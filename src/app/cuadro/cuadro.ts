@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -8,8 +8,4 @@ import { CommonModule } from '@angular/common';
   styleUrl: './cuadro.scss'
 })
 export class CuadroComponent {
-  @Input() titulo: string = 'Título del Cuadro';
-  @Input() contenido: string = 'Contenido del cuadro de ejemplo';
-  @Input() color: string = 'primario';
-  @Input() icono: string = '📦';
 }

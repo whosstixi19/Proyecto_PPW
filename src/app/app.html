@@ -1,73 +1,29 @@
 <div class="app-container">
   <!-- Header con navegación -->
-  <header class="header">
-    <div class="container">
-      <h1 class="header__title">{{ title() }}</h1>
-      <nav class="nav">
-        <a routerLink="/cuadros" routerLinkActive="active" class="nav__link">Cuadros</a>
-        <a routerLink="/tabla" routerLinkActive="active" class="nav__link">Tabla</a>
-      </nav>
+  <header>
+    <h2>{{ title() }}</h2>
+    
+    <nav>
+      <a href="https://avac.ups.edu.ec/grado67/my/" target="_blank">AVAC</a>
+      <a href="https://avac.ups.edu.ec/grado67/my/" target="_blank">Portal</a>
+      <a routerLink="/inicio" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Inicio</a>
+      <a routerLink="/cuadros" routerLinkActive="active">Cuadros</a>
+      <a routerLink="/tabla" routerLinkActive="active">Tabla</a>
+    </nav>
+
+    <div>
+      <a href="#">Iniciar Sesión</a>
     </div>
   </header>
 
-  <!-- Contenido principal -->
-  <main class="main-content">
-    <div class="container">
-      <!-- Sección de bienvenida -->
-      <section class="welcome-section">
-        <h2>Bienvenido al Proyecto</h2>
-        <p>Este es un proyecto Angular básico con componentes reutilizables de Cuadro y Tabla.</p>
-      </section>
-
-      <!-- Grid de cuadros de ejemplo -->
-      <section class="cuadros-section">
-        <h2>Ejemplos de Cuadros</h2>
-        <div class="cuadros-grid">
-          <app-cuadro 
-            titulo="Información" 
-            contenido="Este es un cuadro informativo con borde azul y estilo moderno"
-            color="info"
-            icono="ℹ️">
-          </app-cuadro>
-          
-          <app-cuadro 
-            titulo="Advertencia" 
-            contenido="Este cuadro muestra una advertencia importante para el usuario"
-            color="warning"
-            icono="⚠️">
-          </app-cuadro>
-          
-          <app-cuadro 
-            titulo="Éxito" 
-            contenido="Operación completada exitosamente con todos los datos guardados"
-            color="secundario"
-            icono="✅">
-          </app-cuadro>
-          
-          <app-cuadro 
-            titulo="Peligro" 
-            contenido="Acción crítica detectada que requiere atención inmediata"
-            color="danger"
-            icono="🚨">
-          </app-cuadro>
-        </div>
-      </section>
-
-      <!-- Tabla de ejemplo -->
-      <section class="tabla-section">
-        <app-tabla titulo="Inventario de Productos"></app-tabla>
-      </section>
-
-      <!-- Outlet para rutas -->
-      <router-outlet />
-    </div>
+  <!-- Contenido principal con rutas -->
+  <main>
+    <router-outlet />
   </main>
 
   <!-- Footer -->
-  <footer class="footer">
-    <div class="container">
-      <p>&copy; 2025 Proyecto Cárdenas & Tixi - Programación Web</p>
-    </div>
+  <footer>
+    <small>&copy; 2025 JoseTixi - Derechos reservados</small>
   </footer>
 </div>
 

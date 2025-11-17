@@ -6,121 +6,116 @@
   flex-direction: column;
 }
 
-/* Header */
-.header {
-  background-color: var(--color-primario);
-  color: var(--color-blanco);
-  padding: 1.5rem 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+/* Header - Coincide con el estilo del CSS proporcionado */
+header {
+  border-bottom: 1px solid var(--border);
+  background: var(--background);
+  padding: .5rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
 
-  &__title {
-    margin: 0 0 1rem 0;
-    font-size: 2rem;
-    color: var(--color-blanco);
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
   }
 }
 
 /* Navegación */
-.nav {
+nav {
+  align-items: center;
+  gap: 1rem;
   display: flex;
-  gap: 1.5rem;
   flex-wrap: wrap;
 
-  &__link {
-    color: var(--color-blanco);
+  a {
     text-decoration: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
+    color: var(--text-secondary);
+    transition: color 0.2s;
     font-weight: 500;
+    padding: 0.5rem;
 
-    &:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-      text-decoration: none;
+    &:hover, 
+    &:focus {
+      color: var(--primary);
+      outline: none;
     }
 
     &.active {
-      background-color: rgba(255, 255, 255, 0.2);
+      color: var(--primary);
       font-weight: 600;
     }
   }
 }
 
+/* Botón de iniciar sesión */
+header div a {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background-color: #334155;
+  color: var(--text-primary);
+  display: inline-block;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #475569;
+  }
+}
+
 /* Contenido principal */
-.main-content {
+main {
   flex: 1;
-  padding: 2rem 0;
-}
-
-/* Secciones */
-.welcome-section {
-  background-color: var(--color-blanco);
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: var(--sombra);
-  margin-bottom: 2rem;
-  text-align: center;
-
-  h2 {
-    margin-bottom: 1rem;
-  }
-
-  p {
-    font-size: 1.1rem;
-    color: #666;
-  }
-}
-
-.cuadros-section {
-  margin-bottom: 2rem;
-
-  h2 {
-    margin-bottom: 1.5rem;
-    color: var(--color-primario);
-  }
-}
-
-.cuadros-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.tabla-section {
-  margin-bottom: 2rem;
 }
 
 /* Footer */
-.footer {
-  background-color: #333;
-  color: var(--color-blanco);
-  padding: 1.5rem 0;
+footer {
+  background-color: var(--background);
+  border-top: 1px solid var(--border);
   text-align: center;
+  padding: 16px;
   margin-top: auto;
 
-  p {
-    margin: 0;
-    color: var(--color-blanco);
+  small {
+    color: var(--text-muted);
+    font-size: 0.875rem;
   }
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .header__title {
-    font-size: 1.5rem;
-  }
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
 
-  .nav {
-    gap: 0.75rem;
-
-    &__link {
-      padding: 0.4rem 0.8rem;
-      font-size: 0.9rem;
+    h2 {
+      font-size: 1rem;
     }
   }
 
-  .cuadros-grid {
-    grid-template-columns: 1fr;
+  nav {
+    width: 100%;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+
+    a {
+      font-size: 0.875rem;
+      padding: 0.4rem;
+    }
+  }
+
+  header div {
+    width: 100%;
+
+    a {
+      width: 100%;
+      text-align: center;
+    }
   }
 }

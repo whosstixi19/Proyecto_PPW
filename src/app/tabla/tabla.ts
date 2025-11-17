@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export interface DatosTabla {
@@ -16,7 +16,7 @@ export interface DatosTabla {
   styleUrl: './tabla.scss'
 })
 export class TablaComponent {
-  @Input() titulo: string = 'Tabla de Datos';
+  titulo: string = 'Inventario de Productos';
   
   // Datos de ejemplo
   datos: DatosTabla[] = [

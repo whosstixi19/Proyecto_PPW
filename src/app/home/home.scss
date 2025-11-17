@@ -1,0 +1,118 @@
+/* Estilos del componente Home */
+
+.hero-section {
+  height: 500px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 1rem;
+
+  h1 {
+    padding-top: 36px;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+
+    svg {
+      width: 2.5rem;
+      height: 2.5rem;
+    }
+  }
+
+  p {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    max-width: 600px;
+  }
+}
+
+.features-section {
+  padding: 2rem 1rem;
+  background-color: var(--background);
+
+  header {
+    text-align: center;
+    margin-bottom: 2rem;
+    gap: 2px;
+    flex-direction: column;
+    border: none;
+    padding: 0;
+
+    h2 {
+      margin-bottom: 0.5rem;
+      font-size: 1.875rem;
+    }
+
+    p {
+      opacity: .75;
+      color: var(--text-muted);
+    }
+  }
+
+  & > div {
+    max-width: 1280px;
+    margin: 0 auto;
+
+    & > div:first-child {
+      margin-bottom: 2rem;
+
+      p {
+        font-size: 1.125rem;
+        color: var(--text-muted);
+        max-width: 42rem;
+        margin: 0 auto;
+        text-align: center;
+      }
+    }
+  }
+
+  footer {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    border: none;
+    padding: 0;
+    margin-top: 0;
+  }
+}
+
+.info-table-section {
+  padding: 2rem 1rem;
+  max-width: 1280px;
+  margin: 0 auto;
+
+  h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 1.875rem;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero-section {
+    height: auto;
+    padding: 3rem 1rem;
+
+    h1 {
+      font-size: 2rem;
+
+      svg {
+        width: 2rem;
+        height: 2rem;
+      }
+    }
+
+    p {
+      font-size: 1rem;
+    }
+  }
+
+  .features-section {
+    footer {
+      grid-template-columns: 1fr;
+    }
+  }
+}
