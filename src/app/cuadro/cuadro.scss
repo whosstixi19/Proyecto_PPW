@@ -1,0 +1,77 @@
+/* Estilos del componente Cuadro */
+
+.cuadro {
+  background-color: var(--color-blanco);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: var(--sombra);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  gap: 1rem;
+  border-left: 4px solid var(--color-primario);
+  margin-bottom: 1rem;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  &__icono {
+    font-size: 2.5rem;
+    flex-shrink: 0;
+  }
+
+  &__contenido {
+    flex: 1;
+  }
+
+  &__titulo {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+    color: var(--color-texto);
+  }
+
+  &__texto {
+    margin: 0;
+    color: #666;
+    line-height: 1.5;
+  }
+
+  /* Variantes de color */
+  &--primario {
+    border-left-color: var(--color-primario);
+    .cuadro__icono { color: var(--color-primario); }
+  }
+
+  &--secundario {
+    border-left-color: var(--color-secundario);
+    .cuadro__icono { color: var(--color-secundario); }
+  }
+
+  &--info {
+    border-left-color: #3498db;
+    .cuadro__icono { color: #3498db; }
+  }
+
+  &--warning {
+    border-left-color: #f39c12;
+    .cuadro__icono { color: #f39c12; }
+  }
+
+  &--danger {
+    border-left-color: #e74c3c;
+    .cuadro__icono { color: #e74c3c; }
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .cuadro {
+    flex-direction: column;
+    text-align: center;
+
+    &__icono {
+      font-size: 2rem;
+    }
+  }
+}

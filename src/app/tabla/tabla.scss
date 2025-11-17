@@ -1,0 +1,125 @@
+/* Estilos del componente Tabla */
+
+.tabla-contenedor {
+  background-color: var(--color-blanco);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: var(--sombra);
+  margin-bottom: 2rem;
+}
+
+.tabla-titulo {
+  margin: 0 0 1.5rem 0;
+  color: var(--color-primario);
+  font-size: 1.5rem;
+}
+
+.tabla-wrapper {
+  overflow-x: auto;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+
+  thead {
+    background-color: var(--color-primario);
+    color: var(--color-blanco);
+
+    th {
+      padding: 1rem;
+      text-align: left;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid var(--color-borde);
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: #f8f9fa;
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+
+    td {
+      padding: 1rem;
+      color: var(--color-texto);
+    }
+  }
+}
+
+/* Badges */
+.categoria-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background-color: #e3f2fd;
+  color: #1976d2;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.stock-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+
+  &.stock-bajo {
+    background-color: #ffebee;
+    color: #c62828;
+  }
+
+  &.stock-medio {
+    background-color: #fff3e0;
+    color: #e65100;
+  }
+
+  &.stock-alto {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .tabla {
+    thead {
+      display: none;
+    }
+
+    tbody tr {
+      display: block;
+      margin-bottom: 1rem;
+      border: 1px solid var(--color-borde);
+      border-radius: 8px;
+      padding: 0.5rem;
+    }
+
+    td {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.75rem 0.5rem;
+      border-bottom: 1px solid #f0f0f0;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--color-primario);
+      }
+    }
+  }
+}

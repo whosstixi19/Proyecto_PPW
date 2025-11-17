@@ -1,0 +1,34 @@
+<div class="tabla-contenedor">
+  <h2 class="tabla-titulo">{{ titulo }}</h2>
+  
+  <div class="tabla-wrapper">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Categoría</th>
+          <th>Precio</th>
+          <th>Stock</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of datos; track item.id) {
+          <tr>
+            <td data-label="ID">{{ item.id }}</td>
+            <td data-label="Nombre">{{ item.nombre }}</td>
+            <td data-label="Categoría">
+              <span class="categoria-badge">{{ item.categoria }}</span>
+            </td>
+            <td data-label="Precio">{{ formatearPrecio(item.precio) }}</td>
+            <td data-label="Stock">
+              <span [class]="'stock-badge ' + claseStock(item.stock)">
+                {{ item.stock }}
+              </span>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
