@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './home/home';
-import { CuadroComponent } from './cuadro/cuadro';
-import { TablaComponent } from './tabla/tabla';
 import { LoginComponent } from './login/login';
 import { AdminComponent } from './admin/admin';
+import { ProgramadorComponent } from './programador/programador';
+import { AsesoriasComponent } from './asesorias/asesorias';
 import { authGuard, adminGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -12,6 +12,6 @@ export const routes: Routes = [
   { path: 'inicio', component: HomeComponent, canActivate: [authGuard] },
   { path: 'portafolios', component: HomeComponent, canActivate: [authGuard] },
   { path: 'admin', component: AdminComponent, canActivate: [adminGuard] },
-  { path: 'cuadros', component: CuadroComponent },
-  { path: 'tabla', component: TablaComponent }
+  { path: 'mi-portafolio', component: ProgramadorComponent, canActivate: [authGuard] },
+  { path: 'asesorias', component: AsesoriasComponent, canActivate: [authGuard] },
 ];

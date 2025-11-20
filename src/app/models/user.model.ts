@@ -39,13 +39,15 @@ export interface Proyecto {
 
 export interface Asesoria {
   id?: string;
-  programadorId: string;
-  solicitanteEmail: string;
-  solicitanteNombre: string;
-  fecha: Date;
-  hora: string;
-  comentario?: string;
+  usuarioUid: string;
+  usuarioNombre: string;
+  usuarioEmail: string;
+  programadorUid: string;
+  programadorNombre: string;
+  tema: string;
+  descripcion: string;
   estado: 'pendiente' | 'aprobada' | 'rechazada';
-  mensajeRespuesta?: string;
-  creadaEn: Date;
+  fecha: any; // Firestore Timestamp
+  respuesta?: string;
+  fechaRespuesta?: any; // Firestore Timestamp
 }

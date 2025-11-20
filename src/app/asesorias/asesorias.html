@@ -1,0 +1,149 @@
+<div class="asesorias-page">
+  <!-- Header -->
+  <header class="asesorias-header">
+    <div class="header-content">
+      <h1>💼 Solicitar Asesoría</h1>
+      <div class="header-actions">
+        <a href="/portafolios" class="btn btn-secondary">Ver Portafolios</a>
+        <button class="btn btn-secondary" (click)="logout()">Cerrar Sesión</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Loading -->
+  <div class="asesorias-content" *ngIf="loading">
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Cargando información...</p>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="asesorias-content" *ngIf="!loading">
+    <!-- Programadores Disponibles -->
+    <section class="programadores-section">
+      <h2>Programadores Disponibles</h2>
+      <div class="programadores-grid">
+        <div class="programador-card" *ngFor="let programador of programadores">
+          <div class="programador-avatar">
+            <img *ngIf="programador.photoURL" [src]="programador.photoURL" [alt]="programador.displayName">
+            <div *ngIf="!programador.photoURL" class="avatar-placeholder">
+              {{ programador.displayName.charAt(0).toUpperCase() }}
+            </div>
+          </div>
+          <div class="programador-info">
+            <h3>{{ programador.displayName }}</h3>
+            <p class="programador-especialidad">{{ programador.especialidad || 'Desarrollador' }}</p>
+            <p class="programador-descripcion">{{ programador.descripcion || 'Sin descripción' }}</p>
+            <button class="btn btn-primary" (click)="openModal(programador)">
+              Solicitar Asesoría
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="empty-state" *ngIf="programadores.length === 0">
+        <svg width="64" height="64" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/>
+        </svg>
+        <h3>No hay programadores disponibles</h3>
+        <p>Vuelve más tarde para ver programadores disponibles</p>
+      </div>
+    </section>
+
+    <!-- Mis Solicitudes -->
+    <section class="solicitudes-section">
+      <h2>Mis Solicitudes</h2>
+      <div class="solicitudes-list">
+        <div class="solicitud-card" *ngFor="let asesoria of misAsesorias">
+          <div class="solicitud-header">
+            <div>
+              <h3>{{ asesoria.tema }}</h3>
+              <p class="solicitud-programador">Para: {{ asesoria.programadorNombre }}</p>
+            </div>
+            <span class="estado-badge" [style.background-color]="getEstadoColor(asesoria.estado) + '20'" [style.color]="getEstadoColor(asesoria.estado)">
+              {{ getEstadoTexto(asesoria.estado) }}
+            </span>
+          </div>
+          <p class="solicitud-descripcion">{{ asesoria.descripcion }}</p>
+          <p class="solicitud-fecha">{{ asesoria.fecha?.toDate().toLocaleDateString() }}</p>
+          
+          <div class="solicitud-respuesta" *ngIf="asesoria.respuesta">
+            <strong>Respuesta del programador:</strong>
+            <p>{{ asesoria.respuesta }}</p>
+            <p class="respuesta-fecha">{{ asesoria.fechaRespuesta?.toDate().toLocaleDateString() }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="empty-state" *ngIf="misAsesorias.length === 0">
+        <svg width="64" height="64" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"/>
+        </svg>
+        <h3>No has solicitado asesorías</h3>
+        <p>Solicita una asesoría a un programador para comenzar</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- Modal Solicitar Asesoría -->
+  <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Solicitar Asesoría</h2>
+        <button class="btn-close" (click)="closeModal()">
+          <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      
+      <form class="modal-form" (ngSubmit)="solicitarAsesoria()" #asesoriaForm="ngForm">
+        <div class="programador-seleccionado" *ngIf="selectedProgramador">
+          <div class="programador-avatar-small">
+            <img *ngIf="selectedProgramador.photoURL" [src]="selectedProgramador.photoURL" [alt]="selectedProgramador.displayName">
+            <div *ngIf="!selectedProgramador.photoURL" class="avatar-placeholder-small">
+              {{ selectedProgramador.displayName.charAt(0).toUpperCase() }}
+            </div>
+          </div>
+          <div>
+            <strong>{{ selectedProgramador.displayName }}</strong>
+            <p>{{ selectedProgramador.especialidad || 'Desarrollador' }}</p>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Tema de la Asesoría *</label>
+          <input 
+            type="text" 
+            [(ngModel)]="formData.tema" 
+            name="tema"
+            placeholder="Ej: Consulta sobre React"
+            required
+            maxlength="100">
+        </div>
+
+        <div class="form-group">
+          <label>Descripción *</label>
+          <textarea 
+            [(ngModel)]="formData.descripcion" 
+            name="descripcion"
+            placeholder="Describe detalladamente tu consulta o problema"
+            required
+            rows="6"
+            maxlength="500"></textarea>
+          <small>{{ formData.descripcion.length }}/500 caracteres</small>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeModal()" [disabled]="enviando">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="!asesoriaForm.form.valid || enviando">
+            {{ enviando ? 'Enviando...' : 'Enviar Solicitud' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

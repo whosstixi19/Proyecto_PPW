@@ -37,7 +37,7 @@ export class LoginComponent {
         } else if (user.role === 'programador') {
           this.router.navigate(['/mi-portafolio']);
         } else {
-          this.router.navigate(['/portafolios']);
+          this.router.navigate(['/asesorias']);
         }
       } else {
         this.error = 'No se pudo iniciar sesión. Intenta de nuevo.';

@@ -6,31 +6,48 @@
   align-items: center;
   justify-content: center;
   padding: 2rem 1rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-image: url('/Wallpaper Silver Surfer.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(3px);
+  }
 }
 
 .login-container {
   width: 100%;
   max-width: 450px;
+  position: relative;
+  z-index: 1;
 }
 
 .login-card {
-  background-color: var(--card-bg);
+  background-color: rgba(26, 26, 26, 0.95);
+  backdrop-filter: blur(10px);
   border-radius: 1rem;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(184, 184, 184, 0.2);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
   overflow: hidden;
 }
 
 .login-header {
   text-align: center;
   padding: 3rem 2rem 2rem;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  background: linear-gradient(135deg, rgba(184, 184, 184, 0.1) 0%, rgba(138, 138, 138, 0.1) 100%);
 
   svg {
     width: 64px;
     height: 64px;
-    color: var(--primary-light);
+    color: var(--primary);
     margin-bottom: 1rem;
+    filter: drop-shadow(0 0 10px rgba(184, 184, 184, 0.5));
   }
 
   h1 {
@@ -73,8 +90,8 @@
   justify-content: center;
   gap: 0.75rem;
   padding: 1rem;
-  background-color: var(--card-bg);
-  border: 2px solid var(--border);
+  background-color: rgba(42, 42, 42, 0.8);
+  border: 2px solid rgba(184, 184, 184, 0.3);
   border-radius: 0.5rem;
   color: var(--text-primary);
   font-size: 1rem;
@@ -84,9 +101,9 @@
 
   &:hover:not(:disabled) {
     border-color: var(--primary);
-    background-color: rgba(102, 126, 234, 0.05);
+    background-color: rgba(184, 184, 184, 0.15);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    box-shadow: 0 4px 12px rgba(184, 184, 184, 0.3);
   }
 
   &:active:not(:disabled) {

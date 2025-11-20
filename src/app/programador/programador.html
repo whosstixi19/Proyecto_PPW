@@ -1,0 +1,355 @@
+<div class="programador-page">
+  <header class="programador-header">
+    <div class="header-content">
+      <h1>Mi Portafolio</h1>
+      <div class="header-actions">
+        <button class="btn btn-primary" (click)="openModal()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Agregar Proyecto
+        </button>
+        <button class="btn btn-secondary" (click)="logout()">Cerrar Sesión</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="programador-content">
+    @if (loading && !programador) {
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>Cargando...</p>
+      </div>
+    } @else if (programador) {
+      <div class="profile-section">
+        <div class="profile-card">
+          @if (programador.photoURL) {
+            <img [src]="programador.photoURL" [alt]="programador.displayName" class="profile-avatar">
+          } @else {
+            <div class="profile-avatar-placeholder">
+              {{ programador.displayName.charAt(0).toUpperCase() }}
+            </div>
+          }
+          <div class="profile-info">
+            <h2>{{ programador.displayName }}</h2>
+            <p class="profile-email">{{ programador.email }}</p>
+            @if (programador.especialidad) {
+              <span class="profile-badge">{{ programador.especialidad }}</span>
+            }
+          </div>
+          @if (asesoriasPendientes.length > 0) {
+            <div class="notificaciones-badge">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+              </svg>
+              <span class="badge-count">{{ asesoriasPendientes.length }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Asesorías Pendientes -->
+      @if (asesoriasPendientes.length > 0) {
+        <div class="asesorias-section">
+          <h2>Solicitudes de Asesoría Pendientes ({{ asesoriasPendientes.length }})</h2>
+          <div class="asesorias-list">
+            @for (asesoria of asesoriasPendientes; track asesoria.id) {
+              <div class="asesoria-card">
+                <div class="asesoria-header">
+                  <div>
+                    <h3>{{ asesoria.tema }}</h3>
+                    <p class="asesoria-usuario">De: {{ asesoria.usuarioNombre }} ({{ asesoria.usuarioEmail }})</p>
+                  </div>
+                  <span class="fecha">{{ asesoria.fecha?.toDate().toLocaleDateString() }}</span>
+                </div>
+                <p class="asesoria-descripcion">{{ asesoria.descripcion }}</p>
+                <div class="asesoria-actions">
+                  <button class="btn btn-primary" (click)="openAsesoriaModal(asesoria)">
+                    Responder
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <div class="proyectos-section">
+        <h2>Mis Proyectos ({{ proyectos.length }})</h2>
+
+        @if (proyectos.length === 0) {
+          <div class="empty-state">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+            </svg>
+            <h3>No tienes proyectos aún</h3>
+            <p>Agrega tu primer proyecto para comenzar a construir tu portafolio</p>
+          </div>
+        } @else {
+          <div class="proyectos-grid">
+            @for (proyecto of proyectos; track proyecto.id) {
+              <div class="proyecto-card">
+                @if (proyecto.imagenes && proyecto.imagenes.length > 0) {
+                  <div class="proyecto-image">
+                    <img [src]="proyecto.imagenes[0]" [alt]="proyecto.nombre">
+                  </div>
+                }
+
+                <div class="proyecto-body">
+                  <div class="proyecto-header">
+                    <h3>{{ proyecto.nombre }}</h3>
+                    <span class="proyecto-tipo" [class]="'tipo-' + proyecto.tipo">
+                      {{ proyecto.tipo }}
+                    </span>
+                  </div>
+
+                  <p class="proyecto-descripcion">{{ proyecto.descripcion }}</p>
+
+                  @if (proyecto.participacion && proyecto.participacion.length > 0) {
+                    <div class="proyecto-participacion">
+                      <strong>Participación:</strong>
+                      <div class="tags">
+                        @for (part of proyecto.participacion; track part) {
+                          <span class="tag tag-participacion">{{ part }}</span>
+                        }
+                      </div>
+                    </div>
+                  }
+
+                  @if (proyecto.tecnologias && proyecto.tecnologias.length > 0) {
+                    <div class="proyecto-tecnologias">
+                      <strong>Tecnologías:</strong>
+                      <div class="tags">
+                        @for (tech of proyecto.tecnologias.slice(0, 5); track tech) {
+                          <span class="tag tag-tech">{{ tech }}</span>
+                        }
+                      </div>
+                    </div>
+                  }
+
+                  <div class="proyecto-links">
+                    @if (proyecto.repositorio) {
+                      <a [href]="proyecto.repositorio" target="_blank" rel="noopener" class="proyecto-link">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        Repositorio
+                      </a>
+                    }
+                    @if (proyecto.demo) {
+                      <a [href]="proyecto.demo" target="_blank" rel="noopener" class="proyecto-link">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                          <polyline points="15 3 21 3 21 9"></polyline>
+                          <line x1="10" y1="14" x2="21" y2="3"></line>
+                        </svg>
+                        Demo
+                      </a>
+                    }
+                  </div>
+
+                  <div class="proyecto-actions">
+                    <button class="btn-icon btn-edit" (click)="openModal(proyecto)" title="Editar">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                      </svg>
+                    </button>
+                    <button class="btn-icon btn-delete" (click)="eliminarProyecto(proyecto.id!)" title="Eliminar">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Modal de Proyecto -->
+  @if (showModal) {
+    <div class="modal-overlay" (click)="closeModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>{{ selectedProyecto ? 'Editar' : 'Agregar' }} Proyecto</h2>
+          <button class="btn-close" (click)="closeModal()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <form class="modal-form" (ngSubmit)="guardarProyecto()">
+          <div class="form-group">
+            <label>Nombre del Proyecto *</label>
+            <input type="text" [(ngModel)]="formData.nombre" name="nombre" required>
+          </div>
+
+          <div class="form-group">
+            <label>Descripción *</label>
+            <textarea [(ngModel)]="formData.descripcion" name="descripcion" rows="4" required></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Tipo *</label>
+              <select [(ngModel)]="formData.tipo" name="tipo" required>
+                <option value="academico">Académico</option>
+                <option value="laboral">Laboral</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Participación</label>
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" [checked]="formData.participacion?.includes('frontend')" (change)="toggleParticipacion('frontend')">
+                Frontend
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" [checked]="formData.participacion?.includes('backend')" (change)="toggleParticipacion('backend')">
+                Backend
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" [checked]="formData.participacion?.includes('base-datos')" (change)="toggleParticipacion('base-datos')">
+                Base de Datos
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Tecnologías</label>
+            <div class="input-with-button">
+              <input type="text" [(ngModel)]="tecnologiaInput" name="tecnologiaInput" placeholder="Angular, Firebase, etc.">
+              <button type="button" class="btn-add" (click)="agregarTecnologia()">Agregar</button>
+            </div>
+            @if (formData.tecnologias && formData.tecnologias.length > 0) {
+              <div class="tags-list">
+                @for (tech of formData.tecnologias; track tech; let i = $index) {
+                  <span class="tag-removable">
+                    {{ tech }}
+                    <button type="button" (click)="eliminarTecnologia(i)">×</button>
+                  </span>
+                }
+              </div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label>URL Repositorio</label>
+            <input type="url" [(ngModel)]="formData.repositorio" name="repositorio" placeholder="https://github.com/...">
+          </div>
+
+          <div class="form-group">
+            <label>URL Demo</label>
+            <input type="url" [(ngModel)]="formData.demo" name="demo" placeholder="https://...">
+          </div>
+
+          <div class="form-group">
+            <label>Imágenes (URLs)</label>
+            <div class="input-with-button">
+              <input type="url" [(ngModel)]="imagenInput" name="imagenInput" placeholder="https://...">
+              <button type="button" class="btn-add" (click)="agregarImagen()">Agregar</button>
+            </div>
+            @if (formData.imagenes && formData.imagenes.length > 0) {
+              <div class="images-list">
+                @for (img of formData.imagenes; track img; let i = $index) {
+                  <div class="image-preview">
+                    <img [src]="img" alt="Preview">
+                    <button type="button" class="btn-remove-image" (click)="eliminarImagen(i)">×</button>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+            <button type="submit" class="btn btn-primary" [disabled]="loading">
+              {{ loading ? 'Guardando...' : 'Guardar Proyecto' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- Modal Responder Asesoría -->
+  @if (showAsesoriaModal && selectedAsesoria) {
+    <div class="modal-overlay" (click)="closeAsesoriaModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Responder Solicitud</h2>
+          <button class="btn-close" (click)="closeAsesoriaModal()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        
+        <form class="modal-form" (ngSubmit)="responderAsesoria()" #respuestaFormRef="ngForm">
+          <div class="asesoria-detalle">
+            <div class="detalle-item">
+              <strong>Solicitante:</strong>
+              <p>{{ selectedAsesoria.usuarioNombre }} ({{ selectedAsesoria.usuarioEmail }})</p>
+            </div>
+            <div class="detalle-item">
+              <strong>Tema:</strong>
+              <p>{{ selectedAsesoria.tema }}</p>
+            </div>
+            <div class="detalle-item">
+              <strong>Descripción:</strong>
+              <p>{{ selectedAsesoria.descripcion }}</p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Acción *</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" [(ngModel)]="respuestaForm.accion" name="accion" value="aprobar">
+                <span>✓ Aprobar</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" [(ngModel)]="respuestaForm.accion" name="accion" value="rechazar">
+                <span>✗ Rechazar</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Mensaje de Respuesta *</label>
+            <textarea 
+              [(ngModel)]="respuestaForm.respuesta" 
+              name="respuesta"
+              placeholder="Escribe tu respuesta al usuario..."
+              required
+              rows="5"
+              maxlength="500"></textarea>
+            <small>{{ respuestaForm.respuesta.length }}/500 caracteres</small>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" (click)="closeAsesoriaModal()" [disabled]="respondiendo">
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary" [disabled]="!respuestaFormRef.form.valid || respondiendo">
+              {{ respondiendo ? 'Enviando...' : 'Enviar Respuesta' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

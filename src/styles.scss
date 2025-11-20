@@ -7,18 +7,18 @@
 }
 
 :root {
-  --primary: #a8d5e2;        /* pastel blue */
-  --primary-dark: #79b8cc;   /* darker pastel blue */
-  --primary-hover: #c4e3ed;  /* lighter pastel blue */
-  --primary-light: #d4ecf5;  /* very light pastel blue */
-  --background: #ffffff;     /* white background */
-  --text-primary: #1a1a1a;   /* dark text */
-  --text-secondary: #4a4a4a; /* secondary dark text */
-  --text-muted: #7a7a7a;     /* muted gray text */
-  --border: rgba(0, 0, 0, 0.12);
-  --card-bg: #f8f9fa;        /* light gray card background */
-  --shadow: rgba(0, 0, 0, 0.1);
-  --input-bg: #ffffff;
+  --primary: #b8b8b8;        /* silver gray */
+  --primary-dark: #8a8a8a;   /* darker silver */
+  --primary-hover: #d4d4d4;  /* lighter silver */
+  --primary-light: #e8e8e8;  /* very light silver */
+  --background: #0a0a0a;     /* deep black background */
+  --text-primary: #e8e8e8;   /* light gray text */
+  --text-secondary: #b8b8b8; /* silver text */
+  --text-muted: #6a6a6a;     /* muted gray text */
+  --border: rgba(184, 184, 184, 0.2);
+  --card-bg: #1a1a1a;        /* dark gray card background */
+  --shadow: rgba(0, 0, 0, 0.5);
+  --input-bg: #2a2a2a;
   --hsla-example: rgb(0, 0, 0);
   
   /* Alias para compatibilidad con componentes existentes */

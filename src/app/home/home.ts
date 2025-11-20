@@ -13,7 +13,7 @@ import { Programador } from '../models/user.model';
 })
 export class HomeComponent implements OnInit {
   programadores: Programador[] = [];
-  loading = true;
+  loading = false;
   isAuthenticated = false;
 
   constructor(
@@ -34,9 +34,7 @@ export class HomeComponent implements OnInit {
   }
 
   async loadProgramadores() {
-    this.loading = true;
     this.programadores = await this.userService.getProgramadores();
-    this.loading = false;
   }
 
   async logout() {
@@ -50,5 +48,9 @@ export class HomeComponent implements OnInit {
 
   isAdmin() {
     return this.authService.hasRole('admin');
+  }
+
+  isProgramador() {
+    return this.authService.hasRole('programador');
   }
 }
