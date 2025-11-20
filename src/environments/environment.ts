@@ -1,3 +1,4 @@
+// Credenciales de Firebase para el entorno de desarrollo
 export const environment = {
   production: false,
   firebase: {

@@ -7,20 +7,19 @@
 }
 
 :root {
-  /* Pornhub-inspired palette */
-  --primary: #636240;        /* main Pornhub orange */
-  --primary-dark: #009ef9;   /* darker orange */
-  --primary-hover: #4dafff;  /* lighter hover */
-  --primary-light: #91e3f7;  /* accent light */
-  --background: #000000;     /* black background */
-  --text-primary: #ffffff;   /* white text */
-  --text-secondary: #bfbfbf; /* secondary text */
-  --text-muted: #9ca3af;     /* muted/gray text */
-  --border: rgba(255, 255, 255, 0.08);
-  --card-bg: #111111;        /* very dark card background */
-  --shadow: rgba(0, 0, 0, 0.6);
-  --input-bg: #111111;
-  --hsla-example: rgb(255, 255, 255);
+  --primary: #a8d5e2;        /* pastel blue */
+  --primary-dark: #79b8cc;   /* darker pastel blue */
+  --primary-hover: #c4e3ed;  /* lighter pastel blue */
+  --primary-light: #d4ecf5;  /* very light pastel blue */
+  --background: #ffffff;     /* white background */
+  --text-primary: #1a1a1a;   /* dark text */
+  --text-secondary: #4a4a4a; /* secondary dark text */
+  --text-muted: #7a7a7a;     /* muted gray text */
+  --border: rgba(0, 0, 0, 0.12);
+  --card-bg: #f8f9fa;        /* light gray card background */
+  --shadow: rgba(0, 0, 0, 0.1);
+  --input-bg: #ffffff;
+  --hsla-example: rgb(0, 0, 0);
   
   /* Alias para compatibilidad con componentes existentes */
   --color-primario: var(--primary);
