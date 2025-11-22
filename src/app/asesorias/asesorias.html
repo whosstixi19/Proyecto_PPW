@@ -60,13 +60,23 @@
             <div>
               <h3>{{ asesoria.tema }}</h3>
               <p class="solicitud-programador">Para: {{ asesoria.programadorNombre }}</p>
+              <p class="solicitud-datetime">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                {{ asesoria.fechaSolicitada }} - {{ asesoria.horaSolicitada }}
+              </p>
             </div>
             <span class="estado-badge" [style.background-color]="getEstadoColor(asesoria.estado) + '20'" [style.color]="getEstadoColor(asesoria.estado)">
               {{ getEstadoTexto(asesoria.estado) }}
             </span>
           </div>
           <p class="solicitud-descripcion">{{ asesoria.descripcion }}</p>
-          <p class="solicitud-fecha">{{ asesoria.fecha?.toDate().toLocaleDateString() }}</p>
+          @if (asesoria.comentario) {
+            <p class="solicitud-comentario"><strong>Comentario:</strong> {{ asesoria.comentario }}</p>
+          }
+          <p class="solicitud-fecha">Solicitado el: {{ asesoria.fecha?.toDate().toLocaleDateString() }}</p>
           
           <div class="solicitud-respuesta" *ngIf="asesoria.respuesta">
             <strong>Respuesta del programador:</strong>
@@ -130,16 +140,57 @@
             name="descripcion"
             placeholder="Describe detalladamente tu consulta o problema"
             required
-            rows="6"
+            rows="4"
             maxlength="500"></textarea>
           <small>{{ formData.descripcion.length }}/500 caracteres</small>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Fecha *</label>
+            <input 
+              type="date" 
+              [(ngModel)]="formData.fecha" 
+              name="fecha"
+              (change)="onFechaChange()"
+              [min]="minFecha"
+              required>
+            @if (formData.fecha && horasDisponibles.length === 0) {
+              <small class="error-text">El programador no tiene disponibilidad este día</small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label>Hora *</label>
+            <select 
+              [(ngModel)]="formData.hora" 
+              name="hora"
+              [disabled]="horasDisponibles.length === 0"
+              required>
+              <option value="">Selecciona una hora</option>
+              @for (hora of horasDisponibles; track hora) {
+                <option [value]="hora">{{ hora }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Comentario Adicional (Opcional)</label>
+          <textarea 
+            [(ngModel)]="formData.comentario" 
+            name="comentario"
+            placeholder="Agrega cualquier información adicional que consideres relevante"
+            rows="3"
+            maxlength="300"></textarea>
+          <small>{{ formData.comentario.length }}/300 caracteres</small>
         </div>
 
         <div class="modal-actions">
           <button type="button" class="btn btn-secondary" (click)="closeModal()" [disabled]="enviando">
             Cancelar
           </button>
-          <button type="submit" class="btn btn-primary" [disabled]="!asesoriaForm.form.valid || enviando">
+          <button type="submit" class="btn btn-primary" [disabled]="!asesoriaForm.form.valid || enviando || horasDisponibles.length === 0">
             {{ enviando ? 'Enviando...' : 'Enviar Solicitud' }}
           </button>
         </div>

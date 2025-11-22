@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { UserService } from '../services/user.service';
-import { Programador, Proyecto } from '../models/user.model';
+import { Programador, Proyecto, HorarioDisponible } from '../models/user.model';
 
 @Component({
   selector: 'app-admin',
@@ -16,7 +16,12 @@ export class AdminComponent implements OnInit {
   programadores: Programador[] = [];
   selectedProgramador: Programador | null = null;
   showEditModal = false;
+  showHorariosModal = false;
   loading = false;
+
+  diasSemana = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
+  
+  horariosFormData: HorarioDisponible[] = [];
 
   // Formulario
   formData: Partial<Programador> = {
@@ -143,5 +148,56 @@ export class AdminComponent implements OnInit {
   async logout() {
     await this.authService.logout();
     this.router.navigate(['/login']);
+  }
+
+  // Gestión de Horarios
+  openHorariosModal(programador: Programador) {
+    this.selectedProgramador = programador;
+    
+    // Inicializar horarios con los existentes o crear vacíos
+    if (programador.horariosDisponibles && programador.horariosDisponibles.length > 0) {
+      this.horariosFormData = programador.horariosDisponibles.map(h => ({ ...h }));
+    } else {
+      this.horariosFormData = this.diasSemana.map(dia => ({
+        dia: dia as any,
+        horaInicio: '09:00',
+        horaFin: '17:00',
+        activo: false
+      }));
+    }
+    
+    this.showHorariosModal = true;
+  }
+
+  closeHorariosModal() {
+    this.showHorariosModal = false;
+    this.selectedProgramador = null;
+  }
+
+  toggleHorario(index: number) {
+    this.horariosFormData[index].activo = !this.horariosFormData[index].activo;
+  }
+
+  async saveHorarios() {
+    if (!this.selectedProgramador) return;
+
+    this.loading = true;
+    
+    const horariosActivos = this.horariosFormData.filter(h => h.activo);
+    
+    const success = await this.userService.updateHorarios(
+      this.selectedProgramador.uid,
+      horariosActivos
+    );
+    
+    if (success) {
+      await this.loadProgramadores();
+      this.closeHorariosModal();
+      alert('Horarios actualizados correctamente');
+    } else {
+      alert('Error actualizando horarios');
+    }
+    
+    this.loading = false;
   }
 }

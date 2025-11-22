@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { UserService } from '../services/user.service';
 import { AsesoriaService } from '../services/asesoria.service';
@@ -13,7 +14,7 @@ import { Programador, Proyecto, Asesoria } from '../models/user.model';
   templateUrl: './programador.html',
   styleUrl: './programador.scss'
 })
-export class ProgramadorComponent implements OnInit {
+export class ProgramadorComponent implements OnInit, OnDestroy {
   programador: Programador | null = null;
   proyectos: Proyecto[] = [];
   asesoriasPendientes: Asesoria[] = [];
@@ -27,6 +28,9 @@ export class ProgramadorComponent implements OnInit {
     accion: 'aprobar' as 'aprobar' | 'rechazar',
     respuesta: ''
   };
+
+  // Subscription for real-time updates
+  private asesoriasSubscription?: Subscription;
 
   // Formulario de proyecto
   formData: Partial<Proyecto> = {
@@ -59,10 +63,26 @@ export class ProgramadorComponent implements OnInit {
       return;
     }
 
-    await Promise.all([
-      this.loadProgramador(),
-      this.loadAsesorias()
-    ]);
+    await this.loadProgramador();
+    this.subscribeToAsesorias();
+  }
+
+  ngOnDestroy() {
+    // Cleanup subscription to prevent memory leaks
+    if (this.asesoriasSubscription) {
+      this.asesoriasSubscription.unsubscribe();
+    }
+  }
+
+  subscribeToAsesorias() {
+    const currentUser = this.authService.getCurrentUser();
+    if (currentUser) {
+      this.asesoriasSubscription = this.asesoriaService
+        .getAsesoriasPendientesRealtime(currentUser.uid)
+        .subscribe(asesorias => {
+          this.asesoriasPendientes = asesorias;
+        });
+    }
   }
 
   async loadProgramador() {
@@ -78,13 +98,6 @@ export class ProgramadorComponent implements OnInit {
     }
     
     this.loading = false;
-  }
-
-  async loadAsesorias() {
-    const currentUser = this.authService.getCurrentUser();
-    if (currentUser) {
-      this.asesoriasPendientes = await this.asesoriaService.getAsesoriasPendientes(currentUser.uid);
-    }
   }
 
   openModal(proyecto?: Proyecto) {
@@ -255,7 +268,12 @@ export class ProgramadorComponent implements OnInit {
         this.respuestaForm.respuesta
       );
 
-      await this.loadAsesorias();
+      // External notification simulation
+      await this.asesoriaService.enviarNotificacionExterna(
+        this.selectedAsesoria,
+        'respuesta'
+      );
+
       this.closeAsesoriaModal();
       alert('Respuesta enviada correctamente');
     } catch (error) {

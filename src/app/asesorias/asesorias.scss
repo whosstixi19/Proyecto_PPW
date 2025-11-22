@@ -196,9 +196,23 @@
     }
 
     .solicitud-programador {
-      margin: 0;
+      margin: 0 0 0.5rem;
       color: var(--text-secondary);
       font-size: 0.875rem;
+    }
+
+    .solicitud-datetime {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0;
+      color: var(--primary);
+      font-size: 0.875rem;
+      font-weight: 600;
+
+      svg {
+        flex-shrink: 0;
+      }
     }
 
     .estado-badge {
@@ -214,6 +228,21 @@
     margin: 0 0 1rem;
     color: var(--text-secondary);
     line-height: 1.6;
+  }
+
+  .solicitud-comentario {
+    margin: 0 0 1rem;
+    padding: 0.75rem;
+    background-color: rgba(168, 213, 226, 0.1);
+    border-left: 3px solid var(--primary);
+    border-radius: 0.25rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    line-height: 1.6;
+
+    strong {
+      color: var(--text-primary);
+    }
   }
 
   .solicitud-fecha {
@@ -399,7 +428,7 @@
       font-size: 0.875rem;
     }
 
-    input, textarea {
+    input, textarea, select {
       width: 100%;
       padding: 0.75rem;
       background-color: var(--background);
@@ -418,10 +447,19 @@
       &::placeholder {
         color: var(--text-muted);
       }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
     }
 
     textarea {
       resize: vertical;
+    }
+
+    select {
+      cursor: pointer;
     }
 
     small {
@@ -429,7 +467,17 @@
       margin-top: 0.5rem;
       color: var(--text-muted);
       font-size: 0.75rem;
+
+      &.error-text {
+        color: #e74c3c;
+      }
     }
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
   }
 }
 

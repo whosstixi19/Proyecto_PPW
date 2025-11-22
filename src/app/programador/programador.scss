@@ -195,12 +195,26 @@
     }
 
     .asesoria-usuario {
-      margin: 0;
+      margin: 0 0 0.5rem;
       color: var(--text-secondary);
       font-size: 0.875rem;
     }
 
-    .fecha {
+    .asesoria-datetime {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0;
+      color: var(--primary);
+      font-size: 0.875rem;
+      font-weight: 600;
+
+      svg {
+        flex-shrink: 0;
+      }
+    }
+
+    .fecha-solicitud {
       color: var(--text-muted);
       font-size: 0.75rem;
       white-space: nowrap;
@@ -211,6 +225,21 @@
     margin: 0 0 1rem;
     color: var(--text-secondary);
     line-height: 1.6;
+  }
+
+  .asesoria-comentario {
+    margin: 0 0 1rem;
+    padding: 0.75rem;
+    background-color: rgba(168, 213, 226, 0.1);
+    border-left: 3px solid var(--primary);
+    border-radius: 0.25rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    line-height: 1.6;
+
+    strong {
+      color: var(--text-primary);
+    }
   }
 
   .asesoria-actions {
@@ -243,6 +272,23 @@
       margin: 0;
       color: var(--text-secondary);
       line-height: 1.6;
+    }
+
+    .fecha-hora-destacada {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem;
+      background-color: rgba(168, 213, 226, 0.2);
+      border-radius: 0.5rem;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 1rem;
+
+      svg {
+        flex-shrink: 0;
+        color: var(--primary);
+      }
     }
   }
 }

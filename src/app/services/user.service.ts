@@ -11,7 +11,7 @@ import {
   query,
   where 
 } from '@angular/fire/firestore';
-import { Programador, Proyecto } from '../models/user.model';
+import { Programador, Proyecto, HorarioDisponible } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -136,6 +136,18 @@ export class UserService {
       return true;
     } catch (error) {
       console.error('Error eliminando proyecto:', error);
+      return false;
+    }
+  }
+
+  // Actualizar horarios de disponibilidad
+  async updateHorarios(programadorId: string, horarios: HorarioDisponible[]): Promise<boolean> {
+    try {
+      const docRef = doc(this.firestore, 'usuarios', programadorId);
+      await updateDoc(docRef, { horariosDisponibles: horarios });
+      return true;
+    } catch (error) {
+      console.error('Error actualizando horarios:', error);
       return false;
     }
   }

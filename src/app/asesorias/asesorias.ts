@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { UserService } from '../services/user.service';
 import { AsesoriaService } from '../services/asesoria.service';
@@ -14,7 +15,7 @@ import { Programador, Asesoria } from '../models/user.model';
   templateUrl: './asesorias.html',
   styleUrls: ['./asesorias.scss']
 })
-export class AsesoriasComponent implements OnInit {
+export class AsesoriasComponent implements OnInit, OnDestroy {
   programadores: Programador[] = [];
   misAsesorias: Asesoria[] = [];
   showModal = false;
@@ -24,8 +25,17 @@ export class AsesoriasComponent implements OnInit {
 
   formData = {
     tema: '',
-    descripcion: ''
+    descripcion: '',
+    comentario: '',
+    fecha: '',
+    hora: ''
   };
+
+  horasDisponibles: string[] = [];
+  minFecha: string = new Date().toISOString().split('T')[0];
+  
+  // Subscription for real-time updates
+  private asesoriasSubscription?: Subscription;
 
   constructor(
     private authService: AuthService,
@@ -41,20 +51,29 @@ export class AsesoriasComponent implements OnInit {
       return;
     }
 
-    await Promise.all([
-      this.loadProgramadores(),
-      this.loadMisAsesorias()
-    ]);
+    await this.loadProgramadores();
+    this.subscribeToMisAsesorias();
+  }
+
+  ngOnDestroy() {
+    // Cleanup subscription to prevent memory leaks
+    if (this.asesoriasSubscription) {
+      this.asesoriasSubscription.unsubscribe();
+    }
   }
 
   async loadProgramadores() {
     this.programadores = await this.userService.getProgramadores();
   }
 
-  async loadMisAsesorias() {
+  subscribeToMisAsesorias() {
     const user = this.authService.getCurrentUser();
     if (user) {
-      this.misAsesorias = await this.asesoriaService.getAsesoriasUsuario(user.uid);
+      this.asesoriasSubscription = this.asesoriaService
+        .getAsesoriasUsuarioRealtime(user.uid)
+        .subscribe(asesorias => {
+          this.misAsesorias = asesorias;
+        });
     }
   }
 
@@ -73,8 +92,56 @@ export class AsesoriasComponent implements OnInit {
   resetForm() {
     this.formData = {
       tema: '',
-      descripcion: ''
+      descripcion: '',
+      comentario: '',
+      fecha: '',
+      hora: ''
     };
+    this.horasDisponibles = [];
+  }
+
+  onFechaChange() {
+    if (!this.formData.fecha || !this.selectedProgramador) {
+      this.horasDisponibles = [];
+      return;
+    }
+
+    const fecha = new Date(this.formData.fecha);
+    const diasSemana = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
+    const diaSemana = diasSemana[fecha.getDay()];
+
+    const horarioDelDia = this.selectedProgramador.horariosDisponibles?.find(h => 
+      h.activo && h.dia === diaSemana
+    );
+
+    if (horarioDelDia) {
+      this.horasDisponibles = this.generarHoras(horarioDelDia.horaInicio, horarioDelDia.horaFin);
+    } else {
+      this.horasDisponibles = [];
+    }
+  }
+
+  generarHoras(inicio: string, fin: string): string[] {
+    const horas: string[] = [];
+    const [horaInicio, minInicio] = inicio.split(':').map(Number);
+    const [horaFin, minFin] = fin.split(':').map(Number);
+
+    let horaActual = horaInicio;
+    let minActual = minInicio;
+
+    while (horaActual < horaFin || (horaActual === horaFin && minActual < minFin)) {
+      const horaStr = String(horaActual).padStart(2, '0');
+      const minStr = String(minActual).padStart(2, '0');
+      horas.push(`${horaStr}:${minStr}`);
+
+      minActual += 30; // Intervalos de 30 minutos
+      if (minActual >= 60) {
+        minActual = 0;
+        horaActual++;
+      }
+    }
+
+    return horas;
   }
 
   async solicitarAsesoria() {
@@ -83,9 +150,14 @@ export class AsesoriasComponent implements OnInit {
     const user = this.authService.getCurrentUser();
     if (!user) return;
 
+    if (!this.formData.fecha || !this.formData.hora) {
+      alert('Por favor selecciona fecha y hora');
+      return;
+    }
+
     this.enviando = true;
     try {
-      await this.asesoriaService.crearAsesoria({
+      const asesoria = await this.asesoriaService.crearAsesoria({
         usuarioUid: user.uid,
         usuarioNombre: user.displayName || 'Usuario',
         usuarioEmail: user.email || '',
@@ -93,10 +165,18 @@ export class AsesoriasComponent implements OnInit {
         programadorNombre: this.selectedProgramador.displayName,
         tema: this.formData.tema,
         descripcion: this.formData.descripcion,
+        comentario: this.formData.comentario,
+        fechaSolicitada: this.formData.fecha,
+        horaSolicitada: this.formData.hora,
         estado: 'pendiente'
       });
 
-      await this.loadMisAsesorias();
+      // External notification simulation
+      await this.asesoriaService.enviarNotificacionExterna(
+        asesoria,
+        'solicitud'
+      );
+
       this.closeModal();
       alert('¡Solicitud enviada! El programador te responderá pronto.');
     } catch (error) {
