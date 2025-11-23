@@ -12,10 +12,10 @@
 
       <nav class="nav-menu">
         @if (isAdmin()) {
-          <a href="/admin" class="nav-link">Panel Admin</a>
+          <button class="nav-link" (click)="goToAdmin()">Panel Admin</button>
         }
         @if (!isAdmin() && !isProgramador()) {
-          <a href="/asesorias" class="nav-link">Solicitar Asesoría</a>
+          <button class="nav-link" (click)="goToAsesorias()">Solicitar Asesoría</button>
         }
         <div class="user-menu">
           <span>{{ getCurrentUser()?.displayName }}</span>

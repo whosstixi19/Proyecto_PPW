@@ -53,4 +53,12 @@ export class HomeComponent implements OnInit {
   isProgramador() {
     return this.authService.hasRole('programador');
   }
+
+  goToAdmin() {
+    this.router.navigate(['/admin']);
+  }
+
+  goToAsesorias() {
+    this.router.navigate(['/asesorias']);
+  }
 }

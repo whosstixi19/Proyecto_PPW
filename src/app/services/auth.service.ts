@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Auth, signInWithPopup, GoogleAuthProvider, signOut, user, User } from '@angular/fire/auth';
+import { Auth, signInWithPopup, GoogleAuthProvider, signOut, user, User, onAuthStateChanged } from '@angular/fire/auth';
 import { Firestore, doc, setDoc, getDoc } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { Usuario, UserRole } from '../models/user.model';
 
 @Injectable({
@@ -10,6 +10,8 @@ import { Usuario, UserRole } from '../models/user.model';
 export class AuthService {
   user$: Observable<User | null>;
   currentUser: Usuario | null = null;
+  private authReady = new BehaviorSubject<boolean>(false);
+  authReady$ = this.authReady.asObservable();
 
   constructor(
     private auth: Auth,
@@ -17,13 +19,14 @@ export class AuthService {
   ) {
     this.user$ = user(this.auth);
     
-    // Suscribirse a cambios de autenticación
-    this.user$.subscribe(async (firebaseUser) => {
+    // Esperar a que Firebase Auth se inicialice completamente
+    onAuthStateChanged(this.auth, async (firebaseUser) => {
       if (firebaseUser) {
         await this.loadUserData(firebaseUser.uid);
       } else {
         this.currentUser = null;
       }
+      this.authReady.next(true);
     });
   }
 
@@ -66,6 +69,7 @@ export class AuthService {
       const userDoc = await getDoc(doc(this.firestore, 'usuarios', uid));
       if (userDoc.exists()) {
         this.currentUser = userDoc.data() as Usuario;
+        console.log('Usuario cargado:', this.currentUser.displayName, 'Rol:', this.currentUser.role);
       }
     } catch (error) {
       console.error('Error cargando datos del usuario:', error);

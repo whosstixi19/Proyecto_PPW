@@ -1,29 +1,39 @@
 import { inject } from '@angular/core';
 import { Router, CanActivateFn } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { map, take, filter } from 'rxjs/operators';
 
 export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  if (authService.isAuthenticated()) {
-    return true;
-  }
-
-  // Redirigir al login si no está autenticado
-  router.navigate(['/login']);
-  return false;
+  // Esperar a que la autenticación esté lista
+  return authService.authReady$.pipe(
+    filter(ready => ready),
+    take(1),
+    map(() => {
+      if (authService.isAuthenticated()) {
+        return true;
+      }
+      router.navigate(['/login']);
+      return false;
+    })
+  );
 };
 
 export const adminGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  if (authService.isAuthenticated() && authService.hasRole('admin')) {
-    return true;
-  }
-
-  // Redirigir al home si no es admin
-  router.navigate(['/portafolios']);
-  return false;
+  return authService.authReady$.pipe(
+    filter(ready => ready),
+    take(1),
+    map(() => {
+      if (authService.isAuthenticated() && authService.hasRole('admin')) {
+        return true;
+      }
+      router.navigate(['/portafolios']);
+      return false;
+    })
+  );
 };

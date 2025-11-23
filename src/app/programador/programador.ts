@@ -237,6 +237,10 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     this.router.navigate(['/login']);
   }
 
+  goToInicio() {
+    this.router.navigate(['/inicio']);
+  }
+
   // Gestión de Asesorías
   openAsesoriaModal(asesoria: Asesoria) {
     this.selectedAsesoria = asesoria;
