@@ -279,4 +279,17 @@ export class AdminComponent implements OnInit {
     
     this.loading = false;
   }
+
+  getDiaNombre(dia: string): string {
+    const dias: { [key: string]: string } = {
+      'lunes': 'Lunes',
+      'martes': 'Martes',
+      'miercoles': 'Miércoles',
+      'jueves': 'Jueves',
+      'viernes': 'Viernes',
+      'sabado': 'Sábado',
+      'domingo': 'Domingo'
+    };
+    return dias[dia] || dia;
+  }
 }

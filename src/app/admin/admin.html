@@ -121,6 +121,21 @@
               </div>
             }
 
+            <!-- Horarios de Disponibilidad -->
+            @if (prog.horariosDisponibles && prog.horariosDisponibles.length > 0) {
+              <div class="card-horarios">
+                <h4>📅 Horarios Disponibles</h4>
+                <div class="horarios-grid">
+                  @for (horario of prog.horariosDisponibles; track horario.dia) {
+                    <div class="horario-item">
+                      <span class="dia ">{{ getDiaNombre(horario.dia) }}</span>
+                      <span class="hora ">{{ horario.horaInicio }} - {{ horario.horaFin }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+
             <div class="card-actions">
               <button class="btn-icon btn-schedule" (click)="openHorariosModal(prog)" title="Gestionar Horarios">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
