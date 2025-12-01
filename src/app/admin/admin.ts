@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { filter, take } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 import { UserService } from '../services/user.service';
 import { Programador, Proyecto, HorarioDisponible } from '../models/user.model';
@@ -42,20 +43,35 @@ export class AdminComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private userService: UserService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   async ngOnInit() {
-    // Verificar que sea admin
-    if (!this.authService.hasRole('admin')) {
-      this.router.navigate(['/login']);
-      return;
-    }
+    // Esperar a que Auth + Firestore + Rol estén completos
+    this.authService.authReady$.pipe(
+      filter(ready => ready),
+      take(1)
+    ).subscribe(async () => {
+      console.log('🔵 AdminComponent: authReady$ emitió true');
+      
+      // Verificar que sea admin
+      if (!this.authService.hasRole('admin')) {
+        console.log('❌ No es admin, redirigiendo');
+        this.router.navigate(['/portafolios']);
+        return;
+      }
 
-    await Promise.all([
-      this.loadProgramadores(),
-      this.loadAllUsuarios()
-    ]);
+      console.log('✅ Es admin, cargando datos...');
+      await Promise.all([
+        this.loadProgramadores(),
+        this.loadAllUsuarios()
+      ]);
+      
+      // Forzar detección de cambios para renderizar inmediatamente
+      this.cdr.detectChanges();
+      console.log('🔄 Vista actualizada');
+    });
   }
 
   async loadAllUsuarios() {
@@ -75,6 +91,10 @@ export class AdminComponent implements OnInit {
     console.log('✅ Programadores recargados (Admin):', this.programadores.length);
     
     this.loading = false;
+  }
+
+  getCurrentUser() {
+    return this.authService.getCurrentUser();
   }
 
   openEditModal(programador?: Programador) {
@@ -206,17 +226,24 @@ export class AdminComponent implements OnInit {
   openHorariosModal(programador: Programador) {
     this.selectedProgramador = programador;
     
-    // Inicializar horarios con los existentes o crear vacíos
-    if (programador.horariosDisponibles && programador.horariosDisponibles.length > 0) {
-      this.horariosFormData = programador.horariosDisponibles.map(h => ({ ...h }));
-    } else {
-      this.horariosFormData = this.diasSemana.map(dia => ({
-        dia: dia as any,
-        horaInicio: '09:00',
-        horaFin: '17:00',
-        activo: false
-      }));
-    }
+    // SIEMPRE inicializar con todos los días de la semana
+    this.horariosFormData = this.diasSemana.map(dia => {
+      // Buscar si este día ya tiene configuración
+      const horarioExistente = programador.horariosDisponibles?.find(h => h.dia === dia);
+      
+      if (horarioExistente) {
+        // Si existe, usar los datos guardados
+        return { ...horarioExistente };
+      } else {
+        // Si no existe, crear uno nuevo desactivado
+        return {
+          dia: dia as any,
+          horaInicio: '09:00',
+          horaFin: '17:00',
+          activo: false
+        };
+      }
+    });
     
     this.showHorariosModal = true;
   }

@@ -1,8 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { filter, take } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 import { UserService } from '../services/user.service';
 import { AsesoriaService } from '../services/asesoria.service';
@@ -41,18 +42,33 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private userService: UserService,
     private asesoriaService: AsesoriaService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   async ngOnInit() {
-    const user = this.authService.getCurrentUser();
-    if (!user) {
-      this.router.navigate(['/login']);
-      return;
-    }
+    // Esperar a que Auth + Firestore + Rol estén completos
+    this.authService.authReady$.pipe(
+      filter(ready => ready),
+      take(1)
+    ).subscribe(async () => {
+      console.log('🔵 AsesoriasComponent: authReady$ emitió true');
+      
+      const user = this.authService.getCurrentUser();
+      if (!user) {
+        console.log('❌ No autenticado, redirigiendo');
+        this.router.navigate(['/login']);
+        return;
+      }
 
-    await this.loadProgramadores();
-    this.subscribeToMisAsesorias();
+      console.log('✅ Usuario autenticado, cargando datos...');
+      await this.loadProgramadores();
+      this.subscribeToMisAsesorias();
+      
+      // Forzar detección de cambios para renderizar inmediatamente
+      this.cdr.detectChanges();
+      console.log('🔄 Vista actualizada');
+    });
   }
 
   ngOnDestroy() {
@@ -73,6 +89,10 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
     this.programadores = await this.userService.getProgramadores();
     console.log('✅ Programadores disponibles:', this.programadores.length);
     this.loading = false;
+  }
+
+  getCurrentUser() {
+    return this.authService.getCurrentUser();
   }
 
   subscribeToMisAsesorias() {
@@ -115,17 +135,26 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const fecha = new Date(this.formData.fecha);
+    // Parsear la fecha correctamente en timezone local
+    const [year, month, day] = this.formData.fecha.split('-').map(Number);
+    const fecha = new Date(year, month - 1, day);
+    
     const diasSemana = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
     const diaSemana = diasSemana[fecha.getDay()];
+
+    console.log('📅 Fecha seleccionada:', this.formData.fecha);
+    console.log('📅 Día de la semana:', diaSemana);
+    console.log('📅 Horarios disponibles:', this.selectedProgramador.horariosDisponibles);
 
     const horarioDelDia = this.selectedProgramador.horariosDisponibles?.find(h => 
       h.activo && h.dia === diaSemana
     );
 
     if (horarioDelDia) {
+      console.log('✅ Horario encontrado:', horarioDelDia);
       this.horasDisponibles = this.generarHoras(horarioDelDia.horaInicio, horarioDelDia.horaFin);
     } else {
+      console.log('❌ No hay horario disponible para', diaSemana);
       this.horasDisponibles = [];
     }
   }

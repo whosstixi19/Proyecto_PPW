@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { filter, take } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 import { UserService } from '../services/user.service';
 import { Programador } from '../models/user.model';
@@ -20,31 +21,46 @@ export class HomeComponent implements OnInit {
   constructor(
     private userService: UserService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   async ngOnInit() {
-    this.isAuthenticated = this.authService.isAuthenticated();
-    
-    if (!this.isAuthenticated) {
-      this.router.navigate(['/login']);
-      return;
-    }
+    // Esperar explícitamente a que Auth + Firestore + Rol estén completos
+    this.authService.authReady$.pipe(
+      filter(ready => ready), // Solo cuando authReady emita true
+      take(1) // Ejecutar UNA VEZ y auto-cancelar (evita memory leak)
+    ).subscribe(async () => {
+      console.log('🔵 HomeComponent: authReady$ emitió true, verificando autenticación...');
+      
+      if (!this.authService.isAuthenticated()) {
+        console.log('❌ No autenticado, redirigiendo a login');
+        this.router.navigate(['/login']);
+        return;
+      }
 
-    // Cargar programadores sin bloquear la vista
-    this.loadProgramadores();
+      // GARANTIZADO: usuario + rol están listos
+      console.log('✅ Usuario autenticado, cargando programadores...');
+      await this.loadProgramadores();
+      
+      // Forzar detección de cambios para renderizar inmediatamente
+      this.cdr.detectChanges();
+      console.log('🔄 Vista actualizada');
+    });
   }
+
 
   async loadProgramadores() {
     // Solo mostrar loading si es una recarga manual
     const isManualReload = this.programadores.length > 0;
     if (isManualReload) {
       this.loading = true;
+      console.log('🔄 Recarga manual...');
     }
     
-    console.log('🔄 Recargando programadores...');
+    // getProgramadores usa caché instantáneo de localStorage
     this.programadores = await this.userService.getProgramadores();
-    console.log('✅ Programadores recargados:', this.programadores.length);
+    console.log('✅ Programadores cargados:', this.programadores.length);
     
     this.loading = false;
   }

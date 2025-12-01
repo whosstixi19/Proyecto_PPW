@@ -58,22 +58,22 @@ export class UserService {
 
   // Obtener todos los programadores
   async getProgramadores(): Promise<Programador[]> {
-    console.log('🔍 Iniciando getProgramadores...');
-    
-    // Intentar obtener desde caché primero
+    // Intentar obtener desde caché primero - INSTANTÁNEO
     const cached = this.cacheService.getProgramadores();
-    if (cached) {
-      console.log('⚡ Programadores cargados desde caché:', cached.length);
+    if (cached && cached.length > 0) {
+      console.log('⚡ Caché encontrado:', cached.length, 'programadores');
       
-      // Actualizar en segundo plano
-      setTimeout(() => this.refreshProgramadores(), 100);
+      // Actualizar en segundo plano SIN BLOQUEAR
+      this.refreshProgramadores().catch(err => 
+        console.error('Error actualizando en background:', err)
+      );
       
       return cached;
     }
     
-    console.log('📡 No hay caché, cargando desde Firestore...');
-    // Si no hay caché, cargar desde Firestore
-    return this.refreshProgramadores();
+    console.log('📡 Primera carga desde Firestore...');
+    // Si no hay caché, cargar desde Firestore Y ESPERAR
+    return await this.refreshProgramadores();
   }
 
   // Refrescar programadores desde Firestore
@@ -92,7 +92,7 @@ export class UserService {
       // Guardar en caché
       this.cacheService.setProgramadores(programadores);
       
-      console.log('📊 Programadores actualizados desde Firestore:', programadores.length);
+      console.log('✅ Updated from Firestore:', programadores.length);
       return programadores;
     } catch (error) {
       console.error('❌ Error obteniendo programadores:', error);

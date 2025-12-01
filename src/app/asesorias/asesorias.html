@@ -2,19 +2,30 @@
   <!-- Header -->
   <header class="asesorias-header">
     <div class="header-content">
-      <h1>💼 Solicitar Asesoría</h1>
+      <div class="header-title">
+        <h1>💼 Solicitar Asesoría</h1>
+      </div>
+      
       <div class="header-actions">
-        <button class="btn btn-secondary" (click)="goToInicio()">🏠 Inicio</button>
-        <button class="btn btn-primary" (click)="loadProgramadores()" title="Recargar programadores">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="23 4 23 10 17 10"></polyline>
-            <polyline points="1 20 1 14 7 14"></polyline>
-            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-          </svg>
-          Mostrar Programadores
-        </button>
-        <button class="btn btn-secondary" (click)="goToPortafolios()">Ver Portafolios</button>
-        <button class="btn btn-secondary" (click)="logout()">Cerrar Sesión</button>
+        <div class="action-buttons">
+          <button class="btn btn-secondary" (click)="goToInicio()">🏠 Inicio</button>
+          <button class="btn btn-primary" (click)="loadProgramadores()" title="Recargar programadores">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+            Mostrar Programadores
+          </button>
+          <button class="btn btn-secondary" (click)="goToPortafolios()">Ver Portafolios</button>
+        </div>
+        
+        <div class="user-info">
+          <div class="user-details">
+            <span class="user-name">{{ getCurrentUser()?.displayName }}</span>
+          </div>
+          <button (click)="logout()" class="btn-logout">Cerrar Sesión</button>
+        </div>
       </div>
     </div>
   </header>

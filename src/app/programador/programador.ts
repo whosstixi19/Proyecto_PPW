@@ -1,8 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { filter, take } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 import { UserService } from '../services/user.service';
 import { AsesoriaService } from '../services/asesoria.service';
@@ -52,19 +53,34 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private userService: UserService,
     private asesoriaService: AsesoriaService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   async ngOnInit() {
-    const currentUser = this.authService.getCurrentUser();
-    
-    if (!currentUser || currentUser.role !== 'programador') {
-      this.router.navigate(['/login']);
-      return;
-    }
+    // Esperar a que Auth + Firestore + Rol estén completos
+    this.authService.authReady$.pipe(
+      filter(ready => ready),
+      take(1)
+    ).subscribe(async () => {
+      console.log('🔵 ProgramadorComponent: authReady$ emitió true');
+      
+      const currentUser = this.authService.getCurrentUser();
+      
+      if (!currentUser || currentUser.role !== 'programador') {
+        console.log('❌ No es programador, redirigiendo');
+        this.router.navigate(['/portafolios']);
+        return;
+      }
 
-    await this.loadProgramador();
-    this.subscribeToAsesorias();
+      console.log('✅ Es programador, cargando datos...');
+      await this.loadProgramador();
+      this.subscribeToAsesorias();
+      
+      // Forzar detección de cambios para renderizar inmediatamente
+      this.cdr.detectChanges();
+      console.log('🔄 Vista actualizada');
+    });
   }
 
   ngOnDestroy() {
@@ -102,6 +118,10 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
 
   async loadData() {
     await this.loadProgramador();
+  }
+
+  getCurrentUser() {
+    return this.authService.getCurrentUser();
   }
 
   openModal(proyecto?: Proyecto) {

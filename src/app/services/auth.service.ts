@@ -25,12 +25,16 @@ export class AuthService {
     // Esperar a que Firebase Auth se inicialice completamente
     onAuthStateChanged(this.auth, async (firebaseUser) => {
       if (firebaseUser) {
+        // CRÍTICO: Solo emitir authReady DESPUÉS de tener Auth + Firestore + Rol
         await this.loadUserData(firebaseUser.uid);
+        this.authReady.next(true);
+        console.log('🟢 Auth + Firestore completos. Usuario:', this.currentUser?.displayName, 'Rol:', this.currentUser?.role);
       } else {
         this.currentUser = null;
         this.clearCache();
+        this.authReady.next(true); // No autenticado, pero "ready" para permitir redirección
+        console.log('🔴 No hay usuario autenticado');
       }
-      this.authReady.next(true);
     });
   }
 
@@ -40,9 +44,9 @@ export class AuthService {
       const cachedUser = localStorage.getItem('currentUser');
       if (cachedUser) {
         this.currentUser = JSON.parse(cachedUser);
-        console.log('✨ Usuario cargado desde caché:', this.currentUser?.displayName);
-        // Marcar como listo inmediatamente si hay caché
-        this.authReady.next(true);
+        console.log('⚡ Caché cargado:', this.currentUser?.displayName, 'Rol:', this.currentUser?.role);
+        // NO emitir authReady aquí - debe esperar onAuthStateChanged para validar
+        // El caché solo acelera isAuthenticated() y hasRole() pero NO bypasea la verificación
       }
     } catch (error) {
       console.error('Error cargando caché:', error);

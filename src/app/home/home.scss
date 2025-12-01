@@ -18,33 +18,48 @@
     margin: 0 auto;
     padding: 1rem 2rem;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    gap: 1rem;
 
-    .logo {
+    .header-title {
       display: flex;
+      justify-content: center;
       align-items: center;
-      gap: 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
 
-      svg {
-        color: var(--primary-light);
-      }
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
 
-      h1 {
-        margin: 0;
-        font-size: 1.5rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+        svg {
+          color: var(--primary-light);
+        }
+
+        h1 {
+          margin: 0;
+          font-size: 1.75rem;
+          font-weight: 700;
+          background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
       }
     }
 
     .nav-menu {
       display: flex;
+      justify-content: space-between;
       align-items: center;
       gap: 1.5rem;
+
+      .nav-buttons {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+      }
 
       .nav-link {
         color: var(--text-primary);
@@ -69,14 +84,43 @@
         }
       }
 
-      .user-menu {
+      .user-info {
         display: flex;
         align-items: center;
         gap: 1rem;
+        padding: 0.5rem 1rem;
+        background-color: var(--background);
+        border-radius: 0.5rem;
+        border: 1px solid var(--border);
 
-        span {
-          color: var(--text-secondary);
-          font-size: 0.875rem;
+        .user-details {
+          display: flex;
+          flex-direction: column;
+          gap: 0.25rem;
+
+          .user-name {
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            font-weight: 600;
+          }
+
+          .user-role {
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.25rem;
+            width: fit-content;
+
+            &.admin {
+              background-color: rgba(239, 68, 68, 0.1);
+              color: #ef4444;
+            }
+
+            &.programador {
+              background-color: rgba(59, 130, 246, 0.1);
+              color: #3b82f6;
+            }
+          }
         }
 
         .btn-logout {
@@ -93,6 +137,7 @@
           &:hover {
             border-color: var(--primary);
             color: var(--primary-light);
+            background-color: rgba(99, 102, 241, 0.05);
           }
         }
       }
@@ -102,24 +147,41 @@
 
 /* Hero Section */
 .hero-section {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  background-image: url('/Wallpaper Silver Surfer.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
   border-bottom: 1px solid var(--border);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1;
+  }
 
   .hero-content {
     max-width: 1400px;
     margin: 0 auto;
     padding: 4rem 2rem;
     text-align: center;
+    position: relative;
+    z-index: 2;
 
     h2 {
       font-size: 2.5rem;
       margin: 0 0 1rem;
-      color: var(--text-primary);
+      color: #ffffff;
     }
 
     p {
       font-size: 1.25rem;
-      color: var(--text-secondary);
+      color: rgba(255, 255, 255, 0.9);
       margin: 0;
     }
   }
@@ -183,10 +245,9 @@
   border: 1px solid var(--border);
   border-radius: 1rem;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
   &:hover {
-    transform: translateY(-8px);
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
     border-color: var(--primary);
   }
@@ -281,19 +342,7 @@
   }
 
   .expandible-content {
-    animation: slideDown 0.3s ease-out;
     overflow: hidden;
-  }
-
-  @keyframes slideDown {
-    from {
-      opacity: 0;
-      max-height: 0;
-    }
-    to {
-      opacity: 1;
-      max-height: 1000px;
-    }
   }
 
   .card-social {
@@ -449,7 +498,7 @@
       font-style: italic;
     }
   }
-}
+
 
 /* Responsive */
 @media (max-width: 768px) {
@@ -490,4 +539,5 @@
   .programadores-section .section-container {
     padding: 2rem 1rem;
   }
+}
 }

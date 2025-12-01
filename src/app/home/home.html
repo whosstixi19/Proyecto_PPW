@@ -2,34 +2,46 @@
   <!-- Header -->
   <header class="portfolio-header">
     <div class="header-content">
-      <div class="logo">
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-          <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-        </svg>
-        <h1>DevPortfolio</h1>
-      </div>
-
-      <nav class="nav-menu">
-        <button class="nav-link" (click)="loadProgramadores()" title="Recargar programadores">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="23 4 23 10 17 10"></polyline>
-            <polyline points="1 20 1 14 7 14"></polyline>
-            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+      <div class="header-title">
+        <div class="logo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
           </svg>
-          Recargar
-        </button>
-        @if (isAdmin()) {
-          <button class="nav-link" (click)="goToAdmin()">Panel Admin</button>
-        }
-        @if (isProgramador()) {
-          <button class="nav-link" (click)="goToProgramador()">Mi Portafolio</button>
-        }
-        @if (!isAdmin() && !isProgramador()) {
-          <button class="nav-link" (click)="goToAsesorias()">Solicitar Asesoría</button>
-        }
-        <div class="user-menu">
-          <span>{{ getCurrentUser()?.displayName }}</span>
+          <h1>Portafolios</h1>
+        </div>
+      </div>
+      
+      <nav class="nav-menu">
+        <div class="nav-buttons">
+          <button class="nav-link" (click)="loadProgramadores()" title="Recargar programadores">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+            Recargar
+          </button>
+          @if (isAdmin()) {
+            <button class="nav-link" (click)="goToAdmin()">Panel Admin</button>
+          }
+          @if (isProgramador()) {
+            <button class="nav-link" (click)="goToProgramador()">Mi Portafolio</button>
+          }
+          @if (!isAdmin() && !isProgramador()) {
+            <button class="nav-link" (click)="goToAsesorias()">Solicitar Asesoría</button>
+          }
+        </div>
+        
+        <div class="user-info">
+          <div class="user-details">
+            <span class="user-name">{{ getCurrentUser()?.displayName }}</span>
+            @if (isAdmin()) {
+              <span class="user-role admin">Admin</span>
+            } @else if (isProgramador()) {
+              <span class="user-role programador">Programador</span>
+            }
+          </div>
           <button (click)="logout()" class="btn-logout">Cerrar Sesión</button>
         </div>
       </nav>
@@ -39,8 +51,8 @@
   <!-- Hero Section -->
   <section class="hero-section">
     <div class="hero-content">
-      <h2>Encuentra el Programador Perfecto</h2>
-      <p>Explora portafolios de desarrolladores talentosos y conecta con expertos en tecnología</p>
+      <h2>Encuentra ayuda</h2>
+      <p>Explota y interactua con los programadores para obtener soluciones a tus proyectos</p>
     </div>
   </section>
 
@@ -48,9 +60,6 @@
   <section class="programadores-section">
     <div class="section-container">
       @if (loading) {
-        <div class="loading-state">
-          <p>Cargando portafolios...</p>
-        </div>
       } @else if (programadores.length === 0) {
         <div class="empty-state">
           <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
