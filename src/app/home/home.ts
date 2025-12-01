@@ -13,8 +13,9 @@ import { Programador } from '../models/user.model';
 })
 export class HomeComponent implements OnInit {
   programadores: Programador[] = [];
-  loading = false;
+  loading = false; // ← Cambiado a false para no bloquear la vista inicial
   isAuthenticated = false;
+  expandedProgramadores: Set<string> = new Set(); // IDs de programadores expandidos
 
   constructor(
     private userService: UserService,
@@ -30,11 +31,22 @@ export class HomeComponent implements OnInit {
       return;
     }
 
-    await this.loadProgramadores();
+    // Cargar programadores sin bloquear la vista
+    this.loadProgramadores();
   }
 
   async loadProgramadores() {
+    // Solo mostrar loading si es una recarga manual
+    const isManualReload = this.programadores.length > 0;
+    if (isManualReload) {
+      this.loading = true;
+    }
+    
+    console.log('🔄 Recargando programadores...');
     this.programadores = await this.userService.getProgramadores();
+    console.log('✅ Programadores recargados:', this.programadores.length);
+    
+    this.loading = false;
   }
 
   async logout() {
@@ -58,7 +70,36 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/admin']);
   }
 
+  goToProgramador() {
+    this.router.navigate(['/programador']);
+  }
+
   goToAsesorias() {
     this.router.navigate(['/asesorias']);
+  }
+
+  toggleProgramador(uid: string) {
+    if (this.expandedProgramadores.has(uid)) {
+      this.expandedProgramadores.delete(uid);
+    } else {
+      this.expandedProgramadores.add(uid);
+    }
+  }
+
+  isProgramadorExpanded(uid: string): boolean {
+    return this.expandedProgramadores.has(uid);
+  }
+
+  getDiaNombre(dia: string): string {
+    const dias: { [key: string]: string } = {
+      'lunes': 'Lunes',
+      'martes': 'Martes',
+      'miercoles': 'Miércoles',
+      'jueves': 'Jueves',
+      'viernes': 'Viernes',
+      'sabado': 'Sábado',
+      'domingo': 'Domingo'
+    };
+    return dias[dia] || dia;
   }
 }

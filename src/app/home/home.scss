@@ -56,9 +56,16 @@
         cursor: pointer;
         font-size: 1rem;
         font-family: inherit;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
 
         &:hover {
           color: var(--primary-light);
+        }
+
+        svg {
+          flex-shrink: 0;
         }
       }
 
@@ -234,6 +241,32 @@
       font-size: 1rem;
     }
 
+    .btn-toggle {
+      margin-top: 1rem;
+      padding: 0.75rem 1.5rem;
+      background-color: var(--primary);
+      color: var(--background);
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      &:hover {
+        background-color: var(--primary-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(184, 184, 184, 0.3);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+
     .descripcion {
       margin: 0;
       color: var(--text-secondary);
@@ -244,6 +277,22 @@
       line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
+    }
+  }
+
+  .expandible-content {
+    animation: slideDown 0.3s ease-out;
+    overflow: hidden;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      max-height: 0;
+    }
+    to {
+      opacity: 1;
+      max-height: 1000px;
     }
   }
 
@@ -270,6 +319,45 @@
         color: var(--primary-light);
         background-color: rgba(102, 126, 234, 0.1);
         transform: translateY(-2px);
+      }
+    }
+  }
+
+  .card-horarios {
+    padding: 1.5rem;
+    background-color: rgba(168, 213, 226, 0.05);
+    border-top: 1px solid var(--border);
+
+    h4 {
+      margin: 0 0 1rem;
+      font-size: 1rem;
+      color: var(--text-primary);
+    }
+
+    .horarios-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .horario-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      padding: 0.75rem;
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+
+      .horario-dia {
+        font-weight: 600;
+        color: var(--primary);
+        font-size: 0.875rem;
+      }
+
+      .horario-horas {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
       }
     }
   }

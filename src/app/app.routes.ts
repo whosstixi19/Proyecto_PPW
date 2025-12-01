@@ -4,7 +4,7 @@ import { LoginComponent } from './login/login';
 import { AdminComponent } from './admin/admin';
 import { ProgramadorComponent } from './programador/programador';
 import { AsesoriasComponent } from './asesorias/asesorias';
-import { authGuard, adminGuard } from './guards/auth.guard';
+import { authGuard, adminGuard, programadorGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -12,6 +12,7 @@ export const routes: Routes = [
   { path: 'inicio', component: HomeComponent, canActivate: [authGuard] },
   { path: 'portafolios', component: HomeComponent, canActivate: [authGuard] },
   { path: 'admin', component: AdminComponent, canActivate: [adminGuard] },
-  { path: 'mi-portafolio', component: ProgramadorComponent, canActivate: [authGuard] },
+  { path: 'programador', component: ProgramadorComponent, canActivate: [programadorGuard] },
+  { path: 'mi-portafolio', redirectTo: '/programador', pathMatch: 'full' },
   { path: 'asesorias', component: AsesoriasComponent, canActivate: [authGuard] },
 ];

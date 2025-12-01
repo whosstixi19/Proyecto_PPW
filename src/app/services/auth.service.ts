@@ -19,15 +19,48 @@ export class AuthService {
   ) {
     this.user$ = user(this.auth);
     
+    // Intentar cargar usuario desde caché primero
+    this.loadFromCache();
+    
     // Esperar a que Firebase Auth se inicialice completamente
     onAuthStateChanged(this.auth, async (firebaseUser) => {
       if (firebaseUser) {
         await this.loadUserData(firebaseUser.uid);
       } else {
         this.currentUser = null;
+        this.clearCache();
       }
       this.authReady.next(true);
     });
+  }
+
+  // Cargar usuario desde localStorage (caché)
+  private loadFromCache(): void {
+    try {
+      const cachedUser = localStorage.getItem('currentUser');
+      if (cachedUser) {
+        this.currentUser = JSON.parse(cachedUser);
+        console.log('✨ Usuario cargado desde caché:', this.currentUser?.displayName);
+        // Marcar como listo inmediatamente si hay caché
+        this.authReady.next(true);
+      }
+    } catch (error) {
+      console.error('Error cargando caché:', error);
+    }
+  }
+
+  // Guardar usuario en localStorage (caché)
+  private saveToCache(user: Usuario): void {
+    try {
+      localStorage.setItem('currentUser', JSON.stringify(user));
+    } catch (error) {
+      console.error('Error guardando caché:', error);
+    }
+  }
+
+  // Limpiar caché
+  private clearCache(): void {
+    localStorage.removeItem('currentUser');
   }
 
   // Login con Google
@@ -52,9 +85,11 @@ export class AuthService {
         
         await setDoc(doc(this.firestore, 'usuarios', result.user.uid), newUser);
         this.currentUser = newUser;
+        this.saveToCache(newUser);
         return newUser;
       } else {
         this.currentUser = userDoc.data() as Usuario;
+        this.saveToCache(this.currentUser);
         return this.currentUser;
       }
     } catch (error) {
@@ -69,10 +104,11 @@ export class AuthService {
       const userDoc = await getDoc(doc(this.firestore, 'usuarios', uid));
       if (userDoc.exists()) {
         this.currentUser = userDoc.data() as Usuario;
-        console.log('Usuario cargado:', this.currentUser.displayName, 'Rol:', this.currentUser.role);
+        this.saveToCache(this.currentUser); // Guardar en caché
+        console.log('✅ Usuario cargado:', this.currentUser.displayName, 'Rol:', this.currentUser.role);
       }
     } catch (error) {
-      console.error('Error cargando datos del usuario:', error);
+      console.error('❌ Error cargando datos del usuario:', error);
     }
   }
 
@@ -81,6 +117,7 @@ export class AuthService {
     try {
       await signOut(this.auth);
       this.currentUser = null;
+      this.clearCache();
     } catch (error) {
       console.error('Error en logout:', error);
     }

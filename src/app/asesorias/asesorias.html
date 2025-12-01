@@ -5,6 +5,14 @@
       <h1>💼 Solicitar Asesoría</h1>
       <div class="header-actions">
         <button class="btn btn-secondary" (click)="goToInicio()">🏠 Inicio</button>
+        <button class="btn btn-primary" (click)="loadProgramadores()" title="Recargar programadores">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <polyline points="1 20 1 14 7 14"></polyline>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+          Mostrar Programadores
+        </button>
         <button class="btn btn-secondary" (click)="goToPortafolios()">Ver Portafolios</button>
         <button class="btn btn-secondary" (click)="logout()">Cerrar Sesión</button>
       </div>
@@ -14,7 +22,6 @@
   <!-- Loading -->
   <div class="asesorias-content" *ngIf="loading">
     <div class="loading">
-      <div class="spinner"></div>
       <p>Cargando información...</p>
     </div>
   </div>
@@ -121,6 +128,18 @@
             <strong>{{ selectedProgramador.displayName }}</strong>
             <p>{{ selectedProgramador.especialidad || 'Desarrollador' }}</p>
           </div>
+        </div>
+
+        <!-- Horarios de Disponibilidad -->
+        <div class="horarios-info" *ngIf="selectedProgramador && selectedProgramador.horariosDisponibles && selectedProgramador.horariosDisponibles.length > 0">
+          <h4>📅 Horarios Disponibles</h4>
+          <div class="horarios-grid">
+            <div class="horario-badge" *ngFor="let horario of selectedProgramador.horariosDisponibles">
+              <span class="horario-dia">{{ getDiaNombre(horario.dia) }}</span>
+              <span class="horario-horas">{{ horario.horaInicio }} - {{ horario.horaFin }}</span>
+            </div>
+          </div>
+          <small class="hint-text">💡 Selecciona una fecha que coincida con estos días para ver las horas disponibles</small>
         </div>
 
         <div class="form-group">

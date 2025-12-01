@@ -14,10 +14,12 @@ import { Programador, Proyecto, HorarioDisponible } from '../models/user.model';
 })
 export class AdminComponent implements OnInit {
   programadores: Programador[] = [];
+  todosUsuarios: any[] = [];
   selectedProgramador: Programador | null = null;
   showEditModal = false;
   showHorariosModal = false;
-  loading = false;
+  showUsuariosModal = false;
+  loading = false; // ← Cambiado a false
 
   diasSemana = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
   
@@ -50,12 +52,28 @@ export class AdminComponent implements OnInit {
       return;
     }
 
-    await this.loadProgramadores();
+    await Promise.all([
+      this.loadProgramadores(),
+      this.loadAllUsuarios()
+    ]);
+  }
+
+  async loadAllUsuarios() {
+    this.todosUsuarios = await this.userService.getAllUsuarios();
+    console.log('📋 Todos los usuarios:', this.todosUsuarios);
   }
 
   async loadProgramadores() {
-    this.loading = true;
+    // Solo mostrar loading si es una recarga manual
+    const isManualReload = this.programadores.length > 0;
+    if (isManualReload) {
+      this.loading = true;
+    }
+    
+    console.log('🔄 Recargando programadores (Admin)...');
     this.programadores = await this.userService.getProgramadores();
+    console.log('✅ Programadores recargados (Admin):', this.programadores.length);
+    
     this.loading = false;
   }
 
@@ -152,6 +170,36 @@ export class AdminComponent implements OnInit {
 
   goToInicio() {
     this.router.navigate(['/inicio']);
+  }
+
+  // Gestión de Usuarios y Roles
+  openUsuariosModal() {
+    this.showUsuariosModal = true;
+  }
+
+  closeUsuariosModal() {
+    this.showUsuariosModal = false;
+  }
+
+  async cambiarRol(usuario: any, nuevoRol: 'admin' | 'programador' | 'usuario') {
+    if (!confirm(`¿Cambiar rol de ${usuario.displayName} a ${nuevoRol}?`)) {
+      return;
+    }
+
+    this.loading = true;
+    const success = await this.userService.updateUserRole(usuario.uid, nuevoRol);
+    
+    if (success) {
+      await Promise.all([
+        this.loadAllUsuarios(),
+        this.loadProgramadores()
+      ]);
+      alert('Rol actualizado correctamente');
+    } else {
+      alert('Error actualizando rol');
+    }
+    
+    this.loading = false;
   }
 
   // Gestión de Horarios

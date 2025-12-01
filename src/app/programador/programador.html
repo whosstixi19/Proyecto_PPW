@@ -4,6 +4,14 @@
       <h1>Mi Portafolio</h1>
       <div class="header-actions">
         <button class="btn btn-secondary" (click)="goToInicio()">🏠 Inicio</button>
+        <button class="btn btn-secondary" (click)="loadData()" title="Recargar datos">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <polyline points="1 20 1 14 7 14"></polyline>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+          Recargar
+        </button>
         <button class="btn btn-primary" (click)="openModal()">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -19,7 +27,6 @@
   <div class="programador-content">
     @if (loading && !programador) {
       <div class="loading">
-        <div class="spinner"></div>
         <p>Cargando...</p>
       </div>
     } @else if (programador) {

@@ -517,3 +517,123 @@
     }
   }
 }
+
+// Modal de Usuarios
+.large-modal {
+  max-width: 800px;
+}
+
+.usuarios-list {
+  padding: 1.5rem;
+  max-height: 60vh;
+  overflow-y: auto;
+
+  .empty-message {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 2rem;
+  }
+
+  .usuario-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: var(--background);
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: var(--input-bg);
+    }
+
+    .usuario-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex: 1;
+
+      .avatar-small {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      .avatar-small-placeholder {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--background);
+        font-weight: 700;
+        font-size: 1rem;
+      }
+
+      strong {
+        display: block;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+      }
+
+      .email-small {
+        margin: 0;
+        font-size: 0.875rem;
+        color: var(--text-muted);
+      }
+    }
+
+    .role-selector {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      label {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        font-weight: 600;
+      }
+
+      select {
+        padding: 0.5rem 1rem;
+        background-color: var(--input-bg);
+        border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        color: var(--text-primary);
+        font-family: inherit;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          border-color: var(--primary);
+        }
+
+        &:focus {
+          outline: none;
+          border-color: var(--primary);
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+}
+
+// Botón info para gestionar usuarios
+.btn-info {
+  background-color: #3498db;
+  color: white;
+
+  &:hover:not(:disabled) {
+    background-color: #2980b9;
+  }
+}
+

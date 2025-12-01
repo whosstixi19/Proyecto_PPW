@@ -12,28 +12,90 @@ import {
   where 
 } from '@angular/fire/firestore';
 import { Programador, Proyecto, HorarioDisponible } from '../models/user.model';
+import { CacheService } from './cache.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
   
-  constructor(private firestore: Firestore) {}
+  constructor(
+    private firestore: Firestore,
+    private cacheService: CacheService
+  ) {}
+
+  // Obtener todos los usuarios (para admin)
+  async getAllUsuarios(): Promise<any[]> {
+    try {
+      const usersRef = collection(this.firestore, 'usuarios');
+      const snapshot = await getDocs(usersRef);
+      const usuarios = snapshot.docs.map(doc => ({
+        ...doc.data(),
+        uid: doc.id
+      }));
+      
+      console.log('📊 Total usuarios encontrados:', usuarios.length);
+      return usuarios;
+    } catch (error) {
+      console.error('❌ Error obteniendo usuarios:', error);
+      return [];
+    }
+  }
+
+  // Actualizar rol de usuario
+  async updateUserRole(uid: string, role: 'admin' | 'programador' | 'usuario'): Promise<boolean> {
+    try {
+      const docRef = doc(this.firestore, 'usuarios', uid);
+      await updateDoc(docRef, { role });
+      this.cacheService.invalidate(); // Invalidar caché
+      console.log('✅ Rol actualizado:', uid, '->', role);
+      return true;
+    } catch (error) {
+      console.error('❌ Error actualizando rol:', error);
+      return false;
+    }
+  }
 
   // Obtener todos los programadores
   async getProgramadores(): Promise<Programador[]> {
+    console.log('🔍 Iniciando getProgramadores...');
+    
+    // Intentar obtener desde caché primero
+    const cached = this.cacheService.getProgramadores();
+    if (cached) {
+      console.log('⚡ Programadores cargados desde caché:', cached.length);
+      
+      // Actualizar en segundo plano
+      setTimeout(() => this.refreshProgramadores(), 100);
+      
+      return cached;
+    }
+    
+    console.log('📡 No hay caché, cargando desde Firestore...');
+    // Si no hay caché, cargar desde Firestore
+    return this.refreshProgramadores();
+  }
+
+  // Refrescar programadores desde Firestore
+  private async refreshProgramadores(): Promise<Programador[]> {
     try {
       const q = query(
         collection(this.firestore, 'usuarios'),
         where('role', '==', 'programador')
       );
       const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map(doc => ({
+      const programadores = querySnapshot.docs.map(doc => ({
         ...doc.data(),
         uid: doc.id
       })) as Programador[];
+      
+      // Guardar en caché
+      this.cacheService.setProgramadores(programadores);
+      
+      console.log('📊 Programadores actualizados desde Firestore:', programadores.length);
+      return programadores;
     } catch (error) {
-      console.error('Error obteniendo programadores:', error);
+      console.error('❌ Error obteniendo programadores:', error);
       return [];
     }
   }
@@ -61,6 +123,7 @@ export class UserService {
         // Actualizar
         const docRef = doc(this.firestore, 'usuarios', programador.uid);
         await updateDoc(docRef, { ...programador });
+        this.cacheService.invalidate(); // Invalidar caché
       } else {
         // Crear nuevo (requiere uid de Firebase Auth primero)
         console.error('Se requiere uid para crear usuario');

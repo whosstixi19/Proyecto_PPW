@@ -4,12 +4,29 @@
       <h1>Panel de Administración</h1>
       <div class="header-actions">
         <button class="btn btn-secondary" (click)="goToInicio()">🏠 Inicio</button>
+        <button class="btn btn-secondary" (click)="loadProgramadores()" title="Recargar datos">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <polyline points="1 20 1 14 7 14"></polyline>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+          Recargar
+        </button>
+        <button class="btn btn-info" (click)="openUsuariosModal()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          Gestionar Usuarios
+        </button>
         <button class="btn btn-primary" (click)="openEditModal()">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="12" y1="5" x2="12" y2="19"></line>
             <line x1="5" y1="12" x2="19" y2="12"></line>
           </svg>
-          Agregar Programador
+          Editar Programador
         </button>
         <button class="btn btn-secondary" (click)="logout()">Cerrar Sesión</button>
       </div>
@@ -17,9 +34,8 @@
   </header>
 
   <div class="admin-content">
-    @if (loading && programadores.length === 0) {
+    @if (loading) {
       <div class="loading">
-        <div class="spinner"></div>
         <p>Cargando programadores...</p>
       </div>
     } @else if (programadores.length === 0) {
@@ -31,7 +47,7 @@
           <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
         </svg>
         <h2>No hay programadores registrados</h2>
-        <p>Agrega el primer programador para comenzar</p>
+        <p>Usa "Gestionar Usuarios" para cambiar roles de usuarios existentes a programador</p>
       </div>
     } @else {
       <div class="programadores-grid">
@@ -252,6 +268,57 @@
             </button>
           </div>
         </form>
+      </div>
+    </div>
+  }
+
+  <!-- Modal de Gestión de Usuarios -->
+  @if (showUsuariosModal) {
+    <div class="modal-overlay" (click)="closeUsuariosModal()">
+      <div class="modal-content large-modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Gestionar Usuarios y Roles</h2>
+          <button class="close-btn" (click)="closeUsuariosModal()">&times;</button>
+        </div>
+
+        <div class="usuarios-list">
+          @if (todosUsuarios.length === 0) {
+            <p class="empty-message">No hay usuarios registrados</p>
+          } @else {
+            @for (usuario of todosUsuarios; track usuario.uid) {
+              <div class="usuario-item">
+                <div class="usuario-info">
+                  @if (usuario.photoURL) {
+                    <img [src]="usuario.photoURL" [alt]="usuario.displayName" class="avatar-small">
+                  } @else {
+                    <div class="avatar-small-placeholder">
+                      {{ usuario.displayName?.charAt(0).toUpperCase() || '?' }}
+                    </div>
+                  }
+                  <div>
+                    <strong>{{ usuario.displayName }}</strong>
+                    <p class="email-small">{{ usuario.email }}</p>
+                  </div>
+                </div>
+                
+                <div class="role-selector">
+                  <label>Rol:</label>
+                  <select [value]="usuario.role" (change)="cambiarRol(usuario, $any($event.target).value)" [disabled]="loading">
+                    <option value="usuario">Usuario</option>
+                    <option value="programador">Programador</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </div>
+              </div>
+            }
+          }
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeUsuariosModal()">
+            Cerrar
+          </button>
+        </div>
       </div>
     </div>
   }

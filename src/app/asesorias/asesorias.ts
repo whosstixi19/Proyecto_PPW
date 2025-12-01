@@ -20,7 +20,7 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
   misAsesorias: Asesoria[] = [];
   showModal = false;
   selectedProgramador: Programador | null = null;
-  loading = false;
+  loading = false; // ← Cambiado a false
   enviando = false;
 
   formData = {
@@ -63,7 +63,16 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
   }
 
   async loadProgramadores() {
+    // Solo mostrar loading si es una recarga manual
+    const isManualReload = this.programadores.length > 0;
+    if (isManualReload) {
+      this.loading = true;
+    }
+    
+    console.log('🔄 Recargando programadores disponibles...');
     this.programadores = await this.userService.getProgramadores();
+    console.log('✅ Programadores disponibles:', this.programadores.length);
+    this.loading = false;
   }
 
   subscribeToMisAsesorias() {
@@ -203,6 +212,19 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
       case 'rechazada': return 'Rechazada';
       default: return estado;
     }
+  }
+
+  getDiaNombre(dia: string): string {
+    const dias: { [key: string]: string } = {
+      'lunes': 'Lunes',
+      'martes': 'Martes',
+      'miercoles': 'Miércoles',
+      'jueves': 'Jueves',
+      'viernes': 'Viernes',
+      'sabado': 'Sábado',
+      'domingo': 'Domingo'
+    };
+    return dias[dia] || dia;
   }
 
   goToInicio() {

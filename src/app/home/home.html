@@ -11,8 +11,19 @@
       </div>
 
       <nav class="nav-menu">
+        <button class="nav-link" (click)="loadProgramadores()" title="Recargar programadores">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <polyline points="1 20 1 14 7 14"></polyline>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+          Recargar
+        </button>
         @if (isAdmin()) {
           <button class="nav-link" (click)="goToAdmin()">Panel Admin</button>
+        }
+        @if (isProgramador()) {
+          <button class="nav-link" (click)="goToProgramador()">Mi Portafolio</button>
         }
         @if (!isAdmin() && !isProgramador()) {
           <button class="nav-link" (click)="goToAsesorias()">Solicitar Asesoría</button>
@@ -38,7 +49,6 @@
     <div class="section-container">
       @if (loading) {
         <div class="loading-state">
-          <div class="spinner"></div>
           <p>Cargando portafolios...</p>
         </div>
       } @else if (programadores.length === 0) {
@@ -73,14 +83,29 @@
                 @if (prog.especialidad) {
                   <p class="especialidad">{{ prog.especialidad }}</p>
                 }
-                @if (prog.descripcion) {
-                  <p class="descripcion">{{ prog.descripcion }}</p>
-                }
+                
+                <!-- Botón Mostrar/Ocultar -->
+                <button 
+                  class="btn-toggle" 
+                  (click)="toggleProgramador(prog.uid)"
+                  [class.expanded]="isProgramadorExpanded(prog.uid)">
+                  {{ isProgramadorExpanded(prog.uid) ? 'Ocultar ▲' : 'Mostrar más ▼' }}
+                </button>
               </div>
 
-              <!-- Redes sociales -->
-              @if (prog.redesSociales && (prog.redesSociales.github || prog.redesSociales.linkedin || prog.redesSociales.portfolio)) {
-                <div class="card-social">
+              <!-- Contenido expandible -->
+              @if (isProgramadorExpanded(prog.uid)) {
+                <div class="expandible-content">
+                <!-- Descripción -->
+                @if (prog.descripcion) {
+                  <div class="card-description">
+                    <p class="descripcion">{{ prog.descripcion }}</p>
+                  </div>
+                }
+
+                <!-- Redes sociales -->
+                @if (prog.redesSociales && (prog.redesSociales.github || prog.redesSociales.linkedin || prog.redesSociales.portfolio)) {
+                  <div class="card-social">
                   @if (prog.redesSociales.github) {
                     <a [href]="prog.redesSociales.github" target="_blank" rel="noopener" title="GitHub">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -106,39 +131,59 @@
                 </div>
               }
 
-              <!-- Proyectos -->
-              @if (prog.proyectos && prog.proyectos.length > 0) {
-                <div class="card-projects">
-                  <h4>Proyectos ({{ prog.proyectos.length }})</h4>
-                  <div class="projects-list">
-                    @for (proyecto of prog.proyectos.slice(0, 3); track proyecto.id) {
-                      <div class="project-item">
-                        <div class="project-header">
-                          <span class="project-name">{{ proyecto.nombre }}</span>
-                          @if (proyecto.tipo) {
-                            <span class="project-status" [class]="'status-' + proyecto.tipo">
-                              {{ proyecto.tipo }}
-                            </span>
-                          }
-                        </div>
-                        @if (proyecto.descripcion) {
-                          <p class="project-desc">{{ proyecto.descripcion }}</p>
-                        }
-                        @if (proyecto.tecnologias && proyecto.tecnologias.length > 0) {
-                          <div class="project-tags">
-                            @for (tech of proyecto.tecnologias.slice(0, 3); track tech) {
-                              <span class="tag">{{ tech }}</span>
-                            }
+                <!-- Horarios de Disponibilidad -->
+                @if (prog.horariosDisponibles && prog.horariosDisponibles.length > 0) {
+                  <div class="card-horarios">
+                    <h4>📅 Horarios de Disponibilidad</h4>
+                    <div class="horarios-list">
+                      @for (horario of prog.horariosDisponibles; track horario.dia) {
+                        @if (horario.activo) {
+                          <div class="horario-item">
+                            <span class="horario-dia">{{ getDiaNombre(horario.dia) }}</span>
+                            <span class="horario-horas">{{ horario.horaInicio }} - {{ horario.horaFin }}</span>
                           </div>
                         }
-                      </div>
+                      }
+                    </div>
+                  </div>
+                }
+
+                <!-- Proyectos -->
+                @if (prog.proyectos && prog.proyectos.length > 0) {
+                  <div class="card-projects">
+                    <h4>Proyectos ({{ prog.proyectos.length }})</h4>
+                    <div class="projects-list">
+                      @for (proyecto of prog.proyectos.slice(0, 3); track proyecto.id) {
+                        <div class="project-item">
+                          <div class="project-header">
+                            <span class="project-name">{{ proyecto.nombre }}</span>
+                            @if (proyecto.tipo) {
+                              <span class="project-status" [class]="'status-' + proyecto.tipo">
+                                {{ proyecto.tipo }}
+                              </span>
+                            }
+                          </div>
+                          @if (proyecto.descripcion) {
+                            <p class="project-desc">{{ proyecto.descripcion }}</p>
+                          }
+                          @if (proyecto.tecnologias && proyecto.tecnologias.length > 0) {
+                            <div class="project-tags">
+                              @for (tech of proyecto.tecnologias.slice(0, 3); track tech) {
+                                <span class="tag">{{ tech }}</span>
+                              }
+                            </div>
+                          }
+                        </div>
+                      }
+                    </div>
+                    @if (prog.proyectos.length > 3) {
+                      <p class="more-projects">+ {{ prog.proyectos.length - 3 }} proyectos más</p>
                     }
                   </div>
-                  @if (prog.proyectos.length > 3) {
-                    <p class="more-projects">+ {{ prog.proyectos.length - 3 }} proyectos más</p>
-                  }
+                }
                 </div>
               }
+              <!-- Fin contenido expandible -->
             </article>
           }
         </div>

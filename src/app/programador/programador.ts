@@ -100,7 +100,12 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     this.loading = false;
   }
 
+  async loadData() {
+    await this.loadProgramador();
+  }
+
   openModal(proyecto?: Proyecto) {
+    console.log('🎨 Abriendo modal de proyecto...', proyecto ? 'EDITAR' : 'NUEVO');
     if (proyecto) {
       this.selectedProyecto = proyecto;
       this.formData = { ...proyecto };
@@ -109,6 +114,7 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
       this.resetForm();
     }
     this.showModal = true;
+    console.log('✅ Modal abierto. showModal =', this.showModal);
   }
 
   closeModal() {
