@@ -7,7 +7,7 @@ import { AuthService } from '../services/auth.service';
   selector: 'app-login',
   imports: [CommonModule],
   templateUrl: './login.html',
-  styleUrl: './login.scss'
+  styleUrl: './login.scss',
 })
 export class LoginComponent {
   loading = false;
@@ -15,7 +15,7 @@ export class LoginComponent {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
   ) {
     // Si ya está autenticado, redirigir
     if (this.authService.isAuthenticated()) {
@@ -29,7 +29,7 @@ export class LoginComponent {
 
     try {
       const user = await this.authService.loginWithGoogle();
-      
+
       if (user) {
         // Redirigir según el rol
         if (user.role === 'admin') {

@@ -1,10 +1,21 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, addDoc, getDocs, query, where, updateDoc, doc, Timestamp, onSnapshot } from '@angular/fire/firestore';
+import {
+  Firestore,
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+  updateDoc,
+  doc,
+  Timestamp,
+  onSnapshot,
+} from '@angular/fire/firestore';
 import { Asesoria } from '../models/user.model';
 import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AsesoriaService {
   constructor(private firestore: Firestore) {}
@@ -13,24 +24,28 @@ export class AsesoriaService {
     const asesoriasRef = collection(this.firestore, 'asesorias');
     const docRef = await addDoc(asesoriasRef, {
       ...asesoria,
-      fecha: Timestamp.now()
+      fecha: Timestamp.now(),
     });
-    
+
     return {
       id: docRef.id,
       ...asesoria,
-      fecha: new Date()
+      fecha: new Date(),
     } as Asesoria;
   }
 
   async getAsesoriasPendientes(programadorUid: string): Promise<Asesoria[]> {
     const asesoriasRef = collection(this.firestore, 'asesorias');
-    const q = query(asesoriasRef, where('programadorUid', '==', programadorUid), where('estado', '==', 'pendiente'));
+    const q = query(
+      asesoriasRef,
+      where('programadorUid', '==', programadorUid),
+      where('estado', '==', 'pendiente'),
+    );
     const snapshot = await getDocs(q);
-    
-    return snapshot.docs.map(doc => ({
+
+    return snapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data()
+      ...doc.data(),
     })) as Asesoria[];
   }
 
@@ -38,32 +53,40 @@ export class AsesoriaService {
     const asesoriasRef = collection(this.firestore, 'asesorias');
     const q = query(asesoriasRef, where('usuarioUid', '==', usuarioUid));
     const snapshot = await getDocs(q);
-    
-    return snapshot.docs.map(doc => ({
+
+    return snapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data()
+      ...doc.data(),
     })) as Asesoria[];
   }
 
-  async responderAsesoria(asesoriaId: string, estado: 'aprobada' | 'rechazada', respuesta: string): Promise<void> {
+  async responderAsesoria(
+    asesoriaId: string,
+    estado: 'aprobada' | 'rechazada',
+    respuesta: string,
+  ): Promise<void> {
     const asesoriaRef = doc(this.firestore, 'asesorias', asesoriaId);
     await updateDoc(asesoriaRef, {
       estado,
       respuesta,
-      fechaRespuesta: Timestamp.now()
+      fechaRespuesta: Timestamp.now(),
     });
   }
 
   // Observables en tiempo real
   getAsesoriasPendientesRealtime(programadorUid: string): Observable<Asesoria[]> {
-    return new Observable(observer => {
+    return new Observable((observer) => {
       const asesoriasRef = collection(this.firestore, 'asesorias');
-      const q = query(asesoriasRef, where('programadorUid', '==', programadorUid), where('estado', '==', 'pendiente'));
-      
+      const q = query(
+        asesoriasRef,
+        where('programadorUid', '==', programadorUid),
+        where('estado', '==', 'pendiente'),
+      );
+
       const unsubscribe = onSnapshot(q, (snapshot) => {
-        const asesorias = snapshot.docs.map(doc => ({
+        const asesorias = snapshot.docs.map((doc) => ({
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
         })) as Asesoria[];
         observer.next(asesorias);
       });
@@ -73,14 +96,14 @@ export class AsesoriaService {
   }
 
   getAsesoriasUsuarioRealtime(usuarioUid: string): Observable<Asesoria[]> {
-    return new Observable(observer => {
+    return new Observable((observer) => {
       const asesoriasRef = collection(this.firestore, 'asesorias');
       const q = query(asesoriasRef, where('usuarioUid', '==', usuarioUid));
-      
+
       const unsubscribe = onSnapshot(q, (snapshot) => {
-        const asesorias = snapshot.docs.map(doc => ({
+        const asesorias = snapshot.docs.map((doc) => ({
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
         })) as Asesoria[];
         observer.next(asesorias);
       });
@@ -90,9 +113,12 @@ export class AsesoriaService {
   }
 
   // Simulación de envío de notificaciones externas
-  async enviarNotificacionExterna(asesoria: Asesoria, tipo: 'solicitud' | 'respuesta'): Promise<void> {
+  async enviarNotificacionExterna(
+    asesoria: Asesoria,
+    tipo: 'solicitud' | 'respuesta',
+  ): Promise<void> {
     console.log('🔔 Notificación Externa Simulada:');
-    
+
     if (tipo === 'solicitud') {
       // Simular envío al programador
       console.log('📧 Email enviado a:', asesoria.programadorNombre);

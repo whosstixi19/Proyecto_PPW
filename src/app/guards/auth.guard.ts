@@ -10,7 +10,7 @@ export const authGuard: CanActivateFn = () => {
 
   // SIEMPRE esperar authReady$ - no bypass
   return authService.authReady$.pipe(
-    filter(ready => ready), // Espera hasta que Auth + Firestore + Rol estén completos
+    filter((ready) => ready), // Espera hasta que Auth + Firestore + Rol estén completos
     take(1),
     map(() => {
       if (authService.isAuthenticated()) {
@@ -20,7 +20,7 @@ export const authGuard: CanActivateFn = () => {
       console.log('❌ authGuard: redirigiendo a login');
       router.navigate(['/login']);
       return false;
-    })
+    }),
   );
 };
 
@@ -31,7 +31,7 @@ export const adminGuard: CanActivateFn = () => {
 
   // SIEMPRE esperar authReady$ - no bypass
   return authService.authReady$.pipe(
-    filter(ready => ready),
+    filter((ready) => ready),
     take(1),
     map(() => {
       if (authService.isAuthenticated() && authService.hasRole('admin')) {
@@ -41,7 +41,7 @@ export const adminGuard: CanActivateFn = () => {
       console.log('❌ adminGuard: sin permisos de admin');
       router.navigate(['/portafolios']);
       return false;
-    })
+    }),
   );
 };
 
@@ -52,7 +52,7 @@ export const programadorGuard: CanActivateFn = () => {
 
   // SIEMPRE esperar authReady$ - no bypass
   return authService.authReady$.pipe(
-    filter(ready => ready),
+    filter((ready) => ready),
     take(1),
     map(() => {
       if (authService.isAuthenticated() && authService.hasRole('programador')) {
@@ -62,6 +62,6 @@ export const programadorGuard: CanActivateFn = () => {
       console.log('❌ programadorGuard: sin permisos de programador');
       router.navigate(['/portafolios']);
       return false;
-    })
+    }),
   );
 };

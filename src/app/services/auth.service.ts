@@ -1,11 +1,19 @@
 import { Injectable } from '@angular/core';
-import { Auth, signInWithPopup, GoogleAuthProvider, signOut, user, User, onAuthStateChanged } from '@angular/fire/auth';
+import {
+  Auth,
+  signInWithPopup,
+  GoogleAuthProvider,
+  signOut,
+  user,
+  User,
+  onAuthStateChanged,
+} from '@angular/fire/auth';
 import { Firestore, doc, setDoc, getDoc } from '@angular/fire/firestore';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { Usuario, UserRole } from '../models/user.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   user$: Observable<User | null>;
@@ -15,20 +23,25 @@ export class AuthService {
 
   constructor(
     private auth: Auth,
-    private firestore: Firestore
+    private firestore: Firestore,
   ) {
     this.user$ = user(this.auth);
-    
+
     // Intentar cargar usuario desde caché primero
     this.loadFromCache();
-    
+
     // Esperar a que Firebase Auth se inicialice completamente
     onAuthStateChanged(this.auth, async (firebaseUser) => {
       if (firebaseUser) {
         // CRÍTICO: Solo emitir authReady DESPUÉS de tener Auth + Firestore + Rol
         await this.loadUserData(firebaseUser.uid);
         this.authReady.next(true);
-        console.log('🟢 Auth + Firestore completos. Usuario:', this.currentUser?.displayName, 'Rol:', this.currentUser?.role);
+        console.log(
+          '🟢 Auth + Firestore completos. Usuario:',
+          this.currentUser?.displayName,
+          'Rol:',
+          this.currentUser?.role,
+        );
       } else {
         this.currentUser = null;
         this.clearCache();
@@ -44,7 +57,12 @@ export class AuthService {
       const cachedUser = localStorage.getItem('currentUser');
       if (cachedUser) {
         this.currentUser = JSON.parse(cachedUser);
-        console.log('⚡ Caché cargado:', this.currentUser?.displayName, 'Rol:', this.currentUser?.role);
+        console.log(
+          '⚡ Caché cargado:',
+          this.currentUser?.displayName,
+          'Rol:',
+          this.currentUser?.role,
+        );
         // NO emitir authReady aquí - debe esperar onAuthStateChanged para validar
         // El caché solo acelera isAuthenticated() y hasRole() pero NO bypasea la verificación
       }
@@ -72,10 +90,10 @@ export class AuthService {
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(this.auth, provider);
-      
+
       // Verificar si el usuario ya existe en Firestore
       const userDoc = await getDoc(doc(this.firestore, 'usuarios', result.user.uid));
-      
+
       if (!userDoc.exists()) {
         // Crear nuevo usuario con rol 'usuario' por defecto
         const newUser: Usuario = {
@@ -84,9 +102,9 @@ export class AuthService {
           displayName: result.user.displayName || 'Usuario',
           photoURL: result.user.photoURL || undefined,
           role: 'usuario',
-          createdAt: new Date()
+          createdAt: new Date(),
         };
-        
+
         await setDoc(doc(this.firestore, 'usuarios', result.user.uid), newUser);
         this.currentUser = newUser;
         this.saveToCache(newUser);
@@ -109,7 +127,12 @@ export class AuthService {
       if (userDoc.exists()) {
         this.currentUser = userDoc.data() as Usuario;
         this.saveToCache(this.currentUser); // Guardar en caché
-        console.log('✅ Usuario cargado:', this.currentUser.displayName, 'Rol:', this.currentUser.role);
+        console.log(
+          '✅ Usuario cargado:',
+          this.currentUser.displayName,
+          'Rol:',
+          this.currentUser.role,
+        );
       }
     } catch (error) {
       console.error('❌ Error cargando datos del usuario:', error);

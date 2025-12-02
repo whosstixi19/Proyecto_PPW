@@ -13,7 +13,7 @@ import { Programador, Proyecto, Asesoria } from '../models/user.model';
   selector: 'app-programador',
   imports: [CommonModule, FormsModule],
   templateUrl: './programador.html',
-  styleUrl: './programador.scss'
+  styleUrl: './programador.scss',
 })
 export class ProgramadorComponent implements OnInit, OnDestroy {
   programador: Programador | null = null;
@@ -27,7 +27,7 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
   respondiendo = false;
   respuestaForm = {
     accion: 'aprobar' as 'aprobar' | 'rechazar',
-    respuesta: ''
+    respuesta: '',
   };
 
   // Subscription for real-time updates
@@ -42,7 +42,7 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     tecnologias: [],
     repositorio: '',
     demo: '',
-    imagenes: []
+    imagenes: [],
   };
 
   // Para manejar inputs de arrays
@@ -54,33 +54,35 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private asesoriaService: AsesoriaService,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   async ngOnInit() {
     // Esperar a que Auth + Firestore + Rol estén completos
-    this.authService.authReady$.pipe(
-      filter(ready => ready),
-      take(1)
-    ).subscribe(async () => {
-      console.log('🔵 ProgramadorComponent: authReady$ emitió true');
-      
-      const currentUser = this.authService.getCurrentUser();
-      
-      if (!currentUser || currentUser.role !== 'programador') {
-        console.log('❌ No es programador, redirigiendo');
-        this.router.navigate(['/portafolios']);
-        return;
-      }
+    this.authService.authReady$
+      .pipe(
+        filter((ready) => ready),
+        take(1),
+      )
+      .subscribe(async () => {
+        console.log('🔵 ProgramadorComponent: authReady$ emitió true');
 
-      console.log('✅ Es programador, cargando datos...');
-      await this.loadProgramador();
-      this.subscribeToAsesorias();
-      
-      // Forzar detección de cambios para renderizar inmediatamente
-      this.cdr.detectChanges();
-      console.log('🔄 Vista actualizada');
-    });
+        const currentUser = this.authService.getCurrentUser();
+
+        if (!currentUser || currentUser.role !== 'programador') {
+          console.log('❌ No es programador, redirigiendo');
+          this.router.navigate(['/portafolios']);
+          return;
+        }
+
+        console.log('✅ Es programador, cargando datos...');
+        await this.loadProgramador();
+        this.subscribeToAsesorias();
+
+        // Forzar detección de cambios para renderizar inmediatamente
+        this.cdr.detectChanges();
+        console.log('🔄 Vista actualizada');
+      });
   }
 
   ngOnDestroy() {
@@ -95,7 +97,7 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     if (currentUser) {
       this.asesoriasSubscription = this.asesoriaService
         .getAsesoriasPendientesRealtime(currentUser.uid)
-        .subscribe(asesorias => {
+        .subscribe((asesorias) => {
           this.asesoriasPendientes = asesorias;
         });
     }
@@ -104,7 +106,7 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
   async loadProgramador() {
     this.loading = true;
     const currentUser = this.authService.getCurrentUser();
-    
+
     if (currentUser) {
       const prog = await this.userService.getProgramador(currentUser.uid);
       if (prog) {
@@ -112,7 +114,7 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
         this.proyectos = prog.proyectos || [];
       }
     }
-    
+
     this.loading = false;
   }
 
@@ -151,7 +153,7 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
       tecnologias: [],
       repositorio: '',
       demo: '',
-      imagenes: []
+      imagenes: [],
     };
     this.tecnologiaInput = '';
     this.imagenInput = '';
@@ -161,7 +163,7 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     if (!this.formData.participacion) {
       this.formData.participacion = [];
     }
-    
+
     const index = this.formData.participacion.indexOf(tipo);
     if (index > -1) {
       this.formData.participacion.splice(index, 1);
@@ -216,7 +218,7 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
       repositorio: this.formData.repositorio,
       demo: this.formData.demo,
       imagenes: this.formData.imagenes || [],
-      fechaCreacion: this.selectedProyecto?.fechaCreacion || new Date()
+      fechaCreacion: this.selectedProyecto?.fechaCreacion || new Date(),
     };
 
     let success = false;
@@ -272,7 +274,7 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     this.selectedAsesoria = asesoria;
     this.respuestaForm = {
       accion: 'aprobar',
-      respuesta: ''
+      respuesta: '',
     };
     this.showAsesoriaModal = true;
   }
@@ -295,14 +297,11 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
       await this.asesoriaService.responderAsesoria(
         this.selectedAsesoria.id!,
         estado,
-        this.respuestaForm.respuesta
+        this.respuestaForm.respuesta,
       );
 
       // External notification simulation
-      await this.asesoriaService.enviarNotificacionExterna(
-        this.selectedAsesoria,
-        'respuesta'
-      );
+      await this.asesoriaService.enviarNotificacionExterna(this.selectedAsesoria, 'respuesta');
 
       this.closeAsesoriaModal();
       alert('Respuesta enviada correctamente');

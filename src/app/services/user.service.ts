@@ -1,27 +1,26 @@
 import { Injectable } from '@angular/core';
-import { 
-  Firestore, 
-  collection, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  doc, 
-  getDocs, 
+import {
+  Firestore,
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  getDocs,
   getDoc,
   query,
-  where 
+  where,
 } from '@angular/fire/firestore';
 import { Programador, Proyecto, HorarioDisponible } from '../models/user.model';
 import { CacheService } from './cache.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserService {
-  
   constructor(
     private firestore: Firestore,
-    private cacheService: CacheService
+    private cacheService: CacheService,
   ) {}
 
   // Obtener todos los usuarios (para admin)
@@ -29,11 +28,11 @@ export class UserService {
     try {
       const usersRef = collection(this.firestore, 'usuarios');
       const snapshot = await getDocs(usersRef);
-      const usuarios = snapshot.docs.map(doc => ({
+      const usuarios = snapshot.docs.map((doc) => ({
         ...doc.data(),
-        uid: doc.id
+        uid: doc.id,
       }));
-      
+
       console.log('📊 Total usuarios encontrados:', usuarios.length);
       return usuarios;
     } catch (error) {
@@ -62,15 +61,15 @@ export class UserService {
     const cached = this.cacheService.getProgramadores();
     if (cached && cached.length > 0) {
       console.log('⚡ Caché encontrado:', cached.length, 'programadores');
-      
+
       // Actualizar en segundo plano SIN BLOQUEAR
-      this.refreshProgramadores().catch(err => 
-        console.error('Error actualizando en background:', err)
+      this.refreshProgramadores().catch((err) =>
+        console.error('Error actualizando en background:', err),
       );
-      
+
       return cached;
     }
-    
+
     console.log('📡 Primera carga desde Firestore...');
     // Si no hay caché, cargar desde Firestore Y ESPERAR
     return await this.refreshProgramadores();
@@ -79,19 +78,16 @@ export class UserService {
   // Refrescar programadores desde Firestore
   private async refreshProgramadores(): Promise<Programador[]> {
     try {
-      const q = query(
-        collection(this.firestore, 'usuarios'),
-        where('role', '==', 'programador')
-      );
+      const q = query(collection(this.firestore, 'usuarios'), where('role', '==', 'programador'));
       const querySnapshot = await getDocs(q);
-      const programadores = querySnapshot.docs.map(doc => ({
+      const programadores = querySnapshot.docs.map((doc) => ({
         ...doc.data(),
-        uid: doc.id
+        uid: doc.id,
       })) as Programador[];
-      
+
       // Guardar en caché
       this.cacheService.setProgramadores(programadores);
-      
+
       console.log('✅ Updated from Firestore:', programadores.length);
       return programadores;
     } catch (error) {
@@ -105,7 +101,7 @@ export class UserService {
     try {
       const docRef = doc(this.firestore, 'usuarios', uid);
       const docSnap = await getDoc(docRef);
-      
+
       if (docSnap.exists()) {
         return { ...docSnap.data(), uid: docSnap.id } as Programador;
       }
@@ -172,7 +168,7 @@ export class UserService {
       const programador = await this.getProgramador(programadorId);
       if (!programador || !programador.proyectos) return false;
 
-      const index = programador.proyectos.findIndex(p => p.id === proyecto.id);
+      const index = programador.proyectos.findIndex((p) => p.id === proyecto.id);
       if (index === -1) return false;
 
       programador.proyectos[index] = proyecto;
@@ -192,7 +188,7 @@ export class UserService {
       const programador = await this.getProgramador(programadorId);
       if (!programador || !programador.proyectos) return false;
 
-      const proyectos = programador.proyectos.filter(p => p.id !== proyectoId);
+      const proyectos = programador.proyectos.filter((p) => p.id !== proyectoId);
 
       const docRef = doc(this.firestore, 'usuarios', programadorId);
       await updateDoc(docRef, { proyectos });

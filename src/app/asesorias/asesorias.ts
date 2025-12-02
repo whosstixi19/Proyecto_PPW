@@ -14,7 +14,7 @@ import { Programador, Asesoria } from '../models/user.model';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './asesorias.html',
-  styleUrls: ['./asesorias.scss']
+  styleUrls: ['./asesorias.scss'],
 })
 export class AsesoriasComponent implements OnInit, OnDestroy {
   programadores: Programador[] = [];
@@ -29,12 +29,12 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
     descripcion: '',
     comentario: '',
     fecha: '',
-    hora: ''
+    hora: '',
   };
 
   horasDisponibles: string[] = [];
   minFecha: string = new Date().toISOString().split('T')[0];
-  
+
   // Subscription for real-time updates
   private asesoriasSubscription?: Subscription;
 
@@ -43,32 +43,34 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private asesoriaService: AsesoriaService,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   async ngOnInit() {
     // Esperar a que Auth + Firestore + Rol estén completos
-    this.authService.authReady$.pipe(
-      filter(ready => ready),
-      take(1)
-    ).subscribe(async () => {
-      console.log('🔵 AsesoriasComponent: authReady$ emitió true');
-      
-      const user = this.authService.getCurrentUser();
-      if (!user) {
-        console.log('❌ No autenticado, redirigiendo');
-        this.router.navigate(['/login']);
-        return;
-      }
+    this.authService.authReady$
+      .pipe(
+        filter((ready) => ready),
+        take(1),
+      )
+      .subscribe(async () => {
+        console.log('🔵 AsesoriasComponent: authReady$ emitió true');
 
-      console.log('✅ Usuario autenticado, cargando datos...');
-      await this.loadProgramadores();
-      this.subscribeToMisAsesorias();
-      
-      // Forzar detección de cambios para renderizar inmediatamente
-      this.cdr.detectChanges();
-      console.log('🔄 Vista actualizada');
-    });
+        const user = this.authService.getCurrentUser();
+        if (!user) {
+          console.log('❌ No autenticado, redirigiendo');
+          this.router.navigate(['/login']);
+          return;
+        }
+
+        console.log('✅ Usuario autenticado, cargando datos...');
+        await this.loadProgramadores();
+        this.subscribeToMisAsesorias();
+
+        // Forzar detección de cambios para renderizar inmediatamente
+        this.cdr.detectChanges();
+        console.log('🔄 Vista actualizada');
+      });
   }
 
   ngOnDestroy() {
@@ -84,7 +86,7 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
     if (isManualReload) {
       this.loading = true;
     }
-    
+
     console.log('🔄 Recargando programadores disponibles...');
     this.programadores = await this.userService.getProgramadores();
     console.log('✅ Programadores disponibles:', this.programadores.length);
@@ -100,7 +102,7 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
     if (user) {
       this.asesoriasSubscription = this.asesoriaService
         .getAsesoriasUsuarioRealtime(user.uid)
-        .subscribe(asesorias => {
+        .subscribe((asesorias) => {
           this.misAsesorias = asesorias;
         });
     }
@@ -124,7 +126,7 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
       descripcion: '',
       comentario: '',
       fecha: '',
-      hora: ''
+      hora: '',
     };
     this.horasDisponibles = [];
   }
@@ -138,7 +140,7 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
     // Parsear la fecha correctamente en timezone local
     const [year, month, day] = this.formData.fecha.split('-').map(Number);
     const fecha = new Date(year, month - 1, day);
-    
+
     const diasSemana = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
     const diaSemana = diasSemana[fecha.getDay()];
 
@@ -146,8 +148,8 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
     console.log('📅 Día de la semana:', diaSemana);
     console.log('📅 Horarios disponibles:', this.selectedProgramador.horariosDisponibles);
 
-    const horarioDelDia = this.selectedProgramador.horariosDisponibles?.find(h => 
-      h.activo && h.dia === diaSemana
+    const horarioDelDia = this.selectedProgramador.horariosDisponibles?.find(
+      (h) => h.activo && h.dia === diaSemana,
     );
 
     if (horarioDelDia) {
@@ -184,7 +186,7 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
 
   async solicitarAsesoria() {
     if (!this.selectedProgramador) return;
-    
+
     const user = this.authService.getCurrentUser();
     if (!user) return;
 
@@ -206,14 +208,11 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
         comentario: this.formData.comentario,
         fechaSolicitada: this.formData.fecha,
         horaSolicitada: this.formData.hora,
-        estado: 'pendiente'
+        estado: 'pendiente',
       });
 
       // External notification simulation
-      await this.asesoriaService.enviarNotificacionExterna(
-        asesoria,
-        'solicitud'
-      );
+      await this.asesoriaService.enviarNotificacionExterna(asesoria, 'solicitud');
 
       this.closeModal();
       alert('¡Solicitud enviada! El programador te responderá pronto.');
@@ -226,32 +225,40 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
   }
 
   getEstadoColor(estado: string): string {
-    switch(estado) {
-      case 'pendiente': return '#f39c12';
-      case 'aprobada': return '#27ae60';
-      case 'rechazada': return '#e74c3c';
-      default: return '#95a5a6';
+    switch (estado) {
+      case 'pendiente':
+        return '#f39c12';
+      case 'aprobada':
+        return '#27ae60';
+      case 'rechazada':
+        return '#e74c3c';
+      default:
+        return '#95a5a6';
     }
   }
 
   getEstadoTexto(estado: string): string {
-    switch(estado) {
-      case 'pendiente': return 'Pendiente';
-      case 'aprobada': return 'Aprobada';
-      case 'rechazada': return 'Rechazada';
-      default: return estado;
+    switch (estado) {
+      case 'pendiente':
+        return 'Pendiente';
+      case 'aprobada':
+        return 'Aprobada';
+      case 'rechazada':
+        return 'Rechazada';
+      default:
+        return estado;
     }
   }
 
   getDiaNombre(dia: string): string {
     const dias: { [key: string]: string } = {
-      'lunes': 'Lunes',
-      'martes': 'Martes',
-      'miercoles': 'Miércoles',
-      'jueves': 'Jueves',
-      'viernes': 'Viernes',
-      'sabado': 'Sábado',
-      'domingo': 'Domingo'
+      lunes: 'Lunes',
+      martes: 'Martes',
+      miercoles: 'Miércoles',
+      jueves: 'Jueves',
+      viernes: 'Viernes',
+      sabado: 'Sábado',
+      domingo: 'Domingo',
     };
     return dias[dia] || dia;
   }

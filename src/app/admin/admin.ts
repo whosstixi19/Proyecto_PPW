@@ -11,7 +11,7 @@ import { Programador, Proyecto, HorarioDisponible } from '../models/user.model';
   selector: 'app-admin',
   imports: [CommonModule, FormsModule],
   templateUrl: './admin.html',
-  styleUrl: './admin.scss'
+  styleUrl: './admin.scss',
 })
 export class AdminComponent implements OnInit {
   programadores: Programador[] = [];
@@ -23,7 +23,7 @@ export class AdminComponent implements OnInit {
   loading = false; // ← Cambiado a false
 
   diasSemana = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
-  
+
   horariosFormData: HorarioDisponible[] = [];
 
   // Formulario
@@ -36,42 +36,41 @@ export class AdminComponent implements OnInit {
     redesSociales: {
       github: '',
       linkedin: '',
-      portfolio: ''
-    }
+      portfolio: '',
+    },
   };
 
   constructor(
     private authService: AuthService,
     private userService: UserService,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   async ngOnInit() {
     // Esperar a que Auth + Firestore + Rol estén completos
-    this.authService.authReady$.pipe(
-      filter(ready => ready),
-      take(1)
-    ).subscribe(async () => {
-      console.log('🔵 AdminComponent: authReady$ emitió true');
-      
-      // Verificar que sea admin
-      if (!this.authService.hasRole('admin')) {
-        console.log('❌ No es admin, redirigiendo');
-        this.router.navigate(['/portafolios']);
-        return;
-      }
+    this.authService.authReady$
+      .pipe(
+        filter((ready) => ready),
+        take(1),
+      )
+      .subscribe(async () => {
+        console.log('🔵 AdminComponent: authReady$ emitió true');
 
-      console.log('✅ Es admin, cargando datos...');
-      await Promise.all([
-        this.loadProgramadores(),
-        this.loadAllUsuarios()
-      ]);
-      
-      // Forzar detección de cambios para renderizar inmediatamente
-      this.cdr.detectChanges();
-      console.log('🔄 Vista actualizada');
-    });
+        // Verificar que sea admin
+        if (!this.authService.hasRole('admin')) {
+          console.log('❌ No es admin, redirigiendo');
+          this.router.navigate(['/portafolios']);
+          return;
+        }
+
+        console.log('✅ Es admin, cargando datos...');
+        await Promise.all([this.loadProgramadores(), this.loadAllUsuarios()]);
+
+        // Forzar detección de cambios para renderizar inmediatamente
+        this.cdr.detectChanges();
+        console.log('🔄 Vista actualizada');
+      });
   }
 
   async loadAllUsuarios() {
@@ -85,11 +84,11 @@ export class AdminComponent implements OnInit {
     if (isManualReload) {
       this.loading = true;
     }
-    
+
     console.log('🔄 Recargando programadores (Admin)...');
     this.programadores = await this.userService.getProgramadores();
     console.log('✅ Programadores recargados (Admin):', this.programadores.length);
-    
+
     this.loading = false;
   }
 
@@ -110,8 +109,8 @@ export class AdminComponent implements OnInit {
         redesSociales: {
           github: programador.redesSociales?.github || '',
           linkedin: programador.redesSociales?.linkedin || '',
-          portfolio: programador.redesSociales?.portfolio || ''
-        }
+          portfolio: programador.redesSociales?.portfolio || '',
+        },
       };
     } else {
       this.selectedProgramador = null;
@@ -135,8 +134,8 @@ export class AdminComponent implements OnInit {
       redesSociales: {
         github: '',
         linkedin: '',
-        portfolio: ''
-      }
+        portfolio: '',
+      },
     };
   }
 
@@ -147,22 +146,22 @@ export class AdminComponent implements OnInit {
     }
 
     this.loading = true;
-    
+
     const dataToSave: Partial<Programador> = {
       ...this.formData,
       role: 'programador',
-      proyectos: this.selectedProgramador?.proyectos || []
+      proyectos: this.selectedProgramador?.proyectos || [],
     };
 
     const success = await this.userService.saveProgramador(dataToSave);
-    
+
     if (success) {
       await this.loadProgramadores();
       this.closeModal();
     } else {
       alert('Error guardando programador');
     }
-    
+
     this.loading = false;
   }
 
@@ -173,13 +172,13 @@ export class AdminComponent implements OnInit {
 
     this.loading = true;
     const success = await this.userService.deleteProgramador(uid);
-    
+
     if (success) {
       await this.loadProgramadores();
     } else {
       alert('Error eliminando programador');
     }
-    
+
     this.loading = false;
   }
 
@@ -208,29 +207,26 @@ export class AdminComponent implements OnInit {
 
     this.loading = true;
     const success = await this.userService.updateUserRole(usuario.uid, nuevoRol);
-    
+
     if (success) {
-      await Promise.all([
-        this.loadAllUsuarios(),
-        this.loadProgramadores()
-      ]);
+      await Promise.all([this.loadAllUsuarios(), this.loadProgramadores()]);
       alert('Rol actualizado correctamente');
     } else {
       alert('Error actualizando rol');
     }
-    
+
     this.loading = false;
   }
 
   // Gestión de Horarios
   openHorariosModal(programador: Programador) {
     this.selectedProgramador = programador;
-    
+
     // SIEMPRE inicializar con todos los días de la semana
-    this.horariosFormData = this.diasSemana.map(dia => {
+    this.horariosFormData = this.diasSemana.map((dia) => {
       // Buscar si este día ya tiene configuración
-      const horarioExistente = programador.horariosDisponibles?.find(h => h.dia === dia);
-      
+      const horarioExistente = programador.horariosDisponibles?.find((h) => h.dia === dia);
+
       if (horarioExistente) {
         // Si existe, usar los datos guardados
         return { ...horarioExistente };
@@ -240,11 +236,11 @@ export class AdminComponent implements OnInit {
           dia: dia as any,
           horaInicio: '09:00',
           horaFin: '17:00',
-          activo: false
+          activo: false,
         };
       }
     });
-    
+
     this.showHorariosModal = true;
   }
 
@@ -261,14 +257,14 @@ export class AdminComponent implements OnInit {
     if (!this.selectedProgramador) return;
 
     this.loading = true;
-    
-    const horariosActivos = this.horariosFormData.filter(h => h.activo);
-    
+
+    const horariosActivos = this.horariosFormData.filter((h) => h.activo);
+
     const success = await this.userService.updateHorarios(
       this.selectedProgramador.uid,
-      horariosActivos
+      horariosActivos,
     );
-    
+
     if (success) {
       await this.loadProgramadores();
       this.closeHorariosModal();
@@ -276,19 +272,19 @@ export class AdminComponent implements OnInit {
     } else {
       alert('Error actualizando horarios');
     }
-    
+
     this.loading = false;
   }
 
   getDiaNombre(dia: string): string {
     const dias: { [key: string]: string } = {
-      'lunes': 'Lunes',
-      'martes': 'Martes',
-      'miercoles': 'Miércoles',
-      'jueves': 'Jueves',
-      'viernes': 'Viernes',
-      'sabado': 'Sábado',
-      'domingo': 'Domingo'
+      lunes: 'Lunes',
+      martes: 'Martes',
+      miercoles: 'Miércoles',
+      jueves: 'Jueves',
+      viernes: 'Viernes',
+      sabado: 'Sábado',
+      domingo: 'Domingo',
     };
     return dias[dia] || dia;
   }

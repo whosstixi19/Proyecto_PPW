@@ -111,7 +111,8 @@
 }
 
 /* Loading y estados vacíos */
-.loading, .empty-state {
+.loading,
+.empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -145,7 +146,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Grid de programadores */
@@ -196,7 +199,7 @@
 
     .card-info {
       flex: 1;
-      
+
       h3 {
         margin: 0 0 0.25rem;
         font-size: 1.25rem;
@@ -316,8 +319,12 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .modal-content {
@@ -382,7 +389,8 @@
       font-size: 0.875rem;
     }
 
-    input, textarea {
+    input,
+    textarea {
       width: 100%;
       padding: 0.75rem;
       background-color: var(--background);
@@ -508,7 +516,7 @@
 
     .header-actions {
       width: 100%;
-      
+
       button {
         flex: 1;
       }
@@ -559,7 +567,7 @@
         cursor: pointer;
         font-weight: normal;
 
-        input[type="checkbox"] {
+        input[type='checkbox'] {
           width: 20px;
           height: 20px;
           cursor: pointer;
@@ -595,7 +603,7 @@
           letter-spacing: 0.5px;
         }
 
-        input[type="time"] {
+        input[type='time'] {
           padding: 0.75rem;
           background-color: var(--input-bg);
           border: 1px solid var(--border);
@@ -739,4 +747,3 @@
     transform: translateY(0);
   }
 }
-

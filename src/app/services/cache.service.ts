@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Programador } from '../models/user.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CacheService {
   private programadoresCache: Programador[] | null = null;
@@ -58,11 +58,11 @@ export class CacheService {
     try {
       const cached = localStorage.getItem('programadores_cache');
       const timestamp = localStorage.getItem('programadores_timestamp');
-      
+
       if (cached && timestamp) {
         this.programadoresCache = JSON.parse(cached);
         this.cacheTimestamp = parseInt(timestamp);
-        
+
         // Si el caché expiró, limpiarlo
         if (!this.isCacheValid()) {
           this.invalidate();

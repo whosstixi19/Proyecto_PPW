@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-root',
   imports: [CommonModule, RouterOutlet],
   templateUrl: './app.html',
-  styleUrls: ['./app.scss']
+  styleUrls: ['./app.scss'],
 })
 export class App {
   protected readonly title = signal('Portafolio y Asesorías AyT');

@@ -10,7 +10,7 @@ import { Programador } from '../models/user.model';
   selector: 'app-home',
   imports: [CommonModule],
   templateUrl: './home.html',
-  styleUrl: './home.scss'
+  styleUrl: './home.scss',
 })
 export class HomeComponent implements OnInit {
   programadores: Programador[] = [];
@@ -22,33 +22,34 @@ export class HomeComponent implements OnInit {
     private userService: UserService,
     private authService: AuthService,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   async ngOnInit() {
     // Esperar explícitamente a que Auth + Firestore + Rol estén completos
-    this.authService.authReady$.pipe(
-      filter(ready => ready), // Solo cuando authReady emita true
-      take(1) // Ejecutar UNA VEZ y auto-cancelar (evita memory leak)
-    ).subscribe(async () => {
-      console.log('🔵 HomeComponent: authReady$ emitió true, verificando autenticación...');
-      
-      if (!this.authService.isAuthenticated()) {
-        console.log('❌ No autenticado, redirigiendo a login');
-        this.router.navigate(['/login']);
-        return;
-      }
+    this.authService.authReady$
+      .pipe(
+        filter((ready) => ready), // Solo cuando authReady emita true
+        take(1), // Ejecutar UNA VEZ y auto-cancelar (evita memory leak)
+      )
+      .subscribe(async () => {
+        console.log('🔵 HomeComponent: authReady$ emitió true, verificando autenticación...');
 
-      // GARANTIZADO: usuario + rol están listos
-      console.log('✅ Usuario autenticado, cargando programadores...');
-      await this.loadProgramadores();
-      
-      // Forzar detección de cambios para renderizar inmediatamente
-      this.cdr.detectChanges();
-      console.log('🔄 Vista actualizada');
-    });
+        if (!this.authService.isAuthenticated()) {
+          console.log('❌ No autenticado, redirigiendo a login');
+          this.router.navigate(['/login']);
+          return;
+        }
+
+        // GARANTIZADO: usuario + rol están listos
+        console.log('✅ Usuario autenticado, cargando programadores...');
+        await this.loadProgramadores();
+
+        // Forzar detección de cambios para renderizar inmediatamente
+        this.cdr.detectChanges();
+        console.log('🔄 Vista actualizada');
+      });
   }
-
 
   async loadProgramadores() {
     // Solo mostrar loading si es una recarga manual
@@ -57,11 +58,11 @@ export class HomeComponent implements OnInit {
       this.loading = true;
       console.log('🔄 Recarga manual...');
     }
-    
+
     // getProgramadores usa caché instantáneo de localStorage
     this.programadores = await this.userService.getProgramadores();
     console.log('✅ Programadores cargados:', this.programadores.length);
-    
+
     this.loading = false;
   }
 
@@ -108,13 +109,13 @@ export class HomeComponent implements OnInit {
 
   getDiaNombre(dia: string): string {
     const dias: { [key: string]: string } = {
-      'lunes': 'Lunes',
-      'martes': 'Martes',
-      'miercoles': 'Miércoles',
-      'jueves': 'Jueves',
-      'viernes': 'Viernes',
-      'sabado': 'Sábado',
-      'domingo': 'Domingo'
+      lunes: 'Lunes',
+      martes: 'Martes',
+      miercoles: 'Miércoles',
+      jueves: 'Jueves',
+      viernes: 'Viernes',
+      sabado: 'Sábado',
+      domingo: 'Domingo',
     };
     return dias[dia] || dia;
   }

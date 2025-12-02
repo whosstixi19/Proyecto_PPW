@@ -4,12 +4,20 @@
       <div class="header-title">
         <h1>Mi Portafolio</h1>
       </div>
-      
+
       <div class="header-actions">
         <div class="action-buttons">
           <button class="btn btn-secondary" (click)="goToInicio()">🏠 Inicio</button>
           <button class="btn btn-secondary" (click)="loadData()" title="Recargar datos">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
               <polyline points="23 4 23 10 17 10"></polyline>
               <polyline points="1 20 1 14 7 14"></polyline>
               <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
@@ -17,14 +25,22 @@
             Recargar
           </button>
           <button class="btn btn-primary" (click)="openModal()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
             Agregar Proyecto
           </button>
         </div>
-        
+
         <div class="user-info">
           <div class="user-details">
             <span class="user-name">{{ getCurrentUser()?.displayName }}</span>
@@ -45,7 +61,11 @@
       <div class="profile-section">
         <div class="profile-card">
           @if (programador.photoURL) {
-            <img [src]="programador.photoURL" [alt]="programador.displayName" class="profile-avatar">
+            <img
+              [src]="programador.photoURL"
+              [alt]="programador.displayName"
+              class="profile-avatar"
+            />
           } @else {
             <div class="profile-avatar-placeholder">
               {{ programador.displayName.charAt(0).toUpperCase() }}
@@ -60,7 +80,15 @@
           </div>
           @if (asesoriasPendientes.length > 0) {
             <div class="notificaciones-badge">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
                 <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
               </svg>
@@ -80,9 +108,19 @@
                 <div class="asesoria-header">
                   <div>
                     <h3>{{ asesoria.tema }}</h3>
-                    <p class="asesoria-usuario">De: {{ asesoria.usuarioNombre }} ({{ asesoria.usuarioEmail }})</p>
+                    <p class="asesoria-usuario">
+                      De: {{ asesoria.usuarioNombre }} ({{ asesoria.usuarioEmail }})
+                    </p>
                     <p class="asesoria-datetime">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
                         <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                         <line x1="16" y1="2" x2="16" y2="6"></line>
                         <line x1="8" y1="2" x2="8" y2="6"></line>
@@ -91,11 +129,15 @@
                       {{ asesoria.fechaSolicitada }} a las {{ asesoria.horaSolicitada }}
                     </p>
                   </div>
-                  <span class="fecha-solicitud">Solicitado: {{ asesoria.fecha?.toDate().toLocaleDateString() }}</span>
+                  <span class="fecha-solicitud"
+                    >Solicitado: {{ asesoria.fecha?.toDate().toLocaleDateString() }}</span
+                  >
                 </div>
                 <p class="asesoria-descripcion">{{ asesoria.descripcion }}</p>
                 @if (asesoria.comentario) {
-                  <p class="asesoria-comentario"><strong>Comentario:</strong> {{ asesoria.comentario }}</p>
+                  <p class="asesoria-comentario">
+                    <strong>Comentario:</strong> {{ asesoria.comentario }}
+                  </p>
                 }
                 <div class="asesoria-actions">
                   <button class="btn btn-primary" (click)="openAsesoriaModal(asesoria)">
@@ -113,7 +155,15 @@
 
         @if (proyectos.length === 0) {
           <div class="empty-state">
-            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="64"
+              height="64"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
               <polyline points="14 2 14 8 20 8"></polyline>
             </svg>
@@ -126,7 +176,7 @@
               <div class="proyecto-card">
                 @if (proyecto.imagenes && proyecto.imagenes.length > 0) {
                   <div class="proyecto-image">
-                    <img [src]="proyecto.imagenes[0]" [alt]="proyecto.nombre">
+                    <img [src]="proyecto.imagenes[0]" [alt]="proyecto.nombre" />
                   </div>
                 }
 
@@ -164,16 +214,35 @@
 
                   <div class="proyecto-links">
                     @if (proyecto.repositorio) {
-                      <a [href]="proyecto.repositorio" target="_blank" rel="noopener" class="proyecto-link">
+                      <a
+                        [href]="proyecto.repositorio"
+                        target="_blank"
+                        rel="noopener"
+                        class="proyecto-link"
+                      >
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                          <path
+                            d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+                          />
                         </svg>
                         Repositorio
                       </a>
                     }
                     @if (proyecto.demo) {
-                      <a [href]="proyecto.demo" target="_blank" rel="noopener" class="proyecto-link">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <a
+                        [href]="proyecto.demo"
+                        target="_blank"
+                        rel="noopener"
+                        class="proyecto-link"
+                      >
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
                           <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
                           <polyline points="15 3 21 3 21 9"></polyline>
                           <line x1="10" y1="14" x2="21" y2="3"></line>
@@ -185,15 +254,35 @@
 
                   <div class="proyecto-actions">
                     <button class="btn-icon btn-edit" (click)="openModal(proyecto)" title="Editar">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                       </svg>
                     </button>
-                    <button class="btn-icon btn-delete" (click)="eliminarProyecto(proyecto.id!)" title="Eliminar">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <button
+                      class="btn-icon btn-delete"
+                      (click)="eliminarProyecto(proyecto.id!)"
+                      title="Eliminar"
+                    >
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
                         <polyline points="3 6 5 6 21 6"></polyline>
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        <path
+                          d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                        ></path>
                       </svg>
                     </button>
                   </div>
@@ -213,7 +302,14 @@
         <div class="modal-header">
           <h2>{{ selectedProyecto ? 'Editar' : 'Agregar' }} Proyecto</h2>
           <button class="btn-close" (click)="closeModal()">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
@@ -223,12 +319,17 @@
         <form class="modal-form" (ngSubmit)="guardarProyecto()">
           <div class="form-group">
             <label>Nombre del Proyecto *</label>
-            <input type="text" [(ngModel)]="formData.nombre" name="nombre" required>
+            <input type="text" [(ngModel)]="formData.nombre" name="nombre" required />
           </div>
 
           <div class="form-group">
             <label>Descripción *</label>
-            <textarea [(ngModel)]="formData.descripcion" name="descripcion" rows="4" required></textarea>
+            <textarea
+              [(ngModel)]="formData.descripcion"
+              name="descripcion"
+              rows="4"
+              required
+            ></textarea>
           </div>
 
           <div class="form-row">
@@ -245,15 +346,27 @@
             <label>Participación</label>
             <div class="checkbox-group">
               <label class="checkbox-label">
-                <input type="checkbox" [checked]="formData.participacion?.includes('frontend')" (change)="toggleParticipacion('frontend')">
+                <input
+                  type="checkbox"
+                  [checked]="formData.participacion?.includes('frontend')"
+                  (change)="toggleParticipacion('frontend')"
+                />
                 Frontend
               </label>
               <label class="checkbox-label">
-                <input type="checkbox" [checked]="formData.participacion?.includes('backend')" (change)="toggleParticipacion('backend')">
+                <input
+                  type="checkbox"
+                  [checked]="formData.participacion?.includes('backend')"
+                  (change)="toggleParticipacion('backend')"
+                />
                 Backend
               </label>
               <label class="checkbox-label">
-                <input type="checkbox" [checked]="formData.participacion?.includes('base-datos')" (change)="toggleParticipacion('base-datos')">
+                <input
+                  type="checkbox"
+                  [checked]="formData.participacion?.includes('base-datos')"
+                  (change)="toggleParticipacion('base-datos')"
+                />
                 Base de Datos
               </label>
             </div>
@@ -262,7 +375,12 @@
           <div class="form-group">
             <label>Tecnologías</label>
             <div class="input-with-button">
-              <input type="text" [(ngModel)]="tecnologiaInput" name="tecnologiaInput" placeholder="Angular, Firebase, etc.">
+              <input
+                type="text"
+                [(ngModel)]="tecnologiaInput"
+                name="tecnologiaInput"
+                placeholder="Angular, Firebase, etc."
+              />
               <button type="button" class="btn-add" (click)="agregarTecnologia()">Agregar</button>
             </div>
             @if (formData.tecnologias && formData.tecnologias.length > 0) {
@@ -279,26 +397,38 @@
 
           <div class="form-group">
             <label>URL Repositorio</label>
-            <input type="url" [(ngModel)]="formData.repositorio" name="repositorio" placeholder="https://github.com/...">
+            <input
+              type="url"
+              [(ngModel)]="formData.repositorio"
+              name="repositorio"
+              placeholder="https://github.com/..."
+            />
           </div>
 
           <div class="form-group">
             <label>URL Demo</label>
-            <input type="url" [(ngModel)]="formData.demo" name="demo" placeholder="https://...">
+            <input type="url" [(ngModel)]="formData.demo" name="demo" placeholder="https://..." />
           </div>
 
           <div class="form-group">
             <label>Imágenes (URLs)</label>
             <div class="input-with-button">
-              <input type="url" [(ngModel)]="imagenInput" name="imagenInput" placeholder="https://...">
+              <input
+                type="url"
+                [(ngModel)]="imagenInput"
+                name="imagenInput"
+                placeholder="https://..."
+              />
               <button type="button" class="btn-add" (click)="agregarImagen()">Agregar</button>
             </div>
             @if (formData.imagenes && formData.imagenes.length > 0) {
               <div class="images-list">
                 @for (img of formData.imagenes; track img; let i = $index) {
                   <div class="image-preview">
-                    <img [src]="img" alt="Preview">
-                    <button type="button" class="btn-remove-image" (click)="eliminarImagen(i)">×</button>
+                    <img [src]="img" alt="Preview" />
+                    <button type="button" class="btn-remove-image" (click)="eliminarImagen(i)">
+                      ×
+                    </button>
                   </div>
                 }
               </div>
@@ -323,13 +453,21 @@
         <div class="modal-header">
           <h2>Responder Solicitud</h2>
           <button class="btn-close" (click)="closeAsesoriaModal()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
           </button>
         </div>
-        
+
         <form class="modal-form" (ngSubmit)="responderAsesoria()" #respuestaFormRef="ngForm">
           <div class="asesoria-detalle">
             <div class="detalle-item">
@@ -339,7 +477,15 @@
             <div class="detalle-item">
               <strong>Fecha y Hora Solicitada:</strong>
               <p class="fecha-hora-destacada">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
                   <circle cx="12" cy="12" r="10"></circle>
                   <polyline points="12 6 12 12 16 14"></polyline>
                 </svg>
@@ -366,11 +512,21 @@
             <label>Acción *</label>
             <div class="radio-group">
               <label class="radio-label">
-                <input type="radio" [(ngModel)]="respuestaForm.accion" name="accion" value="aprobar">
+                <input
+                  type="radio"
+                  [(ngModel)]="respuestaForm.accion"
+                  name="accion"
+                  value="aprobar"
+                />
                 <span>✓ Aprobar</span>
               </label>
               <label class="radio-label">
-                <input type="radio" [(ngModel)]="respuestaForm.accion" name="accion" value="rechazar">
+                <input
+                  type="radio"
+                  [(ngModel)]="respuestaForm.accion"
+                  name="accion"
+                  value="rechazar"
+                />
                 <span>✗ Rechazar</span>
               </label>
             </div>
@@ -378,21 +534,31 @@
 
           <div class="form-group">
             <label>Mensaje de Respuesta *</label>
-            <textarea 
-              [(ngModel)]="respuestaForm.respuesta" 
+            <textarea
+              [(ngModel)]="respuestaForm.respuesta"
               name="respuesta"
               placeholder="Escribe tu respuesta al usuario..."
               required
               rows="5"
-              maxlength="500"></textarea>
+              maxlength="500"
+            ></textarea>
             <small>{{ respuestaForm.respuesta.length }}/500 caracteres</small>
           </div>
 
           <div class="modal-actions">
-            <button type="button" class="btn btn-secondary" (click)="closeAsesoriaModal()" [disabled]="respondiendo">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="closeAsesoriaModal()"
+              [disabled]="respondiendo"
+            >
               Cancelar
             </button>
-            <button type="submit" class="btn btn-primary" [disabled]="!respuestaFormRef.form.valid || respondiendo">
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="!respuestaFormRef.form.valid || respondiendo"
+            >
               {{ respondiendo ? 'Enviando...' : 'Enviar Respuesta' }}
             </button>
           </div>
