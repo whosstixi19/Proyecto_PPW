@@ -55,7 +55,6 @@ export class AuthService {
     }
   }
 
-  // Guardar usuario en localStorage (caché)
   private saveToCache(user: Usuario): void {
     try {
       localStorage.setItem('currentUser', JSON.stringify(user));
@@ -64,7 +63,6 @@ export class AuthService {
     }
   }
 
-  // Limpiar caché
   private clearCache(): void {
     localStorage.removeItem('currentUser');
   }
@@ -117,7 +115,6 @@ export class AuthService {
     }
   }
 
-  // Cerrar sesión
   async logout(): Promise<void> {
     try {
       await signOut(this.auth);
@@ -128,7 +125,6 @@ export class AuthService {
     }
   }
 
-  // Verificar si el usuario está autenticado
   isAuthenticated(): boolean {
     return this.currentUser !== null;
   }

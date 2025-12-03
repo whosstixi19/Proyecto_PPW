@@ -33,7 +33,6 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     respuesta: '',
   };
 
-  // Subscription for real-time updates
   private asesoriasSubscription?: Subscription;
 
   // Formulario de proyecto
@@ -48,7 +47,6 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     imagenes: [],
   };
 
-  // Para manejar inputs de arrays
   tecnologiaInput = '';
   imagenInput = '';
 
@@ -78,7 +76,7 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
         await this.loadProgramador();
         this.subscribeToAsesorias();
         
-        // Check query params for view parameter
+        // Verificar si se debe mostrar notificaciones desde URL
         this.route.queryParams.pipe(take(1)).subscribe(params => {
           if (params['view'] === 'notificaciones') {
             this.mostrarNotificaciones = true;
@@ -90,7 +88,6 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    // Cleanup subscription to prevent memory leaks
     if (this.asesoriasSubscription) {
       this.asesoriasSubscription.unsubscribe();
     }
@@ -226,10 +223,8 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     let success = false;
 
     if (this.selectedProyecto) {
-      // Actualizar proyecto existente
       success = await this.userService.updateProyecto(this.programador.uid, proyectoData);
     } else {
-      // Agregar nuevo proyecto
       success = await this.userService.addProyecto(this.programador.uid, proyectoData);
     }
 
@@ -275,7 +270,6 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     this.mostrarNotificaciones = !this.mostrarNotificaciones;
   }
 
-  // Gestión de Asesorías - Aprobación directa
   async aprobarAsesoria(asesoria: Asesoria) {
     if (!confirm(`¿Confirmar asesoría con ${asesoria.usuarioNombre}?\nFecha: ${asesoria.fechaSolicitada} - ${asesoria.horaSolicitada}`)) {
       return;
@@ -299,7 +293,6 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Gestión de Asesorías - Rechazo con motivo
   openRechazarModal(asesoria: Asesoria) {
     this.selectedAsesoria = asesoria;
     this.motivoRechazo = '';
@@ -338,7 +331,6 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Métodos anteriores de modal de asesoría (mantener para compatibilidad)
   openAsesoriaModal(asesoria: Asesoria) {
     this.selectedAsesoria = asesoria;
     this.respuestaForm = {
@@ -369,7 +361,6 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
         this.respuestaForm.respuesta,
       );
 
-      // External notification simulation
       await this.asesoriaService.enviarNotificacionExterna(this.selectedAsesoria, 'respuesta');
 
       this.closeAsesoriaModal();

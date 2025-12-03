@@ -21,7 +21,7 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
   misAsesorias: Asesoria[] = [];
   showModal = false;
   selectedProgramador: Programador | null = null;
-  loading = false; // ← Cambiado a false
+  loading = false;
   enviando = false;
 
   formData = {
@@ -35,7 +35,6 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
   horasDisponibles: string[] = [];
   minFecha: string = new Date().toISOString().split('T')[0];
 
-  // Subscription for real-time updates
   private asesoriasSubscription?: Subscription;
 
   constructor(
@@ -66,7 +65,6 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    // Cleanup subscription to prevent memory leaks
     if (this.asesoriasSubscription) {
       this.asesoriasSubscription.unsubscribe();
     }
@@ -193,7 +191,6 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
         estado: 'pendiente',
       });
 
-      // External notification simulation
       await this.asesoriaService.enviarNotificacionExterna(asesoria, 'solicitud');
 
       this.closeModal();

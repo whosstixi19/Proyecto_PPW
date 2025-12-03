@@ -20,13 +20,12 @@ export class AdminComponent implements OnInit {
   showEditModal = false;
   showHorariosModal = false;
   showUsuariosModal = false;
-  loading = false; // ← Cambiado a false
+  loading = false;
 
   diasSemana = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
 
   horariosFormData: HorarioDisponible[] = [];
 
-  // Formulario
   formData: Partial<Programador> = {
     displayName: '',
     email: '',
@@ -177,7 +176,6 @@ export class AdminComponent implements OnInit {
     this.router.navigate(['/inicio']);
   }
 
-  // Gestión de Usuarios y Roles
   openUsuariosModal() {
     this.showUsuariosModal = true;
   }
@@ -204,20 +202,16 @@ export class AdminComponent implements OnInit {
     this.loading = false;
   }
 
-  // Gestión de Horarios
   openHorariosModal(programador: Programador) {
     this.selectedProgramador = programador;
 
-    // SIEMPRE inicializar con todos los días de la semana
+    // Inicializar todos los días con configuración existente o valores por defecto
     this.horariosFormData = this.diasSemana.map((dia) => {
-      // Buscar si este día ya tiene configuración
       const horarioExistente = programador.horariosDisponibles?.find((h) => h.dia === dia);
 
       if (horarioExistente) {
-        // Si existe, usar los datos guardados
         return { ...horarioExistente };
       } else {
-        // Si no existe, crear uno nuevo desactivado
         return {
           dia: dia as any,
           horaInicio: '09:00',

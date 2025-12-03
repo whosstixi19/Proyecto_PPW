@@ -16,9 +16,9 @@ import { Programador } from '../models/user.model';
 })
 export class HomeComponent implements OnInit, OnDestroy {
   programadores: Programador[] = [];
-  loading = false; // ← Cambiado a false para no bloquear la vista inicial
+  loading = false;
   isAuthenticated = false;
-  expandedProgramadores: Set<string> = new Set(); // IDs de programadores expandidos
+  expandedProgramadores: Set<string> = new Set();
   asesoriasPendientes = 0;
   private asesoriasSubscription?: Subscription;
 
@@ -31,7 +31,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
-    // Esperar explícitamente a que Auth + Firestore + Rol estén completos
+    // Esperar a que la autenticación esté completa
     this.authService.authReady$
       .pipe(
         filter((ready) => ready),
@@ -44,8 +44,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         }
 
         await this.loadProgramadores();
-        
-        // Suscribirse a asesorías si es programador
+
         if (this.isProgramador()) {
           this.subscribeToAsesorias();
         }

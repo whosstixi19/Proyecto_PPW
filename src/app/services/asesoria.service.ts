@@ -73,7 +73,6 @@ export class AsesoriaService {
     });
   }
 
-  // Observables en tiempo real
   getAsesoriasPendientesRealtime(programadorUid: string): Observable<Asesoria[]> {
     return new Observable((observer) => {
       const asesoriasRef = collection(this.firestore, 'asesorias');
@@ -112,13 +111,11 @@ export class AsesoriaService {
     });
   }
 
-  // Simulación de envío de notificaciones externas
+  // Placeholder para notificaciones externas (email, WhatsApp, etc.)
   async enviarNotificacionExterna(
     asesoria: Asesoria,
     tipo: 'solicitud' | 'respuesta',
   ): Promise<void> {
-    // Aquí iría la integración real con APIs de email/WhatsApp
-    // Ejemplo: await this.emailService.send(...)
-    // Ejemplo: await this.whatsappService.send(...)
+    // Integración pendiente con servicios externos
   }
 }
