@@ -3,13 +3,34 @@
   <header class="asesorias-header">
     <div class="header-content">
       <div class="header-title">
-        <h1>💼 Solicitar Asesoría</h1>
+        <h1>{{ mostrarMisAsesorias ? 'Mis Asesorías' : 'Solicitar Asesoría' }}</h1>
       </div>
 
       <div class="header-actions">
         <div class="action-buttons">
-          <button class="btn btn-secondary" (click)="goToInicio()">🏠 Inicio</button>
+          <button class="btn btn-secondary" (click)="goToInicio()">Inicio</button>
+          <button 
+            class="btn" 
+            [class.btn-primary]="!mostrarMisAsesorias"
+            [class.btn-secondary]="mostrarMisAsesorias"
+            (click)="toggleMisAsesorias()"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            {{ mostrarMisAsesorias ? 'Solicitar Asesoría' : 'Mis Asesorías' }}
+          </button>
           <button
+            *ngIf="!mostrarMisAsesorias"
             class="btn btn-primary"
             (click)="loadProgramadores()"
             title="Recargar programadores"
@@ -27,7 +48,28 @@
               <polyline points="1 20 1 14 7 14"></polyline>
               <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
             </svg>
-            Mostrar Programadores
+            Recargar
+          </button>
+          <button
+            *ngIf="mostrarMisAsesorias"
+            class="btn btn-primary"
+            (click)="recargarAsesorias()"
+            title="Recargar asesorías"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+            Recargar
           </button>
           <button class="btn btn-secondary" (click)="goToPortafolios()">Ver Portafolios</button>
         </div>
@@ -45,7 +87,7 @@
   <!-- Content -->
   <div class="asesorias-content" *ngIf="!loading">
     <!-- Programadores Disponibles -->
-    <section class="programadores-section">
+    <section class="programadores-section" *ngIf="!mostrarMisAsesorias">
       <h2>Programadores Disponibles</h2>
       <div class="programadores-grid">
         <div class="programador-card" *ngFor="let programador of programadores">
@@ -92,9 +134,9 @@
       </div>
     </section>
 
-    <!-- Mis Solicitudes -->
-    <section class="solicitudes-section">
-      <h2>Mis Solicitudes</h2>
+    <!-- Mis Asesorías (solo cuando mostrarMisAsesorias = true) -->
+    <section class="solicitudes-section" *ngIf="mostrarMisAsesorias">
+      <h2>Mis Asesorías</h2>
       <div class="solicitudes-list">
         <div class="solicitud-card" *ngFor="let asesoria of misAsesorias">
           <div class="solicitud-header">

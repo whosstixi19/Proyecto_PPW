@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
@@ -20,6 +20,7 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
   programadores: Programador[] = [];
   misAsesorias: Asesoria[] = [];
   showModal = false;
+  mostrarMisAsesorias = false;
   selectedProgramador: Programador | null = null;
   loading = false;
   enviando = false;
@@ -42,6 +43,7 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private asesoriaService: AsesoriaService,
     private router: Router,
+    private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
   ) {}
 
@@ -60,6 +62,14 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
 
         await this.loadProgramadores();
         this.subscribeToMisAsesorias();
+        
+        // Verificar si se debe mostrar Mis Asesorías desde URL
+        this.route.queryParams.pipe(take(1)).subscribe(params => {
+          if (params['view'] === 'mis-asesorias') {
+            this.mostrarMisAsesorias = true;
+          }
+        });
+        
         this.cdr.detectChanges();
       });
   }
@@ -77,6 +87,15 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
     }
 
     this.programadores = await this.userService.getProgramadores();
+    this.loading = false;
+  }
+
+  recargarAsesorias() {
+    this.loading = true;
+    if (this.asesoriasSubscription) {
+      this.asesoriasSubscription.unsubscribe();
+    }
+    this.subscribeToMisAsesorias();
     this.loading = false;
   }
 
@@ -253,5 +272,13 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
   logout() {
     this.authService.logout();
     this.router.navigate(['/login']);
+  }
+
+  toggleMisAsesorias() {
+    this.mostrarMisAsesorias = !this.mostrarMisAsesorias;
+  }
+
+  volverASolicitar() {
+    this.mostrarMisAsesorias = false;
   }
 }

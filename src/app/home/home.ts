@@ -20,6 +20,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   isAuthenticated = false;
   expandedProgramadores: Set<string> = new Set();
   asesoriasPendientes = 0;
+  asesoriasRespondidas = 0;
   private asesoriasSubscription?: Subscription;
 
   constructor(
@@ -47,6 +48,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
         if (this.isProgramador()) {
           this.subscribeToAsesorias();
+        } else {
+          this.subscribeToAsesoriasUsuario();
         }
         
         this.cdr.detectChanges();
@@ -66,6 +69,18 @@ export class HomeComponent implements OnInit, OnDestroy {
         .getAsesoriasPendientesRealtime(currentUser.uid)
         .subscribe((asesorias) => {
           this.asesoriasPendientes = asesorias.length;
+          this.cdr.detectChanges();
+        });
+    }
+  }
+
+  subscribeToAsesoriasUsuario() {
+    const currentUser = this.authService.getCurrentUser();
+    if (currentUser) {
+      this.asesoriasSubscription = this.asesoriaService
+        .getAsesoriasRespondidasRealtime(currentUser.uid)
+        .subscribe((asesorias) => {
+          this.asesoriasRespondidas = asesorias.length;
           this.cdr.detectChanges();
         });
     }
@@ -110,6 +125,10 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   goToAsesorias() {
     this.router.navigate(['/asesorias']);
+  }
+
+  goToMisAsesorias() {
+    this.router.navigate(['/asesorias'], { queryParams: { view: 'mis-asesorias' } });
   }
 
   toggleProgramador(uid: string) {

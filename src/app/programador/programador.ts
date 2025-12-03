@@ -284,7 +284,7 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
       );
 
       await this.asesoriaService.enviarNotificacionExterna(asesoria, 'respuesta');
-      alert('✅ Asesoría aprobada correctamente');
+      alert('Asesoría aprobada correctamente');
     } catch (error) {
       console.error('Error aprobando asesoría:', error);
       alert('Error al aprobar la asesoría');

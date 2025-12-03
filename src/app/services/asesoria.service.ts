@@ -111,6 +111,28 @@ export class AsesoriaService {
     });
   }
 
+  // Obtener asesorías respondidas (aprobadas o rechazadas) del usuario
+  getAsesoriasRespondidasRealtime(usuarioUid: string): Observable<Asesoria[]> {
+    return new Observable((observer) => {
+      const asesoriasRef = collection(this.firestore, 'asesorias');
+      const q = query(
+        asesoriasRef,
+        where('usuarioUid', '==', usuarioUid),
+        where('estado', 'in', ['aprobada', 'rechazada'])
+      );
+
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const asesorias = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Asesoria[];
+        observer.next(asesorias);
+      });
+
+      return () => unsubscribe();
+    });
+  }
+
   // Placeholder para notificaciones externas (email, WhatsApp, etc.)
   async enviarNotificacionExterna(
     asesoria: Asesoria,
