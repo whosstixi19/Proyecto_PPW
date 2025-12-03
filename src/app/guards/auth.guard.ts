@@ -14,10 +14,8 @@ export const authGuard: CanActivateFn = () => {
     take(1),
     map(() => {
       if (authService.isAuthenticated()) {
-        console.log('✅ authGuard: acceso permitido');
         return true;
       }
-      console.log('❌ authGuard: redirigiendo a login');
       router.navigate(['/login']);
       return false;
     }),
@@ -35,10 +33,8 @@ export const adminGuard: CanActivateFn = () => {
     take(1),
     map(() => {
       if (authService.isAuthenticated() && authService.hasRole('admin')) {
-        console.log('✅ adminGuard: acceso permitido');
         return true;
       }
-      console.log('❌ adminGuard: sin permisos de admin');
       router.navigate(['/portafolios']);
       return false;
     }),
@@ -56,10 +52,8 @@ export const programadorGuard: CanActivateFn = () => {
     take(1),
     map(() => {
       if (authService.isAuthenticated() && authService.hasRole('programador')) {
-        console.log('✅ programadorGuard: acceso permitido');
         return true;
       }
-      console.log('❌ programadorGuard: sin permisos de programador');
       router.navigate(['/portafolios']);
       return false;
     }),

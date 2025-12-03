@@ -48,47 +48,33 @@ export class AdminComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    // Esperar a que Auth + Firestore + Rol estén completos
     this.authService.authReady$
       .pipe(
         filter((ready) => ready),
         take(1),
       )
       .subscribe(async () => {
-        console.log('🔵 AdminComponent: authReady$ emitió true');
-
-        // Verificar que sea admin
         if (!this.authService.hasRole('admin')) {
-          console.log('❌ No es admin, redirigiendo');
           this.router.navigate(['/portafolios']);
           return;
         }
 
-        console.log('✅ Es admin, cargando datos...');
         await Promise.all([this.loadProgramadores(), this.loadAllUsuarios()]);
-
-        // Forzar detección de cambios para renderizar inmediatamente
         this.cdr.detectChanges();
-        console.log('🔄 Vista actualizada');
       });
   }
 
   async loadAllUsuarios() {
     this.todosUsuarios = await this.userService.getAllUsuarios();
-    console.log('📋 Todos los usuarios:', this.todosUsuarios);
   }
 
   async loadProgramadores() {
-    // Solo mostrar loading si es una recarga manual
     const isManualReload = this.programadores.length > 0;
     if (isManualReload) {
       this.loading = true;
     }
 
-    console.log('🔄 Recargando programadores (Admin)...');
     this.programadores = await this.userService.getProgramadores();
-    console.log('✅ Programadores recargados (Admin):', this.programadores.length);
-
     this.loading = false;
   }
 

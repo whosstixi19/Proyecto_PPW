@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
@@ -21,10 +21,13 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
   asesoriasPendientes: Asesoria[] = [];
   showModal = false;
   showAsesoriaModal = false;
+  showRechazarModal = false;
+  mostrarNotificaciones = false;
   selectedProyecto: Proyecto | null = null;
   selectedAsesoria: Asesoria | null = null;
   loading = false;
   respondiendo = false;
+  motivoRechazo = '';
   respuestaForm = {
     accion: 'aprobar' as 'aprobar' | 'rechazar',
     respuesta: '',
@@ -54,34 +57,35 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private asesoriaService: AsesoriaService,
     private router: Router,
+    private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
   ) {}
 
   async ngOnInit() {
-    // Esperar a que Auth + Firestore + Rol estén completos
     this.authService.authReady$
       .pipe(
         filter((ready) => ready),
         take(1),
       )
       .subscribe(async () => {
-        console.log('🔵 ProgramadorComponent: authReady$ emitió true');
-
         const currentUser = this.authService.getCurrentUser();
 
         if (!currentUser || currentUser.role !== 'programador') {
-          console.log('❌ No es programador, redirigiendo');
           this.router.navigate(['/portafolios']);
           return;
         }
 
-        console.log('✅ Es programador, cargando datos...');
         await this.loadProgramador();
         this.subscribeToAsesorias();
-
-        // Forzar detección de cambios para renderizar inmediatamente
+        
+        // Check query params for view parameter
+        this.route.queryParams.pipe(take(1)).subscribe(params => {
+          if (params['view'] === 'notificaciones') {
+            this.mostrarNotificaciones = true;
+          }
+        });
+        
         this.cdr.detectChanges();
-        console.log('🔄 Vista actualizada');
       });
   }
 
@@ -127,7 +131,6 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
   }
 
   openModal(proyecto?: Proyecto) {
-    console.log('🎨 Abriendo modal de proyecto...', proyecto ? 'EDITAR' : 'NUEVO');
     if (proyecto) {
       this.selectedProyecto = proyecto;
       this.formData = { ...proyecto };
@@ -136,7 +139,6 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
       this.resetForm();
     }
     this.showModal = true;
-    console.log('✅ Modal abierto. showModal =', this.showModal);
   }
 
   closeModal() {
@@ -269,7 +271,74 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     this.router.navigate(['/inicio']);
   }
 
-  // Gestión de Asesorías
+  toggleNotificaciones() {
+    this.mostrarNotificaciones = !this.mostrarNotificaciones;
+  }
+
+  // Gestión de Asesorías - Aprobación directa
+  async aprobarAsesoria(asesoria: Asesoria) {
+    if (!confirm(`¿Confirmar asesoría con ${asesoria.usuarioNombre}?\nFecha: ${asesoria.fechaSolicitada} - ${asesoria.horaSolicitada}`)) {
+      return;
+    }
+
+    this.loading = true;
+    try {
+      await this.asesoriaService.responderAsesoria(
+        asesoria.id!,
+        'aprobada',
+        `Asesoría confirmada para el ${asesoria.fechaSolicitada} a las ${asesoria.horaSolicitada}. ¡Nos vemos!`,
+      );
+
+      await this.asesoriaService.enviarNotificacionExterna(asesoria, 'respuesta');
+      alert('✅ Asesoría aprobada correctamente');
+    } catch (error) {
+      console.error('Error aprobando asesoría:', error);
+      alert('Error al aprobar la asesoría');
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  // Gestión de Asesorías - Rechazo con motivo
+  openRechazarModal(asesoria: Asesoria) {
+    this.selectedAsesoria = asesoria;
+    this.motivoRechazo = '';
+    this.showRechazarModal = true;
+  }
+
+  closeRechazarModal() {
+    this.showRechazarModal = false;
+    this.selectedAsesoria = null;
+    this.motivoRechazo = '';
+  }
+
+  async rechazarAsesoria() {
+    if (!this.selectedAsesoria || !this.motivoRechazo.trim()) {
+      alert('Por favor proporciona un motivo para el rechazo');
+      return;
+    }
+
+    this.respondiendo = true;
+    try {
+      await this.asesoriaService.responderAsesoria(
+        this.selectedAsesoria.id!,
+        'rechazada',
+        this.motivoRechazo,
+      );
+
+      await this.asesoriaService.enviarNotificacionExterna(this.selectedAsesoria, 'respuesta');
+      
+      this.closeRechazarModal();
+      alert('Asesoría rechazada. Se ha notificado al usuario.');
+    } catch (error) {
+      console.error('Error rechazando asesoría:', error);
+      alert('Error al rechazar la asesoría');
+    } finally {
+      this.respondiendo = false;
+    }
+  }
+
+  // Métodos anteriores de modal de asesoría (mantener para compatibilidad)
   openAsesoriaModal(asesoria: Asesoria) {
     this.selectedAsesoria = asesoria;
     this.respuestaForm = {
@@ -311,5 +380,22 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     } finally {
       this.respondiendo = false;
     }
+  }
+
+  getDiaNombre(dia: number | string): string {
+    if (typeof dia === 'string') {
+      const diasMap: { [key: string]: string } = {
+        lunes: 'Lunes',
+        martes: 'Martes',
+        miercoles: 'Miércoles',
+        jueves: 'Jueves',
+        viernes: 'Viernes',
+        sabado: 'Sábado',
+        domingo: 'Domingo',
+      };
+      return diasMap[dia.toLowerCase()] || dia;
+    }
+    const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    return dias[dia] || '';
   }
 }

@@ -33,7 +33,6 @@ export class UserService {
         uid: doc.id,
       }));
 
-      console.log('📊 Total usuarios encontrados:', usuarios.length);
       return usuarios;
     } catch (error) {
       console.error('❌ Error obteniendo usuarios:', error);
@@ -46,8 +45,7 @@ export class UserService {
     try {
       const docRef = doc(this.firestore, 'usuarios', uid);
       await updateDoc(docRef, { role });
-      this.cacheService.invalidate(); // Invalidar caché
-      console.log('✅ Rol actualizado:', uid, '->', role);
+      this.cacheService.invalidate();
       return true;
     } catch (error) {
       console.error('❌ Error actualizando rol:', error);
@@ -57,21 +55,14 @@ export class UserService {
 
   // Obtener todos los programadores
   async getProgramadores(): Promise<Programador[]> {
-    // Intentar obtener desde caché primero - INSTANTÁNEO
     const cached = this.cacheService.getProgramadores();
     if (cached && cached.length > 0) {
-      console.log('⚡ Caché encontrado:', cached.length, 'programadores');
-
-      // Actualizar en segundo plano SIN BLOQUEAR
       this.refreshProgramadores().catch((err) =>
         console.error('Error actualizando en background:', err),
       );
-
       return cached;
     }
 
-    console.log('📡 Primera carga desde Firestore...');
-    // Si no hay caché, cargar desde Firestore Y ESPERAR
     return await this.refreshProgramadores();
   }
 
@@ -85,13 +76,10 @@ export class UserService {
         uid: doc.id,
       })) as Programador[];
 
-      // Guardar en caché
       this.cacheService.setProgramadores(programadores);
-
-      console.log('✅ Updated from Firestore:', programadores.length);
       return programadores;
     } catch (error) {
-      console.error('❌ Error obteniendo programadores:', error);
+      console.error('Error obteniendo programadores:', error);
       return [];
     }
   }

@@ -47,29 +47,21 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
-    // Esperar a que Auth + Firestore + Rol estén completos
     this.authService.authReady$
       .pipe(
         filter((ready) => ready),
         take(1),
       )
       .subscribe(async () => {
-        console.log('🔵 AsesoriasComponent: authReady$ emitió true');
-
         const user = this.authService.getCurrentUser();
         if (!user) {
-          console.log('❌ No autenticado, redirigiendo');
           this.router.navigate(['/login']);
           return;
         }
 
-        console.log('✅ Usuario autenticado, cargando datos...');
         await this.loadProgramadores();
         this.subscribeToMisAsesorias();
-
-        // Forzar detección de cambios para renderizar inmediatamente
         this.cdr.detectChanges();
-        console.log('🔄 Vista actualizada');
       });
   }
 
@@ -81,15 +73,12 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
   }
 
   async loadProgramadores() {
-    // Solo mostrar loading si es una recarga manual
     const isManualReload = this.programadores.length > 0;
     if (isManualReload) {
       this.loading = true;
     }
 
-    console.log('🔄 Recargando programadores disponibles...');
     this.programadores = await this.userService.getProgramadores();
-    console.log('✅ Programadores disponibles:', this.programadores.length);
     this.loading = false;
   }
 
@@ -137,26 +126,19 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Parsear la fecha correctamente en timezone local
     const [year, month, day] = this.formData.fecha.split('-').map(Number);
     const fecha = new Date(year, month - 1, day);
 
     const diasSemana = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
     const diaSemana = diasSemana[fecha.getDay()];
 
-    console.log('📅 Fecha seleccionada:', this.formData.fecha);
-    console.log('📅 Día de la semana:', diaSemana);
-    console.log('📅 Horarios disponibles:', this.selectedProgramador.horariosDisponibles);
-
     const horarioDelDia = this.selectedProgramador.horariosDisponibles?.find(
       (h) => h.activo && h.dia === diaSemana,
     );
 
     if (horarioDelDia) {
-      console.log('✅ Horario encontrado:', horarioDelDia);
       this.horasDisponibles = this.generarHoras(horarioDelDia.horaInicio, horarioDelDia.horaFin);
     } else {
-      console.log('❌ No hay horario disponible para', diaSemana);
       this.horasDisponibles = [];
     }
   }

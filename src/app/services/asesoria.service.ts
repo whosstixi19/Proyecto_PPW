@@ -117,23 +117,6 @@ export class AsesoriaService {
     asesoria: Asesoria,
     tipo: 'solicitud' | 'respuesta',
   ): Promise<void> {
-    console.log('🔔 Notificación Externa Simulada:');
-
-    if (tipo === 'solicitud') {
-      // Simular envío al programador
-      console.log('📧 Email enviado a:', asesoria.programadorNombre);
-      console.log('📱 WhatsApp enviado a:', asesoria.programadorNombre);
-      console.log('Mensaje: Nueva solicitud de asesoría de', asesoria.usuarioNombre);
-      console.log('Tema:', asesoria.tema);
-      console.log('Fecha:', asesoria.fechaSolicitada, 'Hora:', asesoria.horaSolicitada);
-    } else {
-      // Simular envío al usuario
-      console.log('📧 Email enviado a:', asesoria.usuarioEmail);
-      console.log('📱 WhatsApp simulado para:', asesoria.usuarioNombre);
-      console.log('Mensaje: Tu solicitud fue', asesoria.estado);
-      console.log('Respuesta:', asesoria.respuesta);
-    }
-
     // Aquí iría la integración real con APIs de email/WhatsApp
     // Ejemplo: await this.emailService.send(...)
     // Ejemplo: await this.whatsappService.send(...)

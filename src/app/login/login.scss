@@ -97,17 +97,11 @@
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
 
   &:hover:not(:disabled) {
     border-color: var(--primary);
     background-color: rgba(184, 184, 184, 0.15);
-    transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(184, 184, 184, 0.3);
-  }
-
-  &:active:not(:disabled) {
-    transform: translateY(0);
   }
 
   &:disabled {
