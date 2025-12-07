@@ -89,12 +89,22 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
           const uidParam = params['uid'];
           
           if (uidParam) {
-            // Vista pública de perfil de otro programador
+            // Vista pública de perfil de un programador específico
             await this.loadProgramadorPublico(uidParam);
-            // El usuario NO es el dueño si está viendo otro perfil
+            // El usuario es el dueño solo si su UID coincide con el del perfil
             this.isOwner = currentUser?.uid === uidParam;
+            
+            // Si es el dueño (programador viendo su propio perfil), suscribirse a asesorías
+            if (this.isOwner && currentUser?.role === 'programador') {
+              this.subscribeToAsesorias();
+              
+              // Verificar si se debe mostrar notificaciones
+              if (params['view'] === 'notificaciones') {
+                this.mostrarNotificaciones = true;
+              }
+            }
           } else {
-            // Vista propia del programador
+            // Sin UID en params: solo programadores pueden ver su propio perfil aquí
             if (!currentUser || currentUser.role !== 'programador') {
               this.router.navigate(['/portafolios']);
               return;
