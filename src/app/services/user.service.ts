@@ -11,7 +11,7 @@ import {
   query,
   where,
 } from '@angular/fire/firestore';
-import { Programador, Proyecto, HorarioDisponible } from '../models/user.model';
+import { Programador, Proyecto, HorarioDisponible, Ausencia } from '../models/user.model';
 import { CacheService } from './cache.service';
 
 @Injectable({
@@ -195,6 +195,19 @@ export class UserService {
       return true;
     } catch (error) {
       console.error('Error actualizando horarios:', error);
+      return false;
+    }
+  }
+
+  // Actualizar ausencias del programador
+  async updateProgramadorAusencias(programadorId: string, ausencias: Ausencia[]): Promise<boolean> {
+    try {
+      const docRef = doc(this.firestore, 'usuarios', programadorId);
+      await updateDoc(docRef, { ausencias });
+      this.cacheService.invalidate();
+      return true;
+    } catch (error) {
+      console.error('Error actualizando ausencias:', error);
       return false;
     }
   }

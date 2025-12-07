@@ -114,10 +114,19 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
     }
   }
 
-  openModal(programador: Programador) {
-    this.selectedProgramador = programador;
+  async openModal(programador: Programador) {
+    // Recargar el programador para obtener las ausencias más recientes
+    const programadorActualizado = await this.userService.getProgramador(programador.uid);
+    
+    if (programadorActualizado) {
+      this.selectedProgramador = programadorActualizado;
+    } else {
+      this.selectedProgramador = programador;
+    }
+    
     this.showModal = true;
     this.resetForm();
+    this.cdr.detectChanges();
   }
 
   closeModal() {
@@ -137,7 +146,7 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
     this.horasDisponibles = [];
   }
 
-  onFechaChange() {
+  async onFechaChange() {
     if (!this.formData.fecha || !this.selectedProgramador) {
       this.horasDisponibles = [];
       return;
@@ -154,10 +163,53 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
     );
 
     if (horarioDelDia) {
-      this.horasDisponibles = this.generarHoras(horarioDelDia.horaInicio, horarioDelDia.horaFin);
+      // Generar todas las horas disponibles según el horario
+      const todasLasHoras = this.generarHoras(horarioDelDia.horaInicio, horarioDelDia.horaFin);
+      
+      // Obtener horarios ocupados por otras asesorías
+      const horariosOcupados = await this.asesoriaService.getHorariosOcupados(
+        this.selectedProgramador.uid,
+        this.formData.fecha
+      );
+      
+      // Filtrar horarios bloqueados por ausencias del programador
+      const ausenciasDelDia = this.selectedProgramador.ausencias?.filter(
+        a => a.fecha === this.formData.fecha
+      ) || [];
+      
+      console.log('Fecha seleccionada:', this.formData.fecha);
+      console.log('Ausencias del programador:', this.selectedProgramador.ausencias);
+      console.log('Ausencias del día:', ausenciasDelDia);
+      console.log('Horarios ocupados:', horariosOcupados);
+      
+      // Filtrar horas disponibles (excluir ocupadas y ausencias)
+      this.horasDisponibles = todasLasHoras.filter(hora => {
+        // Verificar si el horario está ocupado
+        if (horariosOcupados.includes(hora)) {
+          return false;
+        }
+        
+        // Verificar si está dentro de una ausencia
+        for (const ausencia of ausenciasDelDia) {
+          if (hora >= ausencia.horaInicio && hora < ausencia.horaFin) {
+            return false;
+          }
+        }
+        
+        return true;
+      });
+      
+      console.log('Horas disponibles finales:', this.horasDisponibles);
     } else {
       this.horasDisponibles = [];
     }
+    
+    // Limpiar hora seleccionada si ya no está disponible
+    if (this.formData.hora && !this.horasDisponibles.includes(this.formData.hora)) {
+      this.formData.hora = '';
+    }
+    
+    this.cdr.detectChanges();
   }
 
   generarHoras(inicio: string, fin: string): string[] {

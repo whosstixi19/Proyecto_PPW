@@ -140,4 +140,48 @@ export class AsesoriaService {
   ): Promise<void> {
     // Integración pendiente con servicios externos
   }
+
+  // Verificar si un horario está disponible (no está ocupado por otra asesoría aprobada)
+  async verificarDisponibilidadHorario(
+    programadorUid: string,
+    fecha: string,
+    hora: string,
+  ): Promise<boolean> {
+    try {
+      const asesoriasRef = collection(this.firestore, 'asesorias');
+      const q = query(
+        asesoriasRef,
+        where('programadorUid', '==', programadorUid),
+        where('fechaSolicitada', '==', fecha),
+        where('horaSolicitada', '==', hora),
+        where('estado', 'in', ['pendiente', 'aprobada'])
+      );
+      const snapshot = await getDocs(q);
+      
+      // Si no hay documentos, el horario está disponible
+      return snapshot.empty;
+    } catch (error) {
+      console.error('Error verificando disponibilidad:', error);
+      return false;
+    }
+  }
+
+  // Obtener horarios ocupados para una fecha específica
+  async getHorariosOcupados(programadorUid: string, fecha: string): Promise<string[]> {
+    try {
+      const asesoriasRef = collection(this.firestore, 'asesorias');
+      const q = query(
+        asesoriasRef,
+        where('programadorUid', '==', programadorUid),
+        where('fechaSolicitada', '==', fecha),
+        where('estado', 'in', ['pendiente', 'aprobada'])
+      );
+      const snapshot = await getDocs(q);
+      
+      return snapshot.docs.map(doc => (doc.data() as Asesoria).horaSolicitada);
+    } catch (error) {
+      console.error('Error obteniendo horarios ocupados:', error);
+      return [];
+    }
+  }
 }

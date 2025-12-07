@@ -1,67 +1,105 @@
 <div class="programador-page">
-  <header class="programador-header">
+  <header class="programador-header" role="banner">
     <div class="header-content">
       <div class="header-title">
-        <h1>Mi Portafolio</h1>
+        <h1 id="page-title">Mi Portafolio</h1>
       </div>
 
-      <div class="header-actions">
+      <div class="header-actions" role="navigation" aria-label="Acciones del portafolio">
         <div class="action-buttons">
-          <button class="btn btn-secondary" (click)="goToInicio()">Inicio</button>
-          <button class="btn btn-secondary" (click)="loadData()" title="Recargar datos">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <polyline points="23 4 23 10 17 10"></polyline>
-              <polyline points="1 20 1 14 7 14"></polyline>
-              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-            </svg>
-            Recargar
-          </button>
           <button 
-            class="btn btn-notificaciones" 
-            [class.has-notifications]="asesoriasPendientes.length > 0"
-            (click)="toggleNotificaciones()"
-            title="Ver notificaciones"
+            class="btn btn-secondary" 
+            (click)="goToInicio()"
+            aria-label="Volver a la página de inicio"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-            </svg>
-            Notificaciones
-            @if (asesoriasPendientes.length > 0) {
-              <span class="notification-count">{{ asesoriasPendientes.length }}</span>
-            }
+            Inicio
           </button>
-          <button class="btn btn-primary" (click)="openModal()">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
+          @if (isOwner) {
+            <button 
+              class="btn btn-secondary" 
+              (click)="loadData()" 
+              title="Recargar datos"
+              aria-label="Recargar datos del portafolio"
             >
-              <line x1="12" y1="5" x2="12" y2="19"></line>
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
-            Agregar Proyecto
-          </button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <polyline points="1 20 1 14 7 14"></polyline>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+              </svg>
+              Recargar
+            </button>
+            <button 
+              class="btn btn-notificaciones" 
+              [class.has-notifications]="asesoriasPendientes.length > 0"
+              (click)="toggleNotificaciones()"
+              title="Ver notificaciones"
+              [attr.aria-label]="'Notificaciones' + (asesoriasPendientes.length > 0 ? ': ' + asesoriasPendientes.length + ' pendientes' : '')"
+              [attr.aria-expanded]="mostrarNotificaciones"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+              </svg>
+              Notificaciones
+              @if (asesoriasPendientes.length > 0) {
+                <span class="notification-count" aria-live="polite" aria-atomic="true">
+                  {{ asesoriasPendientes.length }}
+                </span>
+              }
+            </button>
+            <button class="btn btn-primary" (click)="openModal()">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              Agregar Proyecto
+            </button>
+            <button class="btn btn-secondary" (click)="openAusenciaModal()" title="Gestionar ausencias">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              Ausencias
+            </button>
+          }
         </div>
       </div>
     </div>
@@ -409,40 +447,42 @@
                     }
                   </div>
 
-                  <div class="proyecto-actions">
-                    <button class="btn-icon btn-edit" (click)="openModal(proyecto)" title="Editar">
-                      <svg
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
+                  @if (isOwner) {
+                    <div class="proyecto-actions">
+                      <button class="btn-icon btn-edit" (click)="openModal(proyecto)" title="Editar">
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                      </button>
+                      <button
+                        class="btn-icon btn-delete"
+                        (click)="eliminarProyecto(proyecto.id!)"
+                        title="Eliminar"
                       >
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                      </svg>
-                    </button>
-                    <button
-                      class="btn-icon btn-delete"
-                      (click)="eliminarProyecto(proyecto.id!)"
-                      title="Eliminar"
-                    >
-                      <svg
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                      >
-                        <polyline points="3 6 5 6 21 6"></polyline>
-                        <path
-                          d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                        ></path>
-                      </svg>
-                    </button>
-                  </div>
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <polyline points="3 6 5 6 21 6"></polyline>
+                          <path
+                            d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                          ></path>
+                        </svg>
+                      </button>
+                    </div>
+                  }
                 </div>
               </div>
             }
@@ -473,10 +513,17 @@
           </button>
         </div>
 
-        <form class="modal-form" (ngSubmit)="guardarProyecto()">
+        <form class="modal-form" (ngSubmit)="guardarProyecto()" #proyectoForm="ngForm">
           <div class="form-group">
             <label>Nombre del Proyecto *</label>
-            <input type="text" [(ngModel)]="formData.nombre" name="nombre" required />
+            <input 
+              type="text" 
+              [(ngModel)]="formData.nombre" 
+              name="nombre" 
+              required 
+              placeholder="Ingresa el nombre del proyecto"
+              #nombreInput="ngModel"
+            />
           </div>
 
           <div class="form-group">
@@ -486,6 +533,8 @@
               name="descripcion"
               rows="4"
               required
+              placeholder="Describe el proyecto"
+              #descripcionInput="ngModel"
             ></textarea>
           </div>
 
@@ -559,12 +608,21 @@
               [(ngModel)]="formData.repositorio"
               name="repositorio"
               placeholder="https://github.com/..."
+              pattern="https?://.+"
+              #repositorioInput="ngModel"
             />
           </div>
 
           <div class="form-group">
             <label>URL Demo</label>
-            <input type="url" [(ngModel)]="formData.demo" name="demo" placeholder="https://..." />
+            <input
+              type="url"
+              [(ngModel)]="formData.demo"
+              name="demo"
+              placeholder="https://..."
+              pattern="https?://.+"
+              #demoInput="ngModel"
+            />
           </div>
 
           <div class="form-group">
@@ -575,6 +633,8 @@
                 [(ngModel)]="imagenInput"
                 name="imagenInput"
                 placeholder="https://..."
+                pattern="https?://.+"
+                #imagenUrlInput="ngModel"
               />
               <button type="button" class="btn-add" (click)="agregarImagen()">Agregar</button>
             </div>
@@ -594,7 +654,7 @@
 
           <div class="modal-actions">
             <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
-            <button type="submit" class="btn btn-primary" [disabled]="loading">
+            <button type="submit" class="btn btn-primary" [disabled]="!proyectoForm.form.valid || loading">
               {{ loading ? 'Guardando...' : 'Guardar Proyecto' }}
             </button>
           </div>
@@ -781,5 +841,141 @@
       </div>
     </div>
   }
+
+  <!-- Modal Ausencias -->
+  @if (mostrarAusenciaModal) {
+    <div class="modal-overlay" (click)="closeAusenciaModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>{{ ausenciaEditando ? 'Editar Ausencia' : 'Agregar Ausencia' }}</h2>
+          <button class="btn-close" (click)="closeAusenciaModal()">×</button>
+        </div>
+
+        <form #ausenciaFormRef="ngForm" (ngSubmit)="guardarAusencia()">
+          <div class="form-group">
+            <label for="fecha">Fecha *</label>
+            <input
+              type="date"
+              id="fecha"
+              [(ngModel)]="ausenciaForm.fecha"
+              name="fecha"
+              required
+              #fechaInput="ngModel"
+            />
+            @if (fechaInput.invalid && fechaInput.touched) {
+              <small class="error">La fecha es obligatoria</small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="horaInicio">Hora Inicio *</label>
+            <select
+              id="horaInicio"
+              [(ngModel)]="ausenciaForm.horaInicio"
+              name="horaInicio"
+              required
+              #horaInicioInput="ngModel"
+            >
+              <option value="">Seleccionar hora</option>
+              @for (hora of horasDisponibles; track hora) {
+                <option [value]="hora">{{ hora }}</option>
+              }
+            </select>
+            @if (horaInicioInput.invalid && horaInicioInput.touched) {
+              <small class="error">La hora de inicio es obligatoria</small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="horaFin">Hora Fin *</label>
+            <select
+              id="horaFin"
+              [(ngModel)]="ausenciaForm.horaFin"
+              name="horaFin"
+              required
+              #horaFinInput="ngModel"
+            >
+              <option value="">Seleccionar hora</option>
+              @for (hora of horasDisponibles; track hora) {
+                <option [value]="hora">{{ hora }}</option>
+              }
+            </select>
+            @if (horaFinInput.invalid && horaFinInput.touched) {
+              <small class="error">La hora de fin es obligatoria</small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="motivo">Motivo</label>
+            <textarea
+              id="motivo"
+              [(ngModel)]="ausenciaForm.motivo"
+              name="motivo"
+              rows="3"
+              placeholder="Describe el motivo de la ausencia (opcional)"
+              maxlength="200"
+            ></textarea>
+            <small>{{ (ausenciaForm.motivo?.length || 0) }}/200 caracteres</small>
+          </div>
+
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="closeAusenciaModal()"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="!ausenciaFormRef.form.valid"
+            >
+              {{ ausenciaEditando ? 'Actualizar' : 'Guardar' }}
+            </button>
+          </div>
+        </form>
+
+        <!-- Lista de Ausencias Existentes -->
+        @if (programador && programador.ausencias && programador.ausencias.length > 0) {
+          <div class="ausencias-list">
+            <h3>Ausencias Programadas</h3>
+            @for (ausencia of programador.ausencias; track ausencia.id) {
+              <div class="ausencia-item">
+                <div class="ausencia-info">
+                  <strong>{{ ausencia.fecha }}</strong>
+                  <span>{{ ausencia.horaInicio }} - {{ ausencia.horaFin }}</span>
+                  @if (ausencia.motivo) {
+                    <p>{{ ausencia.motivo }}</p>
+                  }
+                </div>
+                <button
+                  type="button"
+                  class="btn-icon btn-delete"
+                  (click)="eliminarAusencia(ausencia.id!)"
+                  title="Eliminar"
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path
+                      d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                    ></path>
+                  </svg>
+                </button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
 </div>
+
 

@@ -1,6 +1,6 @@
 <div class="portfolio-page">
   <!-- Header -->
-  <header class="portfolio-header">
+  <header class="portfolio-header" role="banner">
     <div class="header-content">
       <div class="header-title">
         <div class="logo">
@@ -8,9 +8,14 @@
         </div>
       </div>
 
-      <nav class="nav-menu">
+      <nav class="nav-menu" role="navigation" aria-label="Menú principal">
         <div class="nav-buttons">
-          <button class="nav-link" (click)="loadProgramadores()" title="Recargar programadores">
+          <button 
+            class="nav-link" 
+            (click)="loadProgramadores()" 
+            title="Recargar programadores"
+            aria-label="Recargar lista de programadores"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="20"
@@ -27,7 +32,13 @@
             Recargar
           </button>
           @if (isAdmin()) {
-            <button class="nav-link" (click)="goToAdmin()">Panel Admin</button>
+            <button 
+              class="nav-link" 
+              (click)="goToAdmin()"
+              aria-label="Ir al panel de administración"
+            >
+              Panel Admin
+            </button>
           }
           @if (isProgramador()) {
             <button 
@@ -35,6 +46,7 @@
               [class.has-notifications]="asesoriasPendientes > 0"
               (click)="goToProgramadorNotificaciones()"
               title="Ver notificaciones"
+              [attr.aria-label]="'Notificaciones' + (asesoriasPendientes > 0 ? ': ' + asesoriasPendientes + ' pendientes' : '')"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -50,10 +62,18 @@
               </svg>
               Notificaciones
               @if (asesoriasPendientes > 0) {
-                <span class="notification-count">{{ asesoriasPendientes }}</span>
+                <span class="notification-count" aria-live="polite" aria-atomic="true">
+                  {{ asesoriasPendientes }}
+                </span>
               }
             </button>
-            <button class="nav-link" (click)="goToProgramador()">Mi Portafolio</button>
+            <button 
+              class="nav-link" 
+              (click)="goToProgramador()"
+              aria-label="Ir a mi portafolio"
+            >
+              Mi Portafolio
+            </button>
           }
           @if (!isAdmin() && !isProgramador()) {
             <button 
@@ -61,6 +81,7 @@
               [class.has-notifications]="asesoriasRespondidas > 0"
               (click)="goToMisAsesorias()"
               title="Ver respuestas de asesorías"
+              [attr.aria-label]="'Mis asesorías' + (asesoriasRespondidas > 0 ? ': ' + asesoriasRespondidas + ' respuestas nuevas' : '')"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -76,10 +97,18 @@
               </svg>
               Mis Asesorías
               @if (asesoriasRespondidas > 0) {
-                <span class="notification-count">{{ asesoriasRespondidas }}</span>
+                <span class="notification-count" aria-live="polite" aria-atomic="true">
+                  {{ asesoriasRespondidas }}
+                </span>
               }
             </button>
-            <button class="nav-link" (click)="goToAsesorias()">Solicitar Asesoría</button>
+            <button 
+              class="nav-link" 
+              (click)="goToAsesorias()"
+              aria-label="Ir a solicitar asesoría"
+            >
+              Solicitar Asesoría
+            </button>
           }
         </div>
       </nav>
@@ -87,19 +116,22 @@
   </header>
 
   <!-- Hero Section -->
-  <section class="hero-section">
+  <section class="hero-section" role="region" aria-label="Sección principal">
     <div class="hero-content">
       <h2>Encuentra ayuda</h2>
-      <p>Explota y interactua con los programadores para obtener soluciones a tus proyectos</p>
+      <p>Explora e interactúa con los programadores para obtener soluciones a tus proyectos</p>
     </div>
   </section>
 
   <!-- Programadores Section -->
-  <section class="programadores-section">
+  <section class="programadores-section" role="region" aria-label="Lista de programadores">
     <div class="section-container">
       @if (loading) {
+        <div class="loading-state" role="status" aria-live="polite" aria-busy="true">
+          <p>Cargando programadores...</p>
+        </div>
       } @else if (programadores.length === 0) {
-        <div class="empty-state">
+        <div class="empty-state" role="status" aria-live="polite">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="64"
@@ -118,15 +150,23 @@
           <p>Aún no se han registrado programadores en la plataforma</p>
         </div>
       } @else {
-        <div class="programadores-grid">
+        <div class="programadores-grid" role="list">
           @for (prog of programadores; track prog.uid) {
-            <article class="programador-card">
+            <article class="programador-card" role="listitem" [attr.aria-label]="'Programador: ' + prog.displayName">
               <!-- Header del card -->
               <div class="card-header">
                 @if (prog.photoURL) {
-                  <img [src]="prog.photoURL" [alt]="prog.displayName" class="avatar" />
+                  <img 
+                    [src]="prog.photoURL" 
+                    [alt]="'Foto de perfil de ' + prog.displayName" 
+                    class="avatar" 
+                  />
                 } @else {
-                  <div class="avatar-placeholder">
+                  <div 
+                    class="avatar-placeholder" 
+                    [attr.aria-label]="'Inicial de ' + prog.displayName"
+                    role="img"
+                  >
                     {{ prog.displayName.charAt(0).toUpperCase() }}
                   </div>
                 }
@@ -139,18 +179,27 @@
                   <p class="especialidad">{{ prog.especialidad }}</p>
                 }
 
-                <!-- Botón Mostrar/Ocultar -->
-                <button
-                  class="btn-toggle"
-                  (click)="toggleProgramador(prog.uid)"
-                  [class.expanded]="isProgramadorExpanded(prog.uid)"
-                >
-                  {{ isProgramadorExpanded(prog.uid) ? 'Ocultar ▲' : 'Mostrar más ▼' }}
-                </button>
+                <!-- Botones de acción -->
+                <div class="card-actions">
+                  <button
+                    class="btn-action btn-primary"
+                    (click)="verPerfilProgramador(prog.uid)"
+                    [attr.aria-label]="'Ver perfil completo de ' + prog.displayName"
+                  >
+                    Mostrar Perfil
+                  </button>
+                  <button
+                    class="btn-action btn-secondary"
+                    (click)="solicitarAsesoria(prog)"
+                    [attr.aria-label]="'Solicitar asesoría a ' + prog.displayName"
+                  >
+                    Solicitar Asesoría
+                  </button>
+                </div>
               </div>
 
               <!-- Contenido expandible -->
-              @if (isProgramadorExpanded(prog.uid)) {
+              @if (false) {
                 <div class="expandible-content">
                   <!-- Descripción -->
                   @if (prog.descripcion) {
@@ -162,14 +211,14 @@
                   <!-- Redes sociales -->
                   @if (
                     prog.redesSociales &&
-                    (prog.redesSociales.github ||
-                      prog.redesSociales.linkedin ||
-                      prog.redesSociales.portfolio)
+                    (prog.redesSociales?.github ||
+                      prog.redesSociales?.linkedin ||
+                      prog.redesSociales?.portfolio)
                   ) {
                     <div class="card-social">
-                      @if (prog.redesSociales.github) {
+                      @if (prog.redesSociales?.github) {
                         <a
-                          [href]="prog.redesSociales.github"
+                          [href]="prog.redesSociales?.github || ''"
                           target="_blank"
                           rel="noopener"
                           title="GitHub"
@@ -183,9 +232,9 @@
                           <span>GitHub</span>
                         </a>
                       }
-                      @if (prog.redesSociales.linkedin) {
+                      @if (prog.redesSociales?.linkedin) {
                         <a
-                          [href]="prog.redesSociales.linkedin"
+                          [href]="prog.redesSociales?.linkedin || ''"
                           target="_blank"
                           rel="noopener"
                           title="LinkedIn"
@@ -199,9 +248,9 @@
                           <span>LinkedIn</span>
                         </a>
                       }
-                      @if (prog.redesSociales.portfolio) {
+                      @if (prog.redesSociales?.portfolio) {
                         <a
-                          [href]="prog.redesSociales.portfolio"
+                          [href]="prog.redesSociales?.portfolio || ''"
                           target="_blank"
                           rel="noopener"
                           title="Portfolio"
@@ -229,7 +278,7 @@
                   }
 
                   <!-- Horarios de Disponibilidad -->
-                  @if (prog.horariosDisponibles && prog.horariosDisponibles.length > 0) {
+                  @if (prog.horariosDisponibles && (prog.horariosDisponibles?.length ?? 0) > 0) {
                     <div class="card-horarios">
                       <h4>📅 Horarios de Disponibilidad</h4>
                       <div class="horarios-list">
@@ -248,11 +297,11 @@
                   }
 
                   <!-- Proyectos -->
-                  @if (prog.proyectos && prog.proyectos.length > 0) {
+                  @if (prog.proyectos && (prog.proyectos?.length ?? 0) > 0) {
                     <div class="card-projects">
-                      <h4>Proyectos ({{ prog.proyectos.length }})</h4>
+                      <h4>Proyectos ({{ prog.proyectos?.length }})</h4>
                       <div class="projects-list">
-                        @for (proyecto of prog.proyectos.slice(0, 3); track proyecto.id) {
+                        @for (proyecto of prog.proyectos?.slice(0, 3); track proyecto.id) {
                           <div class="project-item">
                             <div class="project-header">
                               <span class="project-name">{{ proyecto.nombre }}</span>
@@ -275,8 +324,8 @@
                           </div>
                         }
                       </div>
-                      @if (prog.proyectos.length > 3) {
-                        <p class="more-projects">+ {{ prog.proyectos.length - 3 }} proyectos más</p>
+                      @if ((prog.proyectos?.length || 0) > 3) {
+                        <p class="more-projects">+ {{ (prog.proyectos?.length || 0) - 3 }} proyectos más</p>
                       }
                     </div>
                   }

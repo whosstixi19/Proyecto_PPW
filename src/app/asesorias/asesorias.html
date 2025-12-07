@@ -1,19 +1,27 @@
 <div class="asesorias-page">
   <!-- Header -->
-  <header class="asesorias-header">
+  <header class="asesorias-header" role="banner">
     <div class="header-content">
       <div class="header-title">
-        <h1>{{ mostrarMisAsesorias ? 'Mis Asesorías' : 'Solicitar Asesoría' }}</h1>
+        <h1 id="page-title">{{ mostrarMisAsesorias ? 'Mis Asesorías' : 'Solicitar Asesoría' }}</h1>
       </div>
 
-      <div class="header-actions">
+      <div class="header-actions" role="navigation" aria-label="Acciones de asesorías">
         <div class="action-buttons">
-          <button class="btn btn-secondary" (click)="goToInicio()">Inicio</button>
+          <button 
+            class="btn btn-secondary" 
+            (click)="goToInicio()"
+            aria-label="Volver a la página de inicio"
+          >
+            Inicio
+          </button>
           <button 
             class="btn" 
             [class.btn-primary]="!mostrarMisAsesorias"
             [class.btn-secondary]="mostrarMisAsesorias"
             (click)="toggleMisAsesorias()"
+            [attr.aria-pressed]="mostrarMisAsesorias"
+            [attr.aria-label]="mostrarMisAsesorias ? 'Cambiar a solicitar asesoría' : 'Cambiar a mis asesorías'"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -23,191 +31,228 @@
               fill="none"
               stroke="currentColor"
               stroke-width="2"
+              aria-hidden="true"
+              focusable="false"
             >
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
               <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
             </svg>
             {{ mostrarMisAsesorias ? 'Solicitar Asesoría' : 'Mis Asesorías' }}
           </button>
-          <button
-            *ngIf="!mostrarMisAsesorias"
-            class="btn btn-primary"
-            (click)="loadProgramadores()"
-            title="Recargar programadores"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
+          @if (!mostrarMisAsesorias) {
+            <button
+              class="btn btn-primary"
+              (click)="loadProgramadores()"
+              title="Recargar programadores"
+              aria-label="Recargar lista de programadores"
             >
-              <polyline points="23 4 23 10 17 10"></polyline>
-              <polyline points="1 20 1 14 7 14"></polyline>
-              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-            </svg>
-            Recargar
-          </button>
-          <button
-            *ngIf="mostrarMisAsesorias"
-            class="btn btn-primary"
-            (click)="recargarAsesorias()"
-            title="Recargar asesorías"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <polyline points="1 20 1 14 7 14"></polyline>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+              </svg>
+              Recargar
+            </button>
+          }
+          @if (mostrarMisAsesorias) {
+            <button
+              class="btn btn-primary"
+              (click)="recargarAsesorias()"
+              title="Recargar asesorías"
+              aria-label="Recargar mis asesorías"
             >
-              <polyline points="23 4 23 10 17 10"></polyline>
-              <polyline points="1 20 1 14 7 14"></polyline>
-              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-            </svg>
-            Recargar
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <polyline points="1 20 1 14 7 14"></polyline>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+              </svg>
+              Recargar
+            </button>
+          }
+          <button 
+            class="btn btn-secondary" 
+            (click)="goToPortafolios()"
+            aria-label="Ir a ver portafolios de programadores"
+          >
+            Ver Portafolios
           </button>
-          <button class="btn btn-secondary" (click)="goToPortafolios()">Ver Portafolios</button>
         </div>
       </div>
     </div>
   </header>
 
   <!-- Loading -->
-  <div class="asesorias-content" *ngIf="loading">
-    <div class="loading">
-      <p>Cargando información...</p>
+  @if (loading) {
+    <div class="asesorias-content">
+      <div class="loading" role="status" aria-live="polite" aria-busy="true">
+        <p>Cargando información...</p>
+      </div>
     </div>
-  </div>
+  }
 
   <!-- Content -->
-  <div class="asesorias-content" *ngIf="!loading">
-    <!-- Programadores Disponibles -->
-    <section class="programadores-section" *ngIf="!mostrarMisAsesorias">
-      <h2>Programadores Disponibles</h2>
-      <div class="programadores-grid">
-        <div class="programador-card" *ngFor="let programador of programadores">
-          <div class="programador-avatar">
-            <img
-              *ngIf="programador.photoURL"
-              [src]="programador.photoURL"
-              [alt]="programador.displayName"
-            />
-            <div *ngIf="!programador.photoURL" class="avatar-placeholder">
-              {{ programador.displayName.charAt(0).toUpperCase() }}
+  @if (!loading) {
+    <div class="asesorias-content">
+      <!-- Programadores Disponibles -->
+      @if (!mostrarMisAsesorias) {
+        <section class="programadores-section" role="region" aria-labelledby="programadores-title">
+          <h2 id="programadores-title">Programadores Disponibles</h2>
+          <div class="programadores-grid" role="list">
+            @for (programador of programadores; track programador.uid) {
+              <div class="programador-card">
+                <div class="programador-avatar">
+                  @if (programador.photoURL) {
+                    <img
+                      [src]="programador.photoURL"
+                      [alt]="programador.displayName"
+                    />
+                  } @else {
+                    <div class="avatar-placeholder">
+                      {{ programador.displayName.charAt(0).toUpperCase() }}
+                    </div>
+                  }
+                </div>
+                <div class="programador-info">
+                  <h3>{{ programador.displayName }}</h3>
+                  <p class="programador-especialidad">
+                    {{ programador.especialidad || 'Desarrollador' }}
+                  </p>
+                  <p class="programador-descripcion">
+                    {{ programador.descripcion || 'Sin descripción' }}
+                  </p>
+                  <button class="btn btn-primary" (click)="openModal(programador)">
+                    Solicitar Asesoría
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+
+          @if (programadores.length === 0) {
+            <div class="empty-state">
+              <svg
+                width="64"
+                height="64"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"
+                />
+              </svg>
+              <h3>No hay programadores disponibles</h3>
+              <p>Vuelve más tarde para ver programadores disponibles</p>
             </div>
-          </div>
-          <div class="programador-info">
-            <h3>{{ programador.displayName }}</h3>
-            <p class="programador-especialidad">
-              {{ programador.especialidad || 'Desarrollador' }}
-            </p>
-            <p class="programador-descripcion">
-              {{ programador.descripcion || 'Sin descripción' }}
-            </p>
-            <button class="btn btn-primary" (click)="openModal(programador)">
-              Solicitar Asesoría
-            </button>
-          </div>
-        </div>
-      </div>
+          }
+        </section>
+      }
 
-      <div class="empty-state" *ngIf="programadores.length === 0">
-        <svg
-          width="64"
-          height="64"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          viewBox="0 0 24 24"
-        >
-          <path
-            d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"
-          />
-        </svg>
-        <h3>No hay programadores disponibles</h3>
-        <p>Vuelve más tarde para ver programadores disponibles</p>
-      </div>
-    </section>
-
-    <!-- Mis Asesorías (solo cuando mostrarMisAsesorias = true) -->
-    <section class="solicitudes-section" *ngIf="mostrarMisAsesorias">
+      <!-- Mis Asesorías (solo cuando mostrarMisAsesorias = true) -->
+      @if (mostrarMisAsesorias) {
+        <section class="solicitudes-section">
       <h2>Mis Asesorías</h2>
       <div class="solicitudes-list">
-        <div class="solicitud-card" *ngFor="let asesoria of misAsesorias">
-          <div class="solicitud-header">
-            <div>
-              <h3>{{ asesoria.tema }}</h3>
-              <p class="solicitud-programador">Para: {{ asesoria.programadorNombre }}</p>
-              <p class="solicitud-datetime">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <polyline points="12 6 12 12 16 14"></polyline>
-                </svg>
-                {{ asesoria.fechaSolicitada }} - {{ asesoria.horaSolicitada }}
-              </p>
+        @for (asesoria of misAsesorias; track asesoria.id) {
+          <div class="solicitud-card">
+            <div class="solicitud-header">
+              <div>
+                <h3>{{ asesoria.tema }}</h3>
+                <p class="solicitud-programador">Para: {{ asesoria.programadorNombre }}</p>
+                <p class="solicitud-datetime">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  {{ asesoria.fechaSolicitada }} - {{ asesoria.horaSolicitada }}
+                </p>
+              </div>
+              <span
+                class="estado-badge"
+                [style.background-color]="getEstadoColor(asesoria.estado) + '20'"
+                [style.color]="getEstadoColor(asesoria.estado)"
+              >
+                {{ getEstadoTexto(asesoria.estado) }}
+              </span>
             </div>
-            <span
-              class="estado-badge"
-              [style.background-color]="getEstadoColor(asesoria.estado) + '20'"
-              [style.color]="getEstadoColor(asesoria.estado)"
-            >
-              {{ getEstadoTexto(asesoria.estado) }}
-            </span>
-          </div>
-          <p class="solicitud-descripcion">{{ asesoria.descripcion }}</p>
-          @if (asesoria.comentario) {
-            <p class="solicitud-comentario">
-              <strong>Comentario:</strong> {{ asesoria.comentario }}
+            <p class="solicitud-descripcion">{{ asesoria.descripcion }}</p>
+            @if (asesoria.comentario) {
+              <p class="solicitud-comentario">
+                <strong>Comentario:</strong> {{ asesoria.comentario }}
+              </p>
+            }
+            <p class="solicitud-fecha">
+              Solicitado el: {{ asesoria.fecha?.toDate().toLocaleDateString() }}
             </p>
-          }
-          <p class="solicitud-fecha">
-            Solicitado el: {{ asesoria.fecha?.toDate().toLocaleDateString() }}
-          </p>
 
-          <div class="solicitud-respuesta" *ngIf="asesoria.respuesta">
-            <strong>Respuesta del programador:</strong>
-            <p>{{ asesoria.respuesta }}</p>
-            <p class="respuesta-fecha">
-              {{ asesoria.fechaRespuesta?.toDate().toLocaleDateString() }}
-            </p>
+            @if (asesoria.respuesta) {
+              <div class="solicitud-respuesta">
+                <strong>Respuesta del programador:</strong>
+                <p>{{ asesoria.respuesta }}</p>
+                <p class="respuesta-fecha">
+                  {{ asesoria.fechaRespuesta?.toDate().toLocaleDateString() }}
+                </p>
+              </div>
+            }
           </div>
+        }
+      </div>
+
+      @if (misAsesorias.length === 0) {
+        <div class="empty-state">
+          <svg
+            width="64"
+            height="64"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"
+            />
+          </svg>
+          <h3>No has solicitado asesorías</h3>
+          <p>Solicita una asesoría a un programador para comenzar</p>
         </div>
-      </div>
-
-      <div class="empty-state" *ngIf="misAsesorias.length === 0">
-        <svg
-          width="64"
-          height="64"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          viewBox="0 0 24 24"
-        >
-          <path
-            d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"
-          />
-        </svg>
-        <h3>No has solicitado asesorías</h3>
-        <p>Solicita una asesoría a un programador para comenzar</p>
-      </div>
+      }
     </section>
-  </div>
+      }
+    </div>
+  }
 
   <!-- Modal Solicitar Asesoría -->
-  <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+  @if (showModal) {
+    <div class="modal-overlay" (click)="closeModal()">
     <div class="modal-content" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h2>Solicitar Asesoría</h2>
@@ -226,47 +271,45 @@
       </div>
 
       <form class="modal-form" (ngSubmit)="solicitarAsesoria()" #asesoriaForm="ngForm">
-        <div class="programador-seleccionado" *ngIf="selectedProgramador">
-          <div class="programador-avatar-small">
-            <img
-              *ngIf="selectedProgramador.photoURL"
-              [src]="selectedProgramador.photoURL"
-              [alt]="selectedProgramador.displayName"
-            />
-            <div *ngIf="!selectedProgramador.photoURL" class="avatar-placeholder-small">
-              {{ selectedProgramador.displayName.charAt(0).toUpperCase() }}
+        @if (selectedProgramador) {
+          <div class="programador-seleccionado">
+            <div class="programador-avatar-small">
+              @if (selectedProgramador.photoURL) {
+                <img
+                  [src]="selectedProgramador.photoURL"
+                  [alt]="selectedProgramador.displayName"
+                />
+              } @else {
+                <div class="avatar-placeholder-small">
+                  {{ selectedProgramador.displayName.charAt(0).toUpperCase() }}
+                </div>
+              }
+            </div>
+            <div>
+              <strong>{{ selectedProgramador.displayName }}</strong>
+              <p>{{ selectedProgramador.especialidad || 'Desarrollador' }}</p>
             </div>
           </div>
-          <div>
-            <strong>{{ selectedProgramador.displayName }}</strong>
-            <p>{{ selectedProgramador.especialidad || 'Desarrollador' }}</p>
-          </div>
-        </div>
+        }
 
         <!-- Horarios de Disponibilidad -->
-        <div
-          class="horarios-info"
-          *ngIf="
-            selectedProgramador &&
-            selectedProgramador.horariosDisponibles &&
-            selectedProgramador.horariosDisponibles.length > 0
-          "
-        >
-          <h4>📅 Horarios Disponibles</h4>
-          <div class="horarios-grid">
-            <div
-              class="horario-badge"
-              *ngFor="let horario of selectedProgramador.horariosDisponibles"
-            >
-              <span class="horario-dia">{{ getDiaNombre(horario.dia) }}</span>
-              <span class="horario-horas">{{ horario.horaInicio }} - {{ horario.horaFin }}</span>
+        @if (selectedProgramador && selectedProgramador.horariosDisponibles && selectedProgramador.horariosDisponibles.length > 0) {
+          <div class="horarios-info">
+            <h4>📅 Horarios Disponibles</h4>
+            <div class="horarios-grid">
+              @for (horario of selectedProgramador.horariosDisponibles; track horario.dia) {
+                <div class="horario-badge">
+                  <span class="horario-dia">{{ getDiaNombre(horario.dia) }}</span>
+                  <span class="horario-horas">{{ horario.horaInicio }} - {{ horario.horaFin }}</span>
+                </div>
+              }
             </div>
+            <small class="hint-text"
+              >💡 Selecciona una fecha que coincida con estos días para ver las horas
+              disponibles</small
+            >
           </div>
-          <small class="hint-text"
-            >💡 Selecciona una fecha que coincida con estos días para ver las horas
-            disponibles</small
-          >
-        </div>
+        }
 
         <div class="form-group">
           <label>Tema de la Asesoría *</label>
@@ -337,6 +380,26 @@
           <small>{{ formData.comentario.length }}/300 caracteres</small>
         </div>
 
+        <!-- Mensaje de validación -->
+        @if (!asesoriaForm.form.valid && asesoriaForm.submitted) {
+          <div class="validation-message">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <span>Por favor, completa todos los campos obligatorios (*)</span>
+          </div>
+        }
+
         <div class="modal-actions">
           <button
             type="button"
@@ -356,5 +419,6 @@
         </div>
       </form>
     </div>
-  </div>
+    </div>
+  }
 </div>

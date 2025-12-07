@@ -268,4 +268,16 @@ export class AdminComponent implements OnInit {
     };
     return dias[dia] || dia;
   }
+
+  isValidUrl(url: string): boolean {
+    if (!url || url.trim() === '') {
+      return true;
+    }
+    try {
+      const urlObj = new URL(url);
+      return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+    } catch {
+      return false;
+    }
+  }
 }

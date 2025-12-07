@@ -131,16 +131,12 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.router.navigate(['/asesorias'], { queryParams: { view: 'mis-asesorias' } });
   }
 
-  toggleProgramador(uid: string) {
-    if (this.expandedProgramadores.has(uid)) {
-      this.expandedProgramadores.delete(uid);
-    } else {
-      this.expandedProgramadores.add(uid);
-    }
+  solicitarAsesoria(programador: Programador) {
+    this.router.navigate(['/asesorias']);
   }
 
-  isProgramadorExpanded(uid: string): boolean {
-    return this.expandedProgramadores.has(uid);
+  verPerfilProgramador(uid: string) {
+    this.router.navigate(['/programador'], { queryParams: { uid: uid } });
   }
 
   getDiaNombre(dia: string): string {

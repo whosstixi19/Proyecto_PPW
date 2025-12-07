@@ -7,7 +7,7 @@ import { filter, take } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 import { UserService } from '../services/user.service';
 import { AsesoriaService } from '../services/asesoria.service';
-import { Programador, Proyecto, Asesoria } from '../models/user.model';
+import { Programador, Proyecto, Asesoria, Ausencia } from '../models/user.model';
 
 @Component({
   selector: 'app-programador',
@@ -22,15 +22,31 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
   showModal = false;
   showAsesoriaModal = false;
   showRechazarModal = false;
+  mostrarAusenciaModal = false;
   mostrarNotificaciones = false;
   selectedProyecto: Proyecto | null = null;
   selectedAsesoria: Asesoria | null = null;
+  selectedAusencia: Ausencia | null = null;
+  ausenciaEditando = false;
   loading = false;
   respondiendo = false;
   motivoRechazo = '';
+  isOwner = false; // Indica si el usuario actual es el dueño del perfil
+  horasDisponibles: string[] = [
+    '08:00', '09:00', '10:00', '11:00', '12:00',
+    '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'
+  ];
   respuestaForm = {
     accion: 'aprobar' as 'aprobar' | 'rechazar',
     respuesta: '',
+  };
+
+  // Formulario de ausencia
+  ausenciaForm: Partial<Ausencia> = {
+    fecha: '',
+    horaInicio: '',
+    horaFin: '',
+    motivo: '',
   };
 
   private asesoriasSubscription?: Subscription;
@@ -68,22 +84,34 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
       .subscribe(async () => {
         const currentUser = this.authService.getCurrentUser();
 
-        if (!currentUser || currentUser.role !== 'programador') {
-          this.router.navigate(['/portafolios']);
-          return;
-        }
+        // Verificar si hay un UID en los query params (vista pública)
+        this.route.queryParams.pipe(take(1)).subscribe(async params => {
+          const uidParam = params['uid'];
+          
+          if (uidParam) {
+            // Vista pública de perfil de otro programador
+            await this.loadProgramadorPublico(uidParam);
+            // El usuario NO es el dueño si está viendo otro perfil
+            this.isOwner = currentUser?.uid === uidParam;
+          } else {
+            // Vista propia del programador
+            if (!currentUser || currentUser.role !== 'programador') {
+              this.router.navigate(['/portafolios']);
+              return;
+            }
 
-        await this.loadProgramador();
-        this.subscribeToAsesorias();
-        
-        // Verificar si se debe mostrar notificaciones desde URL
-        this.route.queryParams.pipe(take(1)).subscribe(params => {
-          if (params['view'] === 'notificaciones') {
-            this.mostrarNotificaciones = true;
+            await this.loadProgramador();
+            this.subscribeToAsesorias();
+            this.isOwner = true; // Es su propio perfil
+            
+            // Verificar si se debe mostrar notificaciones
+            if (params['view'] === 'notificaciones') {
+              this.mostrarNotificaciones = true;
+            }
           }
+          
+          this.cdr.detectChanges();
         });
-        
-        this.cdr.detectChanges();
       });
   }
 
@@ -100,6 +128,7 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
         .getAsesoriasPendientesRealtime(currentUser.uid)
         .subscribe((asesorias) => {
           this.asesoriasPendientes = asesorias;
+          this.cdr.detectChanges();
         });
     }
   }
@@ -117,6 +146,23 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     }
 
     this.loading = false;
+    this.cdr.detectChanges();
+  }
+
+  async loadProgramadorPublico(uid: string) {
+    this.loading = true;
+    const prog = await this.userService.getProgramador(uid);
+    
+    if (prog) {
+      this.programador = prog;
+      this.proyectos = prog.proyectos || [];
+    } else {
+      // Si no se encuentra el programador, redirigir a portafolios
+      this.router.navigate(['/portafolios']);
+    }
+
+    this.loading = false;
+    this.cdr.detectChanges();
   }
 
   async loadData() {
@@ -187,6 +233,7 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
 
   agregarImagen() {
     if (this.imagenInput.trim()) {
+      // La validación HTML5 del pattern ya se encarga de verificar el formato
       if (!this.formData.imagenes) {
         this.formData.imagenes = [];
       }
@@ -202,6 +249,17 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
   async guardarProyecto() {
     if (!this.formData.nombre || !this.formData.descripcion || !this.programador) {
       alert('Nombre y descripción son requeridos');
+      return;
+    }
+
+    // Validar URLs con validación nativa del navegador
+    if (this.formData.repositorio && !this.isValidUrl(this.formData.repositorio)) {
+      alert('La URL del repositorio no es válida. Debe comenzar con http:// o https://');
+      return;
+    }
+
+    if (this.formData.demo && !this.isValidUrl(this.formData.demo)) {
+      alert('La URL de demo no es válida. Debe comenzar con http:// o https://');
       return;
     }
 
@@ -388,5 +446,132 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     }
     const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
     return dias[dia] || '';
+  }
+
+  isValidUrl(url: string): boolean {
+    if (!url || url.trim() === '') {
+      return true;
+    }
+    try {
+      const urlObj = new URL(url);
+      return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+    } catch {
+      return false;
+    }
+  }
+
+  // ========== MÉTODOS PARA GESTIONAR AUSENCIAS ==========
+
+  openAusenciaModal(ausencia?: Ausencia) {
+    if (!this.isOwner) {
+      alert('No tienes permisos para gestionar ausencias en este perfil');
+      return;
+    }
+
+    if (ausencia) {
+      this.selectedAusencia = ausencia;
+      this.ausenciaForm = { ...ausencia };
+    } else {
+      this.selectedAusencia = null;
+      this.resetAusenciaForm();
+    }
+    this.mostrarAusenciaModal = true;
+  }
+
+  closeAusenciaModal() {
+    this.mostrarAusenciaModal = false;
+    this.resetAusenciaForm();
+  }
+
+  resetAusenciaForm() {
+    this.ausenciaForm = {
+      fecha: '',
+      horaInicio: '',
+      horaFin: '',
+      motivo: '',
+    };
+  }
+
+  async guardarAusencia() {
+    if (!this.programador || !this.isOwner) {
+      alert('No tienes permisos para realizar esta acción');
+      return;
+    }
+
+    if (!this.ausenciaForm.fecha || !this.ausenciaForm.horaInicio || !this.ausenciaForm.horaFin) {
+      alert('Fecha, hora de inicio y hora de fin son requeridos');
+      return;
+    }
+
+    // Validar que la hora de fin sea mayor a la hora de inicio
+    if (this.ausenciaForm.horaInicio! >= this.ausenciaForm.horaFin!) {
+      alert('La hora de fin debe ser posterior a la hora de inicio');
+      return;
+    }
+
+    this.loading = true;
+
+    const ausenciaData: Ausencia = {
+      id: this.selectedAusencia?.id || Date.now().toString(),
+      fecha: this.ausenciaForm.fecha!,
+      horaInicio: this.ausenciaForm.horaInicio!,
+      horaFin: this.ausenciaForm.horaFin!,
+      motivo: this.ausenciaForm.motivo,
+    };
+
+    let ausencias = this.programador.ausencias || [];
+
+    if (this.selectedAusencia) {
+      // Editar ausencia existente
+      const index = ausencias.findIndex(a => a.id === this.selectedAusencia!.id);
+      if (index > -1) {
+        ausencias[index] = ausenciaData;
+      }
+    } else {
+      // Agregar nueva ausencia
+      ausencias.push(ausenciaData);
+    }
+
+    const success = await this.userService.updateProgramadorAusencias(this.programador.uid, ausencias);
+
+    if (success) {
+      await this.loadProgramador();
+      this.closeAusenciaModal();
+      alert('Ausencia guardada correctamente');
+    } else {
+      alert('Error al guardar la ausencia');
+    }
+
+    this.loading = false;
+  }
+
+  async eliminarAusencia(ausenciaId: string) {
+    if (!this.programador || !this.isOwner) {
+      alert('No tienes permisos para realizar esta acción');
+      return;
+    }
+
+    if (!confirm('¿Estás seguro de eliminar esta ausencia?')) {
+      return;
+    }
+
+    this.loading = true;
+
+    const ausencias = (this.programador.ausencias || []).filter(a => a.id !== ausenciaId);
+    const success = await this.userService.updateProgramadorAusencias(this.programador.uid, ausencias);
+
+    if (success) {
+      await this.loadProgramador();
+      alert('Ausencia eliminada correctamente');
+    } else {
+      alert('Error al eliminar la ausencia');
+    }
+
+    this.loading = false;
+  }
+
+  get minFechaAusencia(): string {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
   }
 }

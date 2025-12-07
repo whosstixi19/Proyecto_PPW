@@ -445,3 +445,208 @@ footer {
     font-size: 0.875rem;
   }
 }
+
+/* ========================================
+   ACCESIBILIDAD (A11Y) 
+   ======================================== */
+
+/* Skip to main content link - visible solo al enfocar */
+.skip-to-main {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--primary);
+  color: var(--background);
+  padding: 8px;
+  text-decoration: none;
+  z-index: 100;
+
+  &:focus {
+    top: 0;
+  }
+}
+
+/* Mejoras de focus visible para todos los elementos interactivos */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Ocultar elementos visualmente pero mantenerlos accesibles para lectores de pantalla */
+.sr-only,
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Asegurar contraste mínimo en todos los textos */
+.text-low-contrast {
+  color: var(--text-secondary);
+}
+
+/* Indicadores de estado accesibles */
+[aria-busy="true"] {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+[aria-disabled="true"],
+[disabled] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Mejoras para modo de alto contraste */
+@media (prefers-contrast: high) {
+  :root {
+    --border: rgba(184, 184, 184, 0.6);
+    --text-secondary: #ffffff;
+  }
+
+  button,
+  .btn,
+  input,
+  select,
+  textarea {
+    border: 2px solid currentColor !important;
+  }
+}
+
+/* Respeto a preferencia de reducción de movimiento */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ========================================
+   RESPONSIVE DESIGN GLOBAL
+   ======================================== */
+
+/* Ajustes para tablets */
+@media (max-width: 1024px) {
+  :root {
+    font-size: 15px;
+  }
+
+  h1 {
+    font-size: 2.25rem;
+  }
+
+  h2 {
+    font-size: 1.85rem;
+  }
+
+  .container {
+    padding: 1.5rem;
+  }
+}
+
+/* Ajustes para móviles */
+@media (max-width: 768px) {
+  :root {
+    font-size: 14px;
+  }
+
+  body {
+    line-height: 1.5;
+  }
+
+  h1 {
+    font-size: 2rem;
+
+    svg {
+      width: 1.75rem;
+      height: 1.75rem;
+    }
+  }
+
+  h2 {
+    font-size: 1.75rem;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+  }
+
+  h4 {
+    font-size: 1.25rem;
+  }
+
+  .container {
+    padding: 1rem;
+  }
+
+  /* Botones más grandes para touch */
+  button,
+  .btn,
+  a.btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Ajustes para pantallas muy pequeñas */
+@media (max-width: 480px) {
+  :root {
+    font-size: 13px;
+  }
+
+  h1 {
+    font-size: 1.75rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  .container {
+    padding: 0.75rem;
+  }
+
+  /* Asegurar que los elementos táctiles sean suficientemente grandes */
+  button,
+  .btn,
+  input,
+  select,
+  a {
+    min-height: 48px;
+  }
+}
+
+/* Mejoras para pantallas grandes */
+@media (min-width: 1440px) {
+  .container {
+    max-width: 1400px;
+  }
+}
+
+/* Orientación landscape en móviles */
+@media (max-width: 768px) and (orientation: landscape) {
+  body {
+    font-size: 14px;
+  }
+
+  h1 {
+    font-size: 1.75rem;
+  }
+}
+

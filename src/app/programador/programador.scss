@@ -1299,29 +1299,282 @@
   }
 }
 
+/* Estilos para ausencias */
+.ausencias-list {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+
+.ausencias-list h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.ausencia-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  margin-bottom: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.ausencia-item:hover {
+  border-color: var(--primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ausencia-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ausencia-info strong {
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.ausencia-info span {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.ausencia-info p {
+  margin: 0.5rem 0 0 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
 @media (max-width: 768px) {
   .programador-header .header-content {
+    padding: 1rem;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+    gap: 1rem;
   }
+
+  .header-title h1 {
+    font-size: 1.5rem;
+  }
+
   .header-actions {
     width: 100%;
     flex-direction: column;
+    gap: 0.75rem;
+
+    .action-buttons {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    button {
+      width: 100%;
+      justify-content: center;
+    }
   }
-  .header-actions button {
+
+  .user-info {
     width: 100%;
+    flex-direction: column;
+    text-align: center;
+    padding: 1rem;
   }
+
   .profile-card {
     flex-direction: column;
     text-align: center;
+    padding: 1.5rem 1rem;
+
+    .profile-avatar {
+      margin: 0 auto 1rem;
+    }
   }
+
+  .profile-info {
+    align-items: center;
+  }
+
+  .social-links {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
   .proyectos-grid {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
+
+  .proyecto-card {
+    padding: 1.25rem;
+  }
+
   .modal-overlay {
-    padding: 1rem;
+    padding: 0.5rem;
+    align-items: flex-start;
+    overflow-y: auto;
   }
+
+  .modal-content {
+    max-width: 100%;
+    width: 100%;
+    margin: 1rem 0;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+  }
+
   .form-row {
     grid-template-columns: 1fr !important;
   }
+
+  .ausencia-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+
+    .ausencia-info {
+      width: 100%;
+    }
+
+    button {
+      align-self: flex-end;
+    }
+  }
+
+  .notificaciones-panel {
+    width: 100%;
+    left: 0;
+    right: 0;
+    border-radius: 0;
+    max-height: 70vh;
+  }
+
+  .asesoria-item {
+    padding: 1rem;
+
+    .asesoria-header {
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: flex-start;
+    }
+
+    .asesoria-actions {
+      width: 100%;
+      flex-direction: column;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
 }
+
+// Tablets
+@media (min-width: 769px) and (max-width: 1024px) {
+  .proyectos-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .programador-header .header-content {
+    padding: 1rem 1.5rem;
+  }
+
+  .modal-content {
+    max-width: 90%;
+  }
+}
+
+// Pantallas muy peque\u00f1as
+@media (max-width: 480px) {
+  .programador-header .header-content {
+    padding: 0.75rem;
+
+    .header-title h1 {
+      font-size: 1.25rem;
+    }
+  }
+
+  .header-actions button {
+    font-size: 0.9rem;
+    padding: 0.65rem 1rem;
+  }
+
+  .profile-card {
+    padding: 1rem;
+  }
+
+  .proyecto-card {
+    padding: 1rem;
+  }
+
+  .modal-content {
+    padding: 1rem;
+    margin: 0.5rem 0;
+  }
+
+  .modal-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .form-group label {
+    font-size: 0.9rem;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    font-size: 0.9rem;
+    padding: 0.65rem;
+  }
+
+  .btn {
+    font-size: 0.9rem;
+    padding: 0.65rem 1rem;
+  }
+}
+
+/* Mejoras de accesibilidad para focus */
+button:focus-visible,
+.btn:focus-visible,
+.nav-link:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+}
+
+/* Modo de alto contraste */
+@media (prefers-contrast: high) {
+  .programador-header,
+  .profile-card,
+  .proyecto-card,
+  .modal-content {
+    border: 2px solid var(--border);
+  }
+
+  button,
+  .btn {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Reducci\u00f3n de movimiento */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+

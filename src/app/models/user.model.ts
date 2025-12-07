@@ -11,25 +11,19 @@ export interface Usuario {
   createdAt: Date;
 }
 
-export interface Programador extends Usuario {
-  role: 'programador';
-  especialidad: string;
-  descripcion: string;
-  redesSociales?: {
-    github?: string;
-    linkedin?: string;
-    twitter?: string;
-    portfolio?: string;
-  };
-  proyectos?: Proyecto[];
-  horariosDisponibles?: HorarioDisponible[];
-}
-
 export interface HorarioDisponible {
   dia: 'lunes' | 'martes' | 'miercoles' | 'jueves' | 'viernes' | 'sabado' | 'domingo';
   horaInicio: string; // Formato "HH:mm"
   horaFin: string; // Formato "HH:mm"
   activo: boolean;
+}
+
+export interface Ausencia {
+  id?: string;
+  fecha: string; // Formato "YYYY-MM-DD"
+  horaInicio: string; // Formato "HH:mm"
+  horaFin: string; // Formato "HH:mm"
+  motivo?: string;
 }
 
 export interface Proyecto {
@@ -43,6 +37,21 @@ export interface Proyecto {
   demo?: string;
   imagenes?: string[];
   fechaCreacion: Date;
+}
+
+export interface Programador extends Usuario {
+  role: 'programador';
+  especialidad: string;
+  descripcion: string;
+  redesSociales?: {
+    github?: string;
+    linkedin?: string;
+    twitter?: string;
+    portfolio?: string;
+  };
+  proyectos?: Proyecto[];
+  horariosDisponibles?: HorarioDisponible[];
+  ausencias?: Ausencia[]; // Horarios bloqueados específicos
 }
 
 export interface Asesoria {

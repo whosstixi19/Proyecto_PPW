@@ -288,7 +288,12 @@
               [(ngModel)]="formData.photoURL"
               name="photoURL"
               placeholder="https://..."
+              pattern="https?://.+"
+              title="Ingresa una URL válida (debe comenzar con http:// o https://)"
             />
+            <small *ngIf="formData.photoURL && !isValidUrl(formData.photoURL)" class="error-text">
+              La URL debe comenzar con http:// o https://
+            </small>
           </div>
 
           <div class="form-section">
@@ -301,7 +306,12 @@
                 [(ngModel)]="formData.redesSociales!.github"
                 name="github"
                 placeholder="https://github.com/usuario"
+                pattern="https?://.+"
+                title="Ingresa una URL válida (debe comenzar con http:// o https://)"
               />
+              <small *ngIf="formData.redesSociales!.github && !isValidUrl(formData.redesSociales!.github)" class="error-text">
+                La URL debe comenzar con http:// o https://
+              </small>
             </div>
 
             <div class="form-group">
@@ -311,7 +321,12 @@
                 [(ngModel)]="formData.redesSociales!.linkedin"
                 name="linkedin"
                 placeholder="https://linkedin.com/in/usuario"
+                pattern="https?://.+"
+                title="Ingresa una URL válida (debe comenzar con http:// o https://)"
               />
+              <small *ngIf="formData.redesSociales!.linkedin && !isValidUrl(formData.redesSociales!.linkedin)" class="error-text">
+                La URL debe comenzar con http:// o https://
+              </small>
             </div>
 
             <div class="form-group">
@@ -321,7 +336,12 @@
                 [(ngModel)]="formData.redesSociales!.portfolio"
                 name="portfolio"
                 placeholder="https://miportfolio.com"
+                pattern="https?://.+"
+                title="Ingresa una URL válida (debe comenzar con http:// o https://)"
               />
+              <small *ngIf="formData.redesSociales!.portfolio && !isValidUrl(formData.redesSociales!.portfolio)" class="error-text">
+                La URL debe comenzar con http:// o https://
+              </small>
             </div>
           </div>
 
