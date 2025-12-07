@@ -12,7 +12,7 @@ export const routes: Routes = [
   { path: 'inicio', component: HomeComponent, canActivate: [authGuard] },
   { path: 'portafolios', component: HomeComponent, canActivate: [authGuard] },
   { path: 'admin', component: AdminComponent, canActivate: [adminGuard] },
-  { path: 'programador', component: ProgramadorComponent, canActivate: [programadorGuard] },
+  { path: 'programador', component: ProgramadorComponent, canActivate: [authGuard] },
   { path: 'mi-portafolio', redirectTo: '/programador', pathMatch: 'full' },
   { path: 'asesorias', component: AsesoriasComponent, canActivate: [authGuard] },
 ];
