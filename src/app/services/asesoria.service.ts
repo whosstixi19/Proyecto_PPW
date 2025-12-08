@@ -14,12 +14,14 @@ import {
 import { Asesoria } from '../models/user.model';
 import { Observable } from 'rxjs';
 
+// Servicio para gestionar asesorías - CRUD y consultas en tiempo real
 @Injectable({
   providedIn: 'root',
 })
 export class AsesoriaService {
   constructor(private firestore: Firestore) {}
 
+  // Crear nueva solicitud de asesoría en Firestore
   async crearAsesoria(asesoria: Omit<Asesoria, 'id' | 'fecha'>): Promise<Asesoria> {
     const asesoriasRef = collection(this.firestore, 'asesorias');
     const docRef = await addDoc(asesoriasRef, {
@@ -34,6 +36,7 @@ export class AsesoriaService {
     } as Asesoria;
   }
 
+  // Obtener asesorías pendientes de un programador (sin tiempo real)
   async getAsesoriasPendientes(programadorUid: string): Promise<Asesoria[]> {
     const asesoriasRef = collection(this.firestore, 'asesorias');
     const q = query(
@@ -49,6 +52,7 @@ export class AsesoriaService {
     })) as Asesoria[];
   }
 
+  // Obtener todas las asesorías de un usuario
   async getAsesoriasUsuario(usuarioUid: string): Promise<Asesoria[]> {
     const asesoriasRef = collection(this.firestore, 'asesorias');
     const q = query(asesoriasRef, where('usuarioUid', '==', usuarioUid));
@@ -60,6 +64,7 @@ export class AsesoriaService {
     })) as Asesoria[];
   }
 
+  // Aprobar o rechazar una asesoría
   async responderAsesoria(
     asesoriaId: string,
     estado: 'aprobada' | 'rechazada',
@@ -73,6 +78,7 @@ export class AsesoriaService {
     });
   }
 
+  // Escuchar asesorías pendientes en tiempo real (para notificaciones)
   getAsesoriasPendientesRealtime(programadorUid: string): Observable<Asesoria[]> {
     return new Observable((observer) => {
       const asesoriasRef = collection(this.firestore, 'asesorias');
@@ -94,6 +100,7 @@ export class AsesoriaService {
     });
   }
 
+  // Escuchar asesorías de un usuario en tiempo real (todas)
   getAsesoriasUsuarioRealtime(usuarioUid: string): Observable<Asesoria[]> {
     return new Observable((observer) => {
       const asesoriasRef = collection(this.firestore, 'asesorias');
@@ -111,37 +118,7 @@ export class AsesoriaService {
     });
   }
 
-  // Obtener asesorías respondidas (aprobadas o rechazadas) del usuario
-  getAsesoriasRespondidasRealtime(usuarioUid: string): Observable<Asesoria[]> {
-    return new Observable((observer) => {
-      const asesoriasRef = collection(this.firestore, 'asesorias');
-      const q = query(
-        asesoriasRef,
-        where('usuarioUid', '==', usuarioUid),
-        where('estado', 'in', ['aprobada', 'rechazada'])
-      );
-
-      const unsubscribe = onSnapshot(q, (snapshot) => {
-        const asesorias = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Asesoria[];
-        observer.next(asesorias);
-      });
-
-      return () => unsubscribe();
-    });
-  }
-
-  // Placeholder para notificaciones externas (email, WhatsApp, etc.)
-  async enviarNotificacionExterna(
-    asesoria: Asesoria,
-    tipo: 'solicitud' | 'respuesta',
-  ): Promise<void> {
-    // Integración pendiente con servicios externos
-  }
-
-  // Verificar si un horario está disponible (no está ocupado por otra asesoría aprobada)
+  // Verificar si un horario específico está disponible
   async verificarDisponibilidadHorario(
     programadorUid: string,
     fecha: string,
@@ -158,7 +135,7 @@ export class AsesoriaService {
       );
       const snapshot = await getDocs(q);
       
-      // Si no hay documentos, el horario está disponible
+      // Retorna true si está disponible (no hay documentos)
       return snapshot.empty;
     } catch (error) {
       console.error('Error verificando disponibilidad:', error);
@@ -166,7 +143,7 @@ export class AsesoriaService {
     }
   }
 
-  // Obtener horarios ocupados para una fecha específica
+  // Obtener todos los horarios ocupados de un programador en una fecha
   async getHorariosOcupados(programadorUid: string, fecha: string): Promise<string[]> {
     try {
       const asesoriasRef = collection(this.firestore, 'asesorias');
@@ -178,6 +155,7 @@ export class AsesoriaService {
       );
       const snapshot = await getDocs(q);
       
+      // Extraer solo las horas ocupadas
       return snapshot.docs.map(doc => (doc.data() as Asesoria).horaSolicitada);
     } catch (error) {
       console.error('Error obteniendo horarios ocupados:', error);

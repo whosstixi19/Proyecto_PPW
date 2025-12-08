@@ -9,6 +9,7 @@ import { UserService } from '../services/user.service';
 import { AsesoriaService } from '../services/asesoria.service';
 import { Programador, Asesoria } from '../models/user.model';
 
+// Componente para solicitar asesorías y ver mis asesorías
 @Component({
   selector: 'app-asesorias',
   standalone: true,
@@ -17,14 +18,19 @@ import { Programador, Asesoria } from '../models/user.model';
   styleUrls: ['./asesorias.scss'],
 })
 export class AsesoriasComponent implements OnInit, OnDestroy {
+  // Lista de programadores disponibles para solicitar asesoría
   programadores: Programador[] = [];
+  // Mis asesorías solicitadas (pendientes, aprobadas, rechazadas)
   misAsesorias: Asesoria[] = [];
+  
+  // Control de modales y vistas
   showModal = false;
   mostrarMisAsesorias = false;
   selectedProgramador: Programador | null = null;
   loading = false;
   enviando = false;
 
+  // Datos del formulario de solicitud
   formData = {
     tema: '',
     descripcion: '',
@@ -33,9 +39,11 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
     hora: '',
   };
 
+  // Horas disponibles según horario del programador y ausencias
   horasDisponibles: string[] = [];
   minFecha: string = new Date().toISOString().split('T')[0];
 
+  // Suscripción a cambios en tiempo real
   private asesoriasSubscription?: Subscription;
 
   constructor(
@@ -60,10 +68,12 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
           return;
         }
 
+        // Cargar programadores disponibles
         await this.loadProgramadores();
+        // Escuchar actualizaciones de mis asesorías en tiempo real
         this.subscribeToMisAsesorias();
         
-        // Verificar si se debe mostrar Mis Asesorías desde URL
+        // Verificar si se debe mostrar la vista de "Mis Asesorías"
         this.route.queryParams.pipe(take(1)).subscribe(params => {
           if (params['view'] === 'mis-asesorias') {
             this.mostrarMisAsesorias = true;
@@ -80,6 +90,7 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Cargar lista de programadores desde Firestore
   async loadProgramadores() {
     const isManualReload = this.programadores.length > 0;
     if (isManualReload) {
@@ -90,19 +101,11 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
     this.loading = false;
   }
 
-  recargarAsesorias() {
-    this.loading = true;
-    if (this.asesoriasSubscription) {
-      this.asesoriasSubscription.unsubscribe();
-    }
-    this.subscribeToMisAsesorias();
-    this.loading = false;
-  }
-
   getCurrentUser() {
     return this.authService.getCurrentUser();
   }
 
+  // Suscribirse a mis asesorías en tiempo real
   subscribeToMisAsesorias() {
     const user = this.authService.getCurrentUser();
     if (user) {
@@ -114,8 +117,9 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Abrir modal para solicitar asesoría con un programador específico
   async openModal(programador: Programador) {
-    // Recargar el programador para obtener las ausencias más recientes
+    // Recargar programador para obtener ausencias actualizadas
     const programadorActualizado = await this.userService.getProgramador(programador.uid);
     
     if (programadorActualizado) {
@@ -146,50 +150,48 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
     this.horasDisponibles = [];
   }
 
+  // Calcular horarios disponibles cuando el usuario selecciona una fecha
   async onFechaChange() {
     if (!this.formData.fecha || !this.selectedProgramador) {
       this.horasDisponibles = [];
       return;
     }
 
+    // Obtener el día de la semana de la fecha seleccionada
     const [year, month, day] = this.formData.fecha.split('-').map(Number);
     const fecha = new Date(year, month - 1, day);
 
     const diasSemana = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
     const diaSemana = diasSemana[fecha.getDay()];
 
+    // Buscar el horario configurado para ese día
     const horarioDelDia = this.selectedProgramador.horariosDisponibles?.find(
       (h) => h.activo && h.dia === diaSemana,
     );
 
     if (horarioDelDia) {
-      // Generar todas las horas disponibles según el horario
+      // Generar todas las horas según el horario del programador
       const todasLasHoras = this.generarHoras(horarioDelDia.horaInicio, horarioDelDia.horaFin);
       
-      // Obtener horarios ocupados por otras asesorías
+      // Obtener horarios ya ocupados por otras asesorías
       const horariosOcupados = await this.asesoriaService.getHorariosOcupados(
         this.selectedProgramador.uid,
         this.formData.fecha
       );
       
-      // Filtrar horarios bloqueados por ausencias del programador
+      // Obtener ausencias del programador para ese día
       const ausenciasDelDia = this.selectedProgramador.ausencias?.filter(
         a => a.fecha === this.formData.fecha
       ) || [];
       
-      console.log('Fecha seleccionada:', this.formData.fecha);
-      console.log('Ausencias del programador:', this.selectedProgramador.ausencias);
-      console.log('Ausencias del día:', ausenciasDelDia);
-      console.log('Horarios ocupados:', horariosOcupados);
-      
-      // Filtrar horas disponibles (excluir ocupadas y ausencias)
+      // Filtrar solo las horas realmente disponibles
       this.horasDisponibles = todasLasHoras.filter(hora => {
-        // Verificar si el horario está ocupado
+        // Excluir horarios ocupados por asesorías
         if (horariosOcupados.includes(hora)) {
           return false;
         }
         
-        // Verificar si está dentro de una ausencia
+        // Excluir horarios dentro de ausencias del programador
         for (const ausencia of ausenciasDelDia) {
           if (hora >= ausencia.horaInicio && hora < ausencia.horaFin) {
             return false;
@@ -198,8 +200,6 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
         
         return true;
       });
-      
-      console.log('Horas disponibles finales:', this.horasDisponibles);
     } else {
       this.horasDisponibles = [];
     }
@@ -212,6 +212,7 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
+  // Generar array de horas en intervalos de 30 minutos
   generarHoras(inicio: string, fin: string): string[] {
     const horas: string[] = [];
     const [horaInicio, minInicio] = inicio.split(':').map(Number);
@@ -235,6 +236,7 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
     return horas;
   }
 
+  // Enviar solicitud de asesoría al programador
   async solicitarAsesoria() {
     if (!this.selectedProgramador) return;
 
@@ -248,6 +250,7 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
 
     this.enviando = true;
     try {
+      // Crear asesoría en Firestore
       const asesoria = await this.asesoriaService.crearAsesoria({
         usuarioUid: user.uid,
         usuarioNombre: user.displayName || 'Usuario',
@@ -262,7 +265,12 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
         estado: 'pendiente',
       });
 
-      await this.asesoriaService.enviarNotificacionExterna(asesoria, 'solicitud');
+      // Simulación de envío de notificaciones (email y WhatsApp)
+      console.log('📧 ============ SIMULACIÓN DE NOTIFICACIONES ============');
+      console.log('✅ Solicitud de asesoría enviada al programador');
+      console.log('📨 Correo electrónico redactado y enviado a:', this.selectedProgramador.email);
+      console.log('💬 Mensaje de WhatsApp enviado al programador');
+      console.log('========================================================');
 
       this.closeModal();
       alert('¡Solicitud enviada! El programador te responderá pronto.');
@@ -274,6 +282,7 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Obtener color del badge según estado de asesoría
   getEstadoColor(estado: string): string {
     switch (estado) {
       case 'pendiente':
@@ -287,6 +296,7 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Convertir estado interno a texto legible
   getEstadoTexto(estado: string): string {
     switch (estado) {
       case 'pendiente':
@@ -300,6 +310,7 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Convertir día interno a nombre legible
   getDiaNombre(dia: string): string {
     const dias: { [key: string]: string } = {
       lunes: 'Lunes',
@@ -313,6 +324,7 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
     return dias[dia] || dia;
   }
 
+  // Métodos de navegación
   goToInicio() {
     this.router.navigate(['/inicio']);
   }
@@ -326,6 +338,7 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
     this.router.navigate(['/login']);
   }
 
+  // Alternar vista entre solicitar y mis asesorías
   toggleMisAsesorias() {
     this.mostrarMisAsesorias = !this.mostrarMisAsesorias;
   }

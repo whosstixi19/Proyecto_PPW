@@ -9,6 +9,7 @@ import { UserService } from '../services/user.service';
 import { AsesoriaService } from '../services/asesoria.service';
 import { Programador, Proyecto, Asesoria, Ausencia } from '../models/user.model';
 
+// Componente de perfil del programador - Gestión de proyectos, asesorías y ausencias
 @Component({
   selector: 'app-programador',
   imports: [CommonModule, FormsModule],
@@ -16,32 +17,38 @@ import { Programador, Proyecto, Asesoria, Ausencia } from '../models/user.model'
   styleUrl: './programador.scss',
 })
 export class ProgramadorComponent implements OnInit, OnDestroy {
+  // Datos del programador y sus proyectos
   programador: Programador | null = null;
   proyectos: Proyecto[] = [];
+  
+  // Asesorías pendientes de responder
   asesoriasPendientes: Asesoria[] = [];
+  
+  // Control de modales y estados
   showModal = false;
-  showAsesoriaModal = false;
   showRechazarModal = false;
   mostrarAusenciaModal = false;
   mostrarNotificaciones = false;
+  
+  // Elementos seleccionados en modales
   selectedProyecto: Proyecto | null = null;
   selectedAsesoria: Asesoria | null = null;
   selectedAusencia: Ausencia | null = null;
-  ausenciaEditando = false;
+  
   loading = false;
   respondiendo = false;
   motivoRechazo = '';
-  isOwner = false; // Indica si el usuario actual es el dueño del perfil
+  
+  // Indica si el usuario actual es dueño del perfil (puede editar)
+  isOwner = false;
+  
+  // Horas disponibles para configurar ausencias
   horasDisponibles: string[] = [
     '08:00', '09:00', '10:00', '11:00', '12:00',
     '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'
   ];
-  respuestaForm = {
-    accion: 'aprobar' as 'aprobar' | 'rechazar',
-    respuesta: '',
-  };
 
-  // Formulario de ausencia
+  // Formulario para gestionar ausencias
   ausenciaForm: Partial<Ausencia> = {
     fecha: '',
     horaInicio: '',
@@ -49,9 +56,10 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     motivo: '',
   };
 
+  // Suscripción a asesorías en tiempo real
   private asesoriasSubscription?: Subscription;
 
-  // Formulario de proyecto
+  // Formulario para agregar/editar proyectos
   formData: Partial<Proyecto> = {
     nombre: '',
     descripcion: '',
@@ -63,6 +71,7 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     imagenes: [],
   };
 
+  // Inputs temporales para agregar tecnologías e imágenes
   tecnologiaInput = '';
   imagenInput = '';
 
@@ -131,6 +140,7 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Escuchar asesorías pendientes en tiempo real
   subscribeToAsesorias() {
     const currentUser = this.authService.getCurrentUser();
     if (currentUser) {
@@ -143,6 +153,7 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Cargar datos del programador actual (su propio perfil)
   async loadProgramador() {
     this.loading = true;
     const currentUser = this.authService.getCurrentUser();
@@ -159,6 +170,7 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
+  // Cargar perfil público de otro programador (modo vista)
   async loadProgramadorPublico(uid: string) {
     this.loading = true;
     const prog = await this.userService.getProgramador(uid);
@@ -167,7 +179,7 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
       this.programador = prog;
       this.proyectos = prog.proyectos || [];
     } else {
-      // Si no se encuentra el programador, redirigir a portafolios
+      // Redirigir si no existe el programador
       this.router.navigate(['/portafolios']);
     }
 
@@ -175,19 +187,18 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
-  async loadData() {
-    await this.loadProgramador();
-  }
-
   getCurrentUser() {
     return this.authService.getCurrentUser();
   }
 
+  // Abrir modal para agregar o editar proyecto
   openModal(proyecto?: Proyecto) {
     if (proyecto) {
+      // Modo edición: cargar datos existentes
       this.selectedProyecto = proyecto;
       this.formData = { ...proyecto };
     } else {
+      // Modo creación: formulario vacío
       this.selectedProyecto = null;
       this.resetForm();
     }
@@ -306,6 +317,7 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     this.loading = false;
   }
 
+  // Eliminar un proyecto del portafolio
   async eliminarProyecto(proyectoId: string) {
     if (!confirm('¿Estás seguro de eliminar este proyecto?')) {
       return;
@@ -334,10 +346,12 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     this.router.navigate(['/inicio']);
   }
 
+  // Alternar panel de notificaciones
   toggleNotificaciones() {
     this.mostrarNotificaciones = !this.mostrarNotificaciones;
   }
 
+  // Aprobar una solicitud de asesoría
   async aprobarAsesoria(asesoria: Asesoria) {
     if (!confirm(`¿Confirmar asesoría con ${asesoria.usuarioNombre}?\nFecha: ${asesoria.fechaSolicitada} - ${asesoria.horaSolicitada}`)) {
       return;
@@ -351,7 +365,13 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
         `Asesoría confirmada para el ${asesoria.fechaSolicitada} a las ${asesoria.horaSolicitada}. ¡Nos vemos!`,
       );
 
-      await this.asesoriaService.enviarNotificacionExterna(asesoria, 'respuesta');
+      // Simulación de notificaciones al usuario
+      console.log('📧 ============ SIMULACIÓN DE NOTIFICACIONES ============');
+      console.log('✅ Respuesta de APROBACIÓN enviada al usuario');
+      console.log('📨 Correo electrónico redactado y enviado a:', asesoria.usuarioEmail);
+      console.log('💬 Mensaje de WhatsApp enviado al usuario:', asesoria.usuarioNombre);
+      console.log('========================================================');
+
       alert('Asesoría aprobada correctamente');
     } catch (error) {
       console.error('Error aprobando asesoría:', error);
@@ -361,6 +381,7 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Abrir modal para rechazar asesoría con motivo
   openRechazarModal(asesoria: Asesoria) {
     this.selectedAsesoria = asesoria;
     this.motivoRechazo = '';
@@ -373,6 +394,7 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     this.motivoRechazo = '';
   }
 
+  // Rechazar una solicitud de asesoría
   async rechazarAsesoria() {
     if (!this.selectedAsesoria || !this.motivoRechazo.trim()) {
       alert('Por favor proporciona un motivo para el rechazo');
@@ -387,55 +409,19 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
         this.motivoRechazo,
       );
 
-      await this.asesoriaService.enviarNotificacionExterna(this.selectedAsesoria, 'respuesta');
+      // Simulación de notificaciones al usuario
+      console.log('📧 ============ SIMULACIÓN DE NOTIFICACIONES ============');
+      console.log('❌ Respuesta de RECHAZO enviada al usuario');
+      console.log('📨 Correo electrónico redactado y enviado a:', this.selectedAsesoria.usuarioEmail);
+      console.log('💬 Mensaje de WhatsApp enviado al usuario:', this.selectedAsesoria.usuarioNombre);
+      console.log('📝 Motivo:', this.motivoRechazo);
+      console.log('========================================================');
       
       this.closeRechazarModal();
       alert('Asesoría rechazada. Se ha notificado al usuario.');
     } catch (error) {
       console.error('Error rechazando asesoría:', error);
       alert('Error al rechazar la asesoría');
-    } finally {
-      this.respondiendo = false;
-    }
-  }
-
-  openAsesoriaModal(asesoria: Asesoria) {
-    this.selectedAsesoria = asesoria;
-    this.respuestaForm = {
-      accion: 'aprobar',
-      respuesta: '',
-    };
-    this.showAsesoriaModal = true;
-  }
-
-  closeAsesoriaModal() {
-    this.showAsesoriaModal = false;
-    this.selectedAsesoria = null;
-  }
-
-  async responderAsesoria() {
-    if (!this.selectedAsesoria || !this.respuestaForm.respuesta.trim()) {
-      alert('Por favor escribe una respuesta');
-      return;
-    }
-
-    this.respondiendo = true;
-    const estado = this.respuestaForm.accion === 'aprobar' ? 'aprobada' : 'rechazada';
-
-    try {
-      await this.asesoriaService.responderAsesoria(
-        this.selectedAsesoria.id!,
-        estado,
-        this.respuestaForm.respuesta,
-      );
-
-      await this.asesoriaService.enviarNotificacionExterna(this.selectedAsesoria, 'respuesta');
-
-      this.closeAsesoriaModal();
-      alert('Respuesta enviada correctamente');
-    } catch (error) {
-      console.error('Error respondiendo asesoría:', error);
-      alert('Error al enviar la respuesta');
     } finally {
       this.respondiendo = false;
     }
@@ -470,8 +456,9 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     }
   }
 
-  // ========== MÉTODOS PARA GESTIONAR AUSENCIAS ==========
+  // ========== GESTIÓN DE AUSENCIAS ==========
 
+  // Abrir modal para agregar o editar ausencia
   openAusenciaModal(ausencia?: Ausencia) {
     if (!this.isOwner) {
       alert('No tienes permisos para gestionar ausencias en este perfil');
@@ -479,9 +466,11 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     }
 
     if (ausencia) {
+      // Modo edición
       this.selectedAusencia = ausencia;
       this.ausenciaForm = { ...ausencia };
     } else {
+      // Modo creación
       this.selectedAusencia = null;
       this.resetAusenciaForm();
     }
@@ -502,6 +491,7 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     };
   }
 
+  // Guardar ausencia (crear o actualizar)
   async guardarAusencia() {
     if (!this.programador || !this.isOwner) {
       alert('No tienes permisos para realizar esta acción');
@@ -513,7 +503,7 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Validar que la hora de fin sea mayor a la hora de inicio
+    // Validar que la hora de fin sea posterior a la de inicio
     if (this.ausenciaForm.horaInicio! >= this.ausenciaForm.horaFin!) {
       alert('La hora de fin debe ser posterior a la hora de inicio');
       return;
@@ -555,6 +545,7 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     this.loading = false;
   }
 
+  // Eliminar una ausencia registrada
   async eliminarAusencia(ausenciaId: string) {
     if (!this.programador || !this.isOwner) {
       alert('No tienes permisos para realizar esta acción');
@@ -567,6 +558,7 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
 
     this.loading = true;
 
+    // Filtrar la ausencia a eliminar
     const ausencias = (this.programador.ausencias || []).filter(a => a.id !== ausenciaId);
     const success = await this.userService.updateProgramadorAusencias(this.programador.uid, ausencias);
 
@@ -580,6 +572,7 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     this.loading = false;
   }
 
+  // Fecha mínima para ausencias (hoy)
   get minFechaAusencia(): string {
     const today = new Date();
     return today.toISOString().split('T')[0];
