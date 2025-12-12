@@ -7,6 +7,7 @@ import { filter, take } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 import { UserService } from '../services/user.service';
 import { AsesoriaService } from '../services/asesoria.service';
+import { NotificationService } from '../services/notification.service';
 import { Programador, Asesoria } from '../models/user.model';
 
 // Componente para solicitar asesorías y ver mis asesorías
@@ -29,6 +30,12 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
   selectedProgramador: Programador | null = null;
   loading = false;
   enviando = false;
+  
+  // Control de simulación de notificaciones
+  mostrarSimulacion = false;
+  etapaNotificacion: 'enviando' | 'email' | 'whatsapp' | 'completado' | '' = '';
+  contenidoEmail = '';
+  contenidoWhatsApp = '';
 
   // Datos del formulario de solicitud
   formData = {
@@ -50,6 +57,7 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private userService: UserService,
     private asesoriaService: AsesoriaService,
+    private notificationService: NotificationService,
     private router: Router,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
@@ -249,8 +257,22 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
     }
 
     this.enviando = true;
+    this.mostrarSimulacion = true;
+    this.etapaNotificacion = 'enviando';
+    
+    // Log de inicio del proceso
+    console.clear();
+    console.log('%c╔════════════════════════════════════════════════════════════════╗', 'color: #667eea; font-weight: bold; font-size: 16px;');
+    console.log('%c║   🎓 SISTEMA DE GESTIÓN DE ASESORÍAS - SIMULACIÓN DE ENVÍO   ║', 'color: #667eea; font-weight: bold; font-size: 16px;');
+    console.log('%c╚════════════════════════════════════════════════════════════════╝', 'color: #667eea; font-weight: bold; font-size: 16px;');
+    console.log('\n%c🚀 PROCESO INICIADO', 'background: #667eea; color: white; padding: 10px 20px; font-size: 14px; font-weight: bold; border-radius: 5px;');
+    console.log('%cFecha y hora: ' + new Date().toLocaleString('es-ES'), 'color: #7f8c8d; font-style: italic;');
+    
     try {
-      // Crear asesoría en Firestore
+      // Etapa 1: Guardar en Firestore
+      console.log('\n%c📝 ETAPA 1/4: GUARDANDO SOLICITUD EN BASE DE DATOS', 'background: #3498db; color: white; padding: 8px 15px; font-weight: bold; border-radius: 3px;');
+      console.log('%c⏳ Conectando con Firebase Firestore...', 'color: #f39c12; font-weight: bold;');
+      
       const asesoria = await this.asesoriaService.crearAsesoria({
         usuarioUid: user.uid,
         usuarioNombre: user.displayName || 'Usuario',
@@ -265,21 +287,101 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
         estado: 'pendiente',
       });
 
-      // Simulación de envío de notificaciones (email y WhatsApp)
-      console.log('📧 ============ SIMULACIÓN DE NOTIFICACIONES ============');
-      console.log('✅ Solicitud de asesoría enviada al programador');
-      console.log('📨 Correo electrónico redactado y enviado a:', this.selectedProgramador.email);
-      console.log('💬 Mensaje de WhatsApp enviado al programador');
-      console.log('========================================================');
+      console.log('%c✅ Solicitud guardada exitosamente', 'color: #27ae60; font-weight: bold; font-size: 13px;');
+      console.log('%c┌─────────────────────────────────────────────────────────────┐', 'color: #95a5a6;');
+      console.log(`%c│ 🆔 ID Asesoría:   ${asesoria.id}`, 'color: #2c3e50;');
+      console.log(`%c│ 👤 Estudiante:    ${user.displayName}`, 'color: #2c3e50;');
+      console.log(`%c│ 👨‍💻 Programador:   ${this.selectedProgramador.displayName}`, 'color: #2c3e50;');
+      console.log(`%c│ 📋 Tema:          ${this.formData.tema}`, 'color: #2c3e50;');
+      console.log(`%c│ 📅 Fecha:         ${this.formData.fecha}`, 'color: #2c3e50;');
+      console.log(`%c│ 🕐 Hora:          ${this.formData.hora}`, 'color: #2c3e50;');
+      console.log(`%c│ 📊 Estado:        Pendiente`, 'color: #f39c12;');
+      console.log('%c└─────────────────────────────────────────────────────────────┘', 'color: #95a5a6;');
 
-      this.closeModal();
-      alert('¡Solicitud enviada! El programador te responderá pronto.');
+      // Etapa 2: Enviar correo electrónico
+      console.log('\n%c📧 ETAPA 2/4: ENVIANDO CORREO ELECTRÓNICO', 'background: #667eea; color: white; padding: 8px 15px; font-weight: bold; border-radius: 3px;');
+      this.etapaNotificacion = 'email';
+      
+      const resultadoEmail = await this.notificationService.simularEnvioCorreo(
+        this.selectedProgramador,
+        {
+          usuarioNombre: user.displayName || 'Usuario',
+          usuarioEmail: user.email || '',
+          tema: this.formData.tema,
+          descripcion: this.formData.descripcion,
+          comentario: this.formData.comentario,
+          fechaSolicitada: this.formData.fecha,
+          horaSolicitada: this.formData.hora,
+        }
+      );
+      this.contenidoEmail = resultadoEmail.emailContent;
+      
+      // Esperar un momento para que el usuario vea la notificación
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Etapa 3: Enviar WhatsApp
+      console.log('\n%c💬 ETAPA 3/4: ENVIANDO NOTIFICACIÓN VÍA WHATSAPP', 'background: #25D366; color: white; padding: 8px 15px; font-weight: bold; border-radius: 3px;');
+      this.etapaNotificacion = 'whatsapp';
+      
+      const resultadoWhatsApp = await this.notificationService.simularEnvioWhatsApp(
+        this.selectedProgramador,
+        {
+          usuarioNombre: user.displayName || 'Usuario',
+          tema: this.formData.tema,
+          fechaSolicitada: this.formData.fecha,
+          horaSolicitada: this.formData.hora,
+        }
+      );
+      this.contenidoWhatsApp = resultadoWhatsApp.message;
+      
+      // Esperar un momento antes de mostrar completado
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Etapa 4: Completado
+      console.log('\n%c🎉 ETAPA 4/4: PROCESO COMPLETADO', 'background: #27ae60; color: white; padding: 8px 15px; font-weight: bold; border-radius: 3px;');
+      this.etapaNotificacion = 'completado';
+      
+      console.log('\n%c╔════════════════════════════════════════════════════════════════╗', 'color: #27ae60; font-weight: bold; font-size: 14px;');
+      console.log('%c║                    ✅ RESUMEN DEL PROCESO                      ║', 'color: #27ae60; font-weight: bold; font-size: 14px;');
+      console.log('%c╚════════════════════════════════════════════════════════════════╝', 'color: #27ae60; font-weight: bold; font-size: 14px;');
+      console.log('\n%c✓ Solicitud guardada en Firestore', 'color: #27ae60; font-weight: bold;');
+      console.log('%c✓ Correo electrónico enviado al programador', 'color: #27ae60; font-weight: bold;');
+      console.log('%c✓ Notificación WhatsApp enviada', 'color: #27ae60; font-weight: bold;');
+      console.log('\n%c📊 ESTADÍSTICAS:', 'background: #34495e; color: white; padding: 5px 10px; font-weight: bold;');
+      console.log('%c• Total de notificaciones enviadas: 2 (Email + WhatsApp)', 'color: #2c3e50;');
+      console.log('%c• Canales utilizados: Correo electrónico, WhatsApp', 'color: #2c3e50;');
+      console.log('%c• Estado de la solicitud: Pendiente de aprobación', 'color: #2c3e50;');
+      console.log('\n%c💡 PRÓXIMOS PASOS:', 'background: #f39c12; color: white; padding: 5px 10px; font-weight: bold;');
+      console.log('%c1. El programador recibirá las notificaciones', 'color: #2c3e50;');
+      console.log('%c2. Revisará los detalles de la solicitud', 'color: #2c3e50;');
+      console.log('%c3. Aprobará o rechazará la asesoría', 'color: #2c3e50;');
+      console.log('%c4. Recibirás una respuesta por correo', 'color: #2c3e50;');
+      console.log('\n%c' + '═'.repeat(64), 'color: #27ae60; font-weight: bold;');
+      console.log('%c🎓 Gracias por usar el Sistema de Gestión de Asesorías', 'color: #667eea; font-weight: bold; text-align: center;');
+      console.log('%c' + '═'.repeat(64) + '\n', 'color: #27ae60; font-weight: bold;');
+      
+      // Esperar 2 segundos y cerrar
+      setTimeout(() => {
+        this.closeModal();
+        this.cerrarSimulacion();
+      }, 2000);
+      
     } catch (error) {
-      console.error('Error al solicitar asesoría:', error);
+      console.error('%c❌ ERROR EN EL PROCESO', 'background: #e74c3c; color: white; padding: 8px 15px; font-weight: bold; border-radius: 3px;');
+      console.error('%c' + error, 'color: #e74c3c;');
       alert('Error al enviar la solicitud');
+      this.cerrarSimulacion();
     } finally {
       this.enviando = false;
     }
+  }
+  
+  // Cerrar modal de simulación
+  cerrarSimulacion() {
+    this.mostrarSimulacion = false;
+    this.etapaNotificacion = '';
+    this.contenidoEmail = '';
+    this.contenidoWhatsApp = '';
   }
 
   // Obtener color del badge según estado de asesoría

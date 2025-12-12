@@ -867,3 +867,243 @@ select:focus-visible {
   }
 }
 
+/* ========================================
+   ESTILOS PARA MODAL DE SIMULACIÓN DE NOTIFICACIONES
+   ======================================== */
+
+.notification-modal {
+  background: white;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease-out;
+  
+  .notification-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem;
+    border-radius: 16px 16px 0 0;
+    text-align: center;
+    
+    h2 {
+      margin: 0;
+      color: white;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+  }
+  
+  .notification-content {
+    padding: 2rem;
+    
+    .notification-step {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      border-radius: 12px;
+      background: #f8f9fa;
+      transition: all 0.3s ease;
+      
+      &.active {
+        background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+        border: 2px solid #667eea;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+      }
+      
+      &.completed {
+        background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+        border: 2px solid #27ae60;
+        
+        .step-icon {
+          background: #27ae60;
+          
+          svg {
+            stroke: white;
+          }
+        }
+      }
+      
+      .step-icon {
+        width: 48px;
+        height: 48px;
+        min-width: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #667eea;
+        color: white;
+        font-size: 1.5rem;
+        
+        &.loading {
+          background: transparent;
+          border: 3px solid #e0e0e0;
+          border-top-color: #667eea;
+          animation: spin 1s linear infinite;
+        }
+        
+        .spinner {
+          width: 100%;
+          height: 100%;
+        }
+      }
+      
+      .step-content {
+        flex: 1;
+        
+        h3 {
+          margin: 0 0 0.5rem 0;
+          font-size: 1.1rem;
+          color: #2d3748;
+          font-weight: 600;
+        }
+        
+        p {
+          margin: 0.25rem 0;
+          color: #718096;
+          font-size: 0.95rem;
+          line-height: 1.5;
+        }
+        
+        .email-address {
+          color: #667eea;
+          font-weight: 600;
+          font-size: 0.9rem;
+          margin-top: 0.5rem;
+        }
+      }
+    }
+    
+    .notification-success {
+      text-align: center;
+      padding: 2rem;
+      background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+      border-radius: 12px;
+      margin-top: 1.5rem;
+      
+      .success-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        animation: bounce 0.6s ease-in-out;
+      }
+      
+      h3 {
+        color: #27ae60;
+        font-size: 1.3rem;
+        margin: 0 0 1rem 0;
+        font-weight: 700;
+      }
+      
+      p {
+        color: #2d3748;
+        margin: 0.5rem 0;
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+      
+      .success-note {
+        color: #718096;
+        font-size: 0.9rem;
+        font-style: italic;
+        margin-top: 1rem;
+      }
+    }
+  }
+  
+  .notification-footer {
+    padding: 1.5rem 2rem;
+    border-top: 1px solid #e0e0e0;
+    text-align: center;
+    
+    .btn {
+      min-width: 150px;
+      padding: 0.75rem 2rem;
+      font-weight: 600;
+    }
+  }
+}
+
+/* Animación de spinner */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Animación de bounce para el icono de éxito */
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  25% { transform: translateY(-15px); }
+  50% { transform: translateY(0); }
+  75% { transform: translateY(-7px); }
+}
+
+/* Animación de entrada del modal */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive para modal de notificaciones */
+@media (max-width: 768px) {
+  .notification-modal {
+    width: 95%;
+    max-height: 90vh;
+    
+    .notification-header {
+      padding: 1.5rem;
+      
+      h2 {
+        font-size: 1.25rem;
+      }
+    }
+    
+    .notification-content {
+      padding: 1.5rem;
+      
+      .notification-step {
+        padding: 0.75rem;
+        
+        .step-icon {
+          width: 40px;
+          height: 40px;
+          min-width: 40px;
+        }
+        
+        .step-content {
+          h3 {
+            font-size: 1rem;
+          }
+          
+          p {
+            font-size: 0.85rem;
+          }
+        }
+      }
+      
+      .notification-success {
+        padding: 1.5rem;
+        
+        .success-icon {
+          font-size: 3rem;
+        }
+        
+        h3 {
+          font-size: 1.1rem;
+        }
+        
+        p {
+          font-size: 0.9rem;
+        }
+      }
+    }
+  }
+}

@@ -396,4 +396,141 @@
     </div>
     </div>
   }
+  
+  <!-- Modal de Simulación de Notificaciones -->
+  @if (mostrarSimulacion) {
+    <div class="modal-overlay" (click)="cerrarSimulacion()">
+      <div class="notification-modal" (click)="$event.stopPropagation()">
+        <div class="notification-header">
+          <h2>📨 Enviando Notificaciones</h2>
+        </div>
+        
+        <div class="notification-content">
+          <!-- Etapa: Enviando -->
+          @if (etapaNotificacion === 'enviando') {
+            <div class="notification-step active">
+              <div class="step-icon loading">
+                <div class="spinner"></div>
+              </div>
+              <div class="step-content">
+                <h3>⏳ Procesando solicitud...</h3>
+                <p>Guardando tu solicitud de asesoría en el sistema</p>
+              </div>
+            </div>
+          }
+          
+          <!-- Etapa: Email -->
+          @if (etapaNotificacion === 'email') {
+            <div class="notification-step completed">
+              <div class="step-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <div class="step-content">
+                <h3>✅ Solicitud guardada</h3>
+              </div>
+            </div>
+            
+            <div class="notification-step active">
+              <div class="step-icon loading">
+                <div class="spinner"></div>
+              </div>
+              <div class="step-content">
+                <h3>📧 Enviando correo electrónico...</h3>
+                <p>Notificando al programador {{selectedProgramador?.displayName}}</p>
+                <p class="email-address">📬 {{selectedProgramador?.email}}</p>
+              </div>
+            </div>
+          }
+          
+          <!-- Etapa: WhatsApp -->
+          @if (etapaNotificacion === 'whatsapp') {
+            <div class="notification-step completed">
+              <div class="step-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <div class="step-content">
+                <h3>✅ Correo enviado exitosamente</h3>
+              </div>
+            </div>
+            
+            <div class="notification-step completed">
+              <div class="step-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <div class="step-content">
+                <h3>✅ Correo enviado</h3>
+              </div>
+            </div>
+            
+            <div class="notification-step active">
+              <div class="step-icon loading">
+                <div class="spinner"></div>
+              </div>
+              <div class="step-content">
+                <h3>💬 Enviando mensaje WhatsApp...</h3>
+                <p>Enviando notificación adicional al programador</p>
+              </div>
+            </div>
+          }
+          
+          <!-- Etapa: Completado -->
+          @if (etapaNotificacion === 'completado') {
+            <div class="notification-step completed">
+              <div class="step-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <div class="step-content">
+                <h3>✅ Solicitud guardada</h3>
+              </div>
+            </div>
+            
+            <div class="notification-step completed">
+              <div class="step-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <div class="step-content">
+                <h3>✅ Correo enviado</h3>
+              </div>
+            </div>
+            
+            <div class="notification-step completed">
+              <div class="step-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <div class="step-content">
+                <h3>✅ WhatsApp enviado</h3>
+              </div>
+            </div>
+            
+            <div class="notification-success">
+              <div class="success-icon">🎉</div>
+              <h3>¡Notificaciones enviadas con éxito!</h3>
+              <p>El programador {{selectedProgramador?.displayName}} ha sido notificado por correo y WhatsApp.</p>
+              <p class="success-note">Te responderá pronto con la confirmación.</p>
+            </div>
+          }
+        </div>
+        
+        @if (etapaNotificacion === 'completado') {
+          <div class="notification-footer">
+            <button class="btn btn-primary" (click)="cerrarSimulacion()">
+              Entendido
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  }
 </div>

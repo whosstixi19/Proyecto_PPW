@@ -77,6 +77,11 @@ Sistema web desarrollado con Angular para la gestion de portafolios de programad
   - `getAsesoriasRespondidasRealtime()`: Notificaciones para usuarios
   - `enviarNotificacionExterna()`: Placeholder para emails/WhatsApp
 - **CacheService**: Optimizacion de carga con localStorage (5 min TTL)
+- **NotificationService**: 🆕 Simulacion de envio de notificaciones
+  - `simularEnvioCorreo()`: Simula envio de correos electronicos
+  - `simularEnvioWhatsApp()`: Simula envio de mensajes WhatsApp
+  - Genera contenido HTML profesional para emails
+  - Muestra todo el proceso en la consola del navegador con colores y formato
 
 ### Guards
 
@@ -132,6 +137,32 @@ npm start
 ```bash
 npm run build
 ```
+
+## 🔍 Ver Simulacion de Notificaciones
+
+El sistema incluye una simulacion completa del envio de notificaciones (correo y WhatsApp) cuando se solicita una asesoria.
+
+### Como Ver la Simulacion:
+
+1. **Abre la consola del navegador:**
+   - Presiona `F12` o `Ctrl + Shift + I`
+   - Ve a la pestaña **Console**
+
+2. **Solicita una asesoria:**
+   - Ve a "Solicitar Asesoria"
+   - Selecciona un programador
+   - Completa el formulario
+   - Haz clic en "Enviar Solicitud"
+
+3. **Observa en la consola:**
+   - Proceso completo con 4 etapas
+   - Colores y formato profesional
+   - Contenido del correo HTML
+   - Mensaje de WhatsApp
+   - Estadisticas y resumen
+
+📚 **Ver guia completa:** [`GUIA_CONSOLA_NAVEGADOR.md`](GUIA_CONSOLA_NAVEGADOR.md)
+📖 **Documentacion tecnica:** [`SIMULACION_NOTIFICACIONES.md`](SIMULACION_NOTIFICACIONES.md)
 
 ## Scripts Disponibles
 
