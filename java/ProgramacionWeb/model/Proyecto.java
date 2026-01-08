@@ -1,59 +1,54 @@
-package modelo;
+package ec.edu.ups.ProgramacionWeb.model;
 
 import java.util.Date;
 import java.util.List;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 @Entity
-@Table(name = "proyectos")
+@Table(name="Tabla_proyecto")
 public class Proyecto {
-    // Atributos
+    
     @Id
-    @Column(name = "id", length = 50)
+    @Column(name="pro_id", length=50)
     private String id;
     
-    @Column(name = "nombre", length = 150, nullable = false)
+    @Column(name="pro_nombre", length=200)
     private String nombre;
     
-    @Column(name = "descripcion", columnDefinition = "TEXT")
+    @Column(name="pro_descripcion", length=500)
     private String descripcion;
     
-    @Column(name = "tipo", length = 50)
+    @Column(name="pro_tipo", length=50)
     private String tipo;
     
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "proyecto_participacion", joinColumns = @JoinColumn(name = "proyecto_id"))
-    @Column(name = "participante")
+    @ElementCollection
     private List<String> participacion;
     
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "proyecto_tecnologias", joinColumns = @JoinColumn(name = "proyecto_id"))
-    @Column(name = "tecnologia")
+    @ElementCollection
     private List<String> tecnologias;
     
-    @Column(name = "repositorio", length = 255)
+    @Column(name="pro_repositorio", length=300)
     private String repositorio;
     
-    @Column(name = "demo", length = 255)
+    @Column(name="pro_demo", length=300)
     private String demo;
     
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "proyecto_imagenes", joinColumns = @JoinColumn(name = "proyecto_id"))
-    @Column(name = "imagen", length = 255)
+    @ElementCollection
     private List<String> imagenes;
     
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "fecha_creacion")
+    @Temporal(TemporalType.DATE)
+    @Column(name="pro_fecha_creacion")
     private Date fechaCreacion;
-    
-    @ManyToMany(mappedBy = "proyectos", fetch = FetchType.LAZY)
-    private List<Programador> programadores;
 
-    // Constructor vacío
     public Proyecto() {
     }
 
-    // Constructor con parámetros
     public Proyecto(String id, String nombre, String descripcion, String tipo,
                     List<String> participacion, List<String> tecnologias, Date fechaCreacion) {
         this.id = id;
@@ -65,7 +60,6 @@ public class Proyecto {
         this.fechaCreacion = fechaCreacion;
     }
 
-    // Getters y Setters
     public String getId() {
         return id;
     }
@@ -144,13 +138,5 @@ public class Proyecto {
 
     public void setFechaCreacion(Date fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
-    }
-
-    public List<Programador> getProgramadores() {
-        return programadores;
-    }
-
-    public void setProgramadores(List<Programador> programadores) {
-        this.programadores = programadores;
     }
 }

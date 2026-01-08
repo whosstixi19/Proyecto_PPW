@@ -1,68 +1,64 @@
-package modelo;
+package ec.edu.ups.ProgramacionWeb.model;
 
 import java.util.Date;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 @Entity
-@Table(name = "asesorias")
+@Table(name="Tabla_asesoria")
 public class Asesoria {
-    // Atributos
+    
     @Id
-    @Column(name = "id", length = 50)
+    @Column(name="ase_id", length=50)
     private String id;
     
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_uid", referencedColumnName = "uid")
-    private Usuario usuario;
-    
-    @Column(name = "usuario_nombre", length = 100)
-    private String usuarioNombre;
-    
-    @Column(name = "usuario_email", length = 100)
-    private String usuarioEmail;
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "programador_uid", referencedColumnName = "uid")
-    private Programador programador;
-    
-    @Column(name = "programador_nombre", length = 100)
-    private String programadorNombre;
-    
-    @Column(name = "tema", length = 100)
-    private String tema;
-    
-    @Column(name = "descripcion", columnDefinition = "TEXT")
-    private String descripcion;
-    
-    @Column(name = "comentario", columnDefinition = "TEXT")
-    private String comentario;
-    
-    @Column(name = "fecha_solicitada", length = 20)
-    private String fechaSolicitada;
-    
-    @Column(name = "hora_solicitada", length = 10)
-    private String horaSolicitada;
-    
-    @Column(name = "estado", length = 20)
-    private String estado;
-    
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "fecha")
-    private Date fecha;
-    
-    @Column(name = "respuesta", columnDefinition = "TEXT")
-    private String respuesta;
-    
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "fecha_respuesta")
-    private Date fechaRespuesta;
-    
-    // Mantener UIDs para compatibilidad con Firebase
-    @Transient
+    @Column(name="ase_usuario_uid", length=100)
     private String usuarioUid;
     
-    @Transient
+    @Column(name="ase_usuario_nombre", length=100)
+    private String usuarioNombre;
+    
+    @Column(name="ase_usuario_email", length=100)
+    private String usuarioEmail;
+    
+    @Column(name="ase_programador_uid", length=100)
     private String programadorUid;
+    
+    @Column(name="ase_programador_nombre", length=100)
+    private String programadorNombre;
+    
+    @Column(name="ase_tema", length=200)
+    private String tema;
+    
+    @Column(name="ase_descripcion", length=500)
+    private String descripcion;
+    
+    @Column(name="ase_comentario", length=500)
+    private String comentario;
+    
+    @Column(name="ase_fecha_solicitada", length=20)
+    private String fechaSolicitada;
+    
+    @Column(name="ase_hora_solicitada", length=20)
+    private String horaSolicitada;
+    
+    @Column(name="ase_estado", length=50)
+    private String estado;
+    
+    @Temporal(TemporalType.DATE)
+    @Column(name="ase_fecha")
+    private Date fecha;
+    
+    @Column(name="ase_respuesta", length=500)
+    private String respuesta;
+    
+    @Temporal(TemporalType.DATE)
+    @Column(name="ase_fecha_respuesta")
+    private Date fechaRespuesta;
 
     // Constructor vacío
     public Asesoria() {
@@ -94,17 +90,6 @@ public class Asesoria {
         this.id = id;
     }
 
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-        if (usuario != null) {
-            this.usuarioUid = usuario.getUid();
-        }
-    }
-
     public String getUsuarioUid() {
         return usuarioUid;
     }
@@ -127,17 +112,6 @@ public class Asesoria {
 
     public void setUsuarioEmail(String usuarioEmail) {
         this.usuarioEmail = usuarioEmail;
-    }
-
-    public Programador getProgramador() {
-        return programador;
-    }
-
-    public void setProgramador(Programador programador) {
-        this.programador = programador;
-        if (programador != null) {
-            this.programadorUid = programador.getUid();
-        }
     }
 
     public String getProgramadorUid() {

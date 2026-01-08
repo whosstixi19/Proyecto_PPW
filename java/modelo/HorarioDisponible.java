@@ -1,11 +1,30 @@
 package modelo;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "horarios_disponibles")
 public class HorarioDisponible {
     // Atributos
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+    
+    @Column(name = "dia", length = 20, nullable = false)
     private String dia;
+    
+    @Column(name = "hora_inicio", length = 10)
     private String horaInicio;
+    
+    @Column(name = "hora_fin", length = 10)
     private String horaFin;
+    
+    @Column(name = "activo")
     private boolean activo;
+    
+    @Column(name = "programador_uid", length = 50)
+    private String programadorUid;
 
     // Constructor vacío
     public HorarioDisponible() {
@@ -50,5 +69,21 @@ public class HorarioDisponible {
 
     public void setActivo(boolean activo) {
         this.activo = activo;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getProgramadorUid() {
+        return programadorUid;
+    }
+
+    public void setProgramadorUid(String programadorUid) {
+        this.programadorUid = programadorUid;
     }
 }

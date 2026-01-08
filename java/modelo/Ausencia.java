@@ -1,12 +1,29 @@
 package modelo;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "ausencias")
 public class Ausencia {
     // Atributos
+    @Id
+    @Column(name = "id", length = 50)
     private String id;
+    
+    @Column(name = "fecha", length = 20)
     private String fecha;
+    
+    @Column(name = "hora_inicio", length = 10)
     private String horaInicio;
+    
+    @Column(name = "hora_fin", length = 10)
     private String horaFin;
+    
+    @Column(name = "motivo", columnDefinition = "TEXT")
     private String motivo;
+    
+    @Column(name = "programador_uid", length = 50)
+    private String programadorUid;
 
     // Constructor vacío
     public Ausencia() {
@@ -60,5 +77,13 @@ public class Ausencia {
 
     public void setMotivo(String motivo) {
         this.motivo = motivo;
+    }
+
+    public String getProgramadorUid() {
+        return programadorUid;
+    }
+
+    public void setProgramadorUid(String programadorUid) {
+        this.programadorUid = programadorUid;
     }
 }

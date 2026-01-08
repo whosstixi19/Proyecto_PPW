@@ -2,17 +2,45 @@ package modelo;
 
 import java.util.Date;
 import java.util.List;
+import jakarta.persistence.*;
 
+@Entity
+@Table(name = "programadores")
+@PrimaryKeyJoinColumn(name = "uid")
 public class Programador extends Usuario {
     // Atributos específicos del Programador
+    @Column(name = "especialidad", length = 100)
     private String especialidad;
+    
+    @Column(name = "descripcion", columnDefinition = "TEXT")
     private String descripcion;
+    
+    @Column(name = "github", length = 100)
     private String github;
+    
+    @Column(name = "linkedin", length = 100)
     private String linkedin;
+    
+    @Column(name = "twitter", length = 100)
     private String twitter;
+    
+    @Column(name = "portfolio", length = 255)
     private String portfolio;
+    
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "programador_proyecto",
+        joinColumns = @JoinColumn(name = "programador_uid"),
+        inverseJoinColumns = @JoinColumn(name = "proyecto_id")
+    )
     private List<Proyecto> proyectos;
+    
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "programador_uid")
     private List<HorarioDisponible> horariosDisponibles;
+    
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "programador_uid")
     private List<Ausencia> ausencias;
 
     // Constructor vacío
