@@ -24,6 +24,7 @@ public class Programador extends Usuario {
     @Column(name = "twitter", length = 100)
     private String twitter;
     
+    
     @Column(name = "portfolio", length = 255)
     private String portfolio;
     
