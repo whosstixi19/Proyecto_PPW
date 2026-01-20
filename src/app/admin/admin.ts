@@ -216,6 +216,7 @@ export class AdminComponent implements OnInit {
           dia: dia as any,
           horaInicio: '09:00',
           horaFin: '17:00',
+          modalidad: 'virtual' as const,
           activo: false,
         };
       }

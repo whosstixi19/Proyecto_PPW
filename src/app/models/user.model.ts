@@ -15,6 +15,7 @@ export interface HorarioDisponible {
   dia: 'lunes' | 'martes' | 'miercoles' | 'jueves' | 'viernes' | 'sabado' | 'domingo';
   horaInicio: string; // Formato "HH:mm"
   horaFin: string; // Formato "HH:mm"
+  modalidad: 'presencial' | 'virtual' | 'hibrida';
   activo: boolean;
 }
 
