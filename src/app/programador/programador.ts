@@ -7,9 +7,9 @@ import { filter, take } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 import { UserService } from '../services/user.service';
 import { AsesoriaService } from '../services/asesoria.service';
-import { Programador, Proyecto, Asesoria, Ausencia } from '../models/user.model';
+import { Programador, Proyecto, Asesoria, Ausencia, HorarioDisponible } from '../models/user.model';
 
-// Componente de perfil del programador - Gestión de proyectos, asesorías y ausencias
+// Componente de perfil del programador - Gestión de proyectos, asesorías, ausencias y horarios
 @Component({
   selector: 'app-programador',
   imports: [CommonModule, FormsModule],
@@ -28,12 +28,14 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
   showModal = false;
   showRechazarModal = false;
   mostrarAusenciaModal = false;
+  mostrarHorariosModal = false;
   mostrarNotificaciones = false;
   
   // Elementos seleccionados en modales
   selectedProyecto: Proyecto | null = null;
   selectedAsesoria: Asesoria | null = null;
   selectedAusencia: Ausencia | null = null;
+  selectedHorario: HorarioDisponible | null = null;
   
   loading = false;
   respondiendo = false;
@@ -42,10 +44,21 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
   // Indica si el usuario actual es dueño del perfil (puede editar)
   isOwner = false;
   
-  // Horas disponibles para configurar ausencias
+  // Horas disponibles para configurar ausencias y horarios
   horasDisponibles: string[] = [
     '08:00', '09:00', '10:00', '11:00', '12:00',
     '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'
+  ];
+  
+  // Días de la semana para horarios
+  diasSemana: Array<{value: string, label: string}> = [
+    { value: 'lunes', label: 'Lunes' },
+    { value: 'martes', label: 'Martes' },
+    { value: 'miercoles', label: 'Miércoles' },
+    { value: 'jueves', label: 'Jueves' },
+    { value: 'viernes', label: 'Viernes' },
+    { value: 'sabado', label: 'Sábado' },
+    { value: 'domingo', label: 'Domingo' },
   ];
 
   // Formulario para gestionar ausencias
@@ -54,6 +67,15 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     horaInicio: '',
     horaFin: '',
     motivo: '',
+  };
+  
+  // Formulario para gestionar horarios de disponibilidad
+  horarioForm: Partial<HorarioDisponible> = {
+    dia: 'lunes',
+    horaInicio: '08:00',
+    horaFin: '09:00',
+    modalidad: 'virtual',
+    activo: true,
   };
 
   // Suscripción a asesorías en tiempo real
@@ -576,5 +598,152 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
   get minFechaAusencia(): string {
     const today = new Date();
     return today.toISOString().split('T')[0];
+  }
+
+  // ========== GESTIÓN DE HORARIOS DE DISPONIBILIDAD ==========
+
+  // Abrir modal para agregar o editar horario de disponibilidad
+  openHorariosModal(horario?: HorarioDisponible) {
+    if (!this.isOwner) {
+      alert('No tienes permisos para gestionar horarios en este perfil');
+      return;
+    }
+
+    if (horario) {
+      // Modo edición
+      this.selectedHorario = horario;
+      this.horarioForm = { ...horario };
+    } else {
+      // Modo creación
+      this.selectedHorario = null;
+      this.resetHorarioForm();
+    }
+    this.mostrarHorariosModal = true;
+  }
+
+  closeHorariosModal() {
+    this.mostrarHorariosModal = false;
+    this.resetHorarioForm();
+  }
+
+  resetHorarioForm() {
+    this.horarioForm = {
+      dia: 'lunes',
+      horaInicio: '08:00',
+      horaFin: '09:00',
+      modalidad: 'virtual',
+      activo: true,
+    };
+  }
+
+  // Guardar horario de disponibilidad (crear o actualizar)
+  async guardarHorario() {
+    if (!this.programador || !this.isOwner) {
+      alert('No tienes permisos para realizar esta acción');
+      return;
+    }
+
+    if (!this.horarioForm.dia || !this.horarioForm.horaInicio || !this.horarioForm.horaFin || !this.horarioForm.modalidad) {
+      alert('Todos los campos son requeridos');
+      return;
+    }
+
+    // Validar que la hora de fin sea posterior a la de inicio
+    const horaInicio = parseInt(this.horarioForm.horaInicio!.split(':')[0]);
+    const horaFin = parseInt(this.horarioForm.horaFin!.split(':')[0]);
+
+    if (horaFin <= horaInicio) {
+      alert('La hora de fin debe ser posterior a la hora de inicio');
+      return;
+    }
+
+    this.loading = true;
+
+    const horarioData: HorarioDisponible = {
+      dia: this.horarioForm.dia as any,
+      horaInicio: this.horarioForm.horaInicio!,
+      horaFin: this.horarioForm.horaFin!,
+      modalidad: this.horarioForm.modalidad as any,
+      activo: this.horarioForm.activo ?? true,
+    };
+
+    let horarios = this.programador.horariosDisponibles || [];
+
+    if (this.selectedHorario) {
+      // Editar horario existente
+      const index = horarios.findIndex(h => 
+        h.dia === this.selectedHorario!.dia && 
+        h.horaInicio === this.selectedHorario!.horaInicio
+      );
+      if (index > -1) {
+        horarios[index] = horarioData;
+      }
+    } else {
+      // Verificar que no exista conflicto con horarios existentes
+      const conflicto = horarios.find(h => 
+        h.dia === horarioData.dia && 
+        this.hayConflictoHorario(h, horarioData)
+      );
+
+      if (conflicto) {
+        alert(`Ya existe un horario configurado para ${horarioData.dia} que se solapa con el horario seleccionado`);
+        this.loading = false;
+        return;
+      }
+
+      horarios.push(horarioData);
+    }
+
+    const success = await this.userService.updateHorarios(this.programador.uid, horarios);
+
+    if (success) {
+      await this.loadProgramador();
+      this.closeHorariosModal();
+      alert('Horario guardado correctamente');
+    } else {
+      alert('Error al guardar el horario');
+    }
+
+    this.loading = false;
+  }
+
+  // Eliminar un horario de disponibilidad
+  async eliminarHorario(dia: string, horaInicio: string) {
+    if (!this.programador || !this.isOwner) {
+      alert('No tienes permisos para realizar esta acción');
+      return;
+    }
+
+    if (!confirm(`¿Estás seguro de eliminar el horario del ${dia}?`)) {
+      return;
+    }
+
+    this.loading = true;
+
+    // Filtrar el horario a eliminar
+    const horarios = (this.programador.horariosDisponibles || []).filter(h => 
+      !(h.dia === dia && h.horaInicio === horaInicio)
+    );
+    
+    const success = await this.userService.updateHorarios(this.programador.uid, horarios);
+
+    if (success) {
+      await this.loadProgramador();
+      alert('Horario eliminado correctamente');
+    } else {
+      alert('Error al eliminar el horario');
+    }
+
+    this.loading = false;
+  }
+
+  // Verificar si dos horarios tienen conflicto (se solapan)
+  private hayConflictoHorario(h1: HorarioDisponible, h2: HorarioDisponible): boolean {
+    const inicio1 = parseInt(h1.horaInicio.split(':')[0]);
+    const fin1 = parseInt(h1.horaFin.split(':')[0]);
+    const inicio2 = parseInt(h2.horaInicio.split(':')[0]);
+    const fin2 = parseInt(h2.horaFin.split(':')[0]);
+
+    return (inicio1 < fin2 && fin1 > inicio2);
   }
 }
