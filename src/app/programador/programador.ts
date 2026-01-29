@@ -368,6 +368,10 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     this.router.navigate(['/inicio']);
   }
 
+  goToDashboard() {
+    this.router.navigate(['/dashboard']);
+  }
+
   // Alternar panel de notificaciones
   toggleNotificaciones() {
     this.mostrarNotificaciones = !this.mostrarNotificaciones;

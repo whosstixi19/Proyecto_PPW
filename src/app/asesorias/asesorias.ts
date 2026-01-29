@@ -431,6 +431,10 @@ export class AsesoriasComponent implements OnInit, OnDestroy {
     this.router.navigate(['/inicio']);
   }
 
+  goToDashboard() {
+    this.router.navigate(['/dashboard']);
+  }
+
   goToPortafolios() {
     this.router.navigate(['/portafolios']);
   }

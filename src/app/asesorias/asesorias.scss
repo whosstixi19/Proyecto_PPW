@@ -679,6 +679,17 @@
     }
   }
 
+  &.btn-info {
+    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+    color: white;
+    border: none;
+
+    &:hover:not(:disabled) {
+      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.4);
+      background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+    }
+  }
+
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;

@@ -64,6 +64,18 @@ export class AsesoriaService {
     })) as Asesoria[];
   }
 
+  // Obtener todas las asesorías de un programador (todas las estados)
+  async getAllAsesoriasProgramador(programadorUid: string): Promise<Asesoria[]> {
+    const asesoriasRef = collection(this.firestore, 'asesorias');
+    const q = query(asesoriasRef, where('programadorUid', '==', programadorUid));
+    const snapshot = await getDocs(q);
+
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as Asesoria[];
+  }
+
   // Aprobar o rechazar una asesoría
   async responderAsesoria(
     asesoriaId: string,

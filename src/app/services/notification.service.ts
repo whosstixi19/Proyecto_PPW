@@ -35,21 +35,21 @@ export class NotificationService {
         const emailContent = this.generarContenidoCorreo(programador, asesoria);
 
         // Mostrar en consola con estilos (simulación)
-        console.log('\n%c╔═══════════════════════════════════════════════════════════════╗', 'color: #667eea; font-weight: bold;');
-        console.log('%c║           📧 CORREO ELECTRÓNICO ENVIADO CON ÉXITO           ║', 'color: #667eea; font-weight: bold;');
+        console.log('\n%c╔══════════════════════════════════════════════════════════════╗', 'color: #667eea; font-weight: bold;');
+        console.log('%c║            CORREO ELECTRÓNICO ENVIADO CON ÉXITO           ║', 'color: #667eea; font-weight: bold;');
         console.log('%c╚═══════════════════════════════════════════════════════════════╝', 'color: #667eea; font-weight: bold;');
         
-        console.log('\n%c📤 DATOS DEL ENVÍO:', 'background: #27ae60; color: white; padding: 5px 10px; font-weight: bold;');
+        console.log('\n%c DATOS DEL ENVÍO:', 'background: #27ae60; color: white; padding: 5px 10px; font-weight: bold;');
         console.log('%c┌─────────────────────────────────────────────────────────────┐', 'color: #95a5a6;');
-        console.log(`%c│ 👤 Destinatario: ${programador.displayName}`, 'color: #2c3e50; font-weight: bold;');
-        console.log(`%c│ 📧 Email:        ${programador.email}`, 'color: #2c3e50;');
-        console.log(`%c│ 📋 Asunto:       Nueva solicitud de asesoría - ${asesoria.tema}`, 'color: #2c3e50;');
-        console.log(`%c│ 👨‍💼 Remitente:    ${asesoria.usuarioNombre}`, 'color: #2c3e50;');
-        console.log(`%c│ 📅 Fecha:        ${asesoria.fechaSolicitada}`, 'color: #2c3e50;');
-        console.log(`%c│ 🕐 Hora:         ${asesoria.horaSolicitada}`, 'color: #2c3e50;');
+        console.log(`%c│  Destinatario: ${programador.displayName}`, 'color: #2c3e50; font-weight: bold;');
+        console.log(`%c│  Email:        ${programador.email}`, 'color: #2c3e50;');
+        console.log(`%c│  Asunto:       Nueva solicitud de asesoría - ${asesoria.tema}`, 'color: #2c3e50;');
+        console.log(`%c│  Remitente:    ${asesoria.usuarioNombre}`, 'color: #2c3e50;');
+        console.log(`%c│  Fecha:        ${asesoria.fechaSolicitada}`, 'color: #2c3e50;');
+        console.log(`%c│  Hora:         ${asesoria.horaSolicitada}`, 'color: #2c3e50;');
         console.log('%c└─────────────────────────────────────────────────────────────┘', 'color: #95a5a6;');
         
-        console.log('\n%c📝 CONTENIDO DEL CORREO:', 'background: #3498db; color: white; padding: 5px 10px; font-weight: bold;');
+        console.log('\n%c CONTENIDO DEL CORREO:', 'background: #3498db; color: white; padding: 5px 10px; font-weight: bold;');
         console.log('%c┌─────────────────────────────────────────────────────────────┐', 'color: #95a5a6;');
         console.log(`%c│ Tema:        ${asesoria.tema}`, 'color: #34495e;');
         console.log(`%c│ Descripción: ${asesoria.descripcion}`, 'color: #34495e;');
@@ -58,8 +58,8 @@ export class NotificationService {
         }
         console.log('%c└─────────────────────────────────────────────────────────────┘', 'color: #95a5a6;');
         
-        console.log('\n%c✅ ESTADO: Correo enviado exitosamente', 'background: #27ae60; color: white; padding: 8px 15px; font-size: 13px; font-weight: bold; border-radius: 3px;');
-        console.log('%c⏱️  Tiempo de envío simulado: ' + (delay / 1000).toFixed(2) + 's', 'color: #7f8c8d;');
+        console.log('\n%c ESTADO: Correo enviado exitosamente', 'background: #27ae60; color: white; padding: 8px 15px; font-size: 13px; font-weight: bold; border-radius: 3px;');
+        console.log('%c⏱  Tiempo de envío simulado: ' + (delay / 1000).toFixed(2) + 's', 'color: #7f8c8d;');
         console.log('%c═══════════════════════════════════════════════════════════════\n', 'color: #667eea; font-weight: bold;');
 
         resolve({
@@ -178,9 +178,9 @@ export class NotificationService {
       const delay = Math.random() * 800 + 500;
 
       // Mostrar inicio del proceso
-      console.log('\n%c💬 INICIANDO ENVÍO DE CORREO...', 
+      console.log('\n%c INICIANDO ENVÍO DE CORREO...', 
         'background: #25D366; color: white; padding: 10px 20px; font-size: 14px; font-weight: bold; border-radius: 5px;');
-      console.log('%c⏳ Conectando con API de CORREO...', 'color: #f39c12; font-weight: bold;');
+      console.log('%c Conectando con API de CORREO...', 'color: #f39c12; font-weight: bold;');
 
       setTimeout(() => {
         const mensaje = `
@@ -197,15 +197,15 @@ ${asesoria.usuarioNombre} ha solicitado una asesoría contigo.
         `.trim();
 
         console.log('\n%c╔═══════════════════════════════════════════════════════════════╗', 'color: #25D366; font-weight: bold;');
-        console.log('%c║              💬 CORREO ENVIADO CON ÉXITO                   ║', 'color: #25D366; font-weight: bold;');
+        console.log('%c║               CORREO ENVIADO CON ÉXITO                   ║', 'color: #25D366; font-weight: bold;');
         console.log('%c╚═══════════════════════════════════════════════════════════════╝', 'color: #25D366; font-weight: bold;');
-        console.log('\n%c📱 DATOS DEL ENVÍO:', 'background: #128C7E; color: white; padding: 5px 10px; font-weight: bold;');
+        console.log('\n%c DATOS DEL ENVÍO:', 'background: #128C7E; color: white; padding: 5px 10px; font-weight: bold;');
         console.log('%c┌─────────────────────────────────────────────────────────────┐', 'color: #95a5a6;');
-        console.log(`%c│ 👤 Destinatario:  ${programador.displayName}`, 'color: #2c3e50; font-weight: bold;');
-        console.log(`%c│ 👨‍💼 Remitente:     ${asesoria.usuarioNombre}`, 'color: #2c3e50;');
-        console.log(`%c│ 📋 Tipo:          Notificación de Asesoría`, 'color: #2c3e50;');
+        console.log(`%c│  Destinatario:  ${programador.displayName}`, 'color: #2c3e50; font-weight: bold;');
+        console.log(`%c│  Remitente:     ${asesoria.usuarioNombre}`, 'color: #2c3e50;');
+        console.log(`%c│  Tipo:          Notificación de Asesoría`, 'color: #2c3e50;');
         console.log('%c└─────────────────────────────────────────────────────────────┘', 'color: #95a5a6;');
-        console.log('\n%c💬 CONTENIDO DEL MENSAJE:', 'background: #25D366; color: white; padding: 5px 10px; font-weight: bold;');
+        console.log('\n%c CONTENIDO DEL MENSAJE:', 'background: #25D366; color: white; padding: 5px 10px; font-weight: bold;');
         console.log('%c╭─────────────────────────────────────────────────────────────╮', 'color: #25D366;');
         const lines = mensaje.split('\n');
         lines.forEach(line => {
@@ -215,8 +215,8 @@ ${asesoria.usuarioNombre} ha solicitado una asesoría contigo.
         });
         console.log('%c╰─────────────────────────────────────────────────────────────╯', 'color: #25D366;');
         
-        console.log('%c⏱️  Tiempo de envío simulado: ' + (delay / 1000).toFixed(2) + 's', 'color: #7f8c8d;');
-        console.log('%c🔔 El programador recibirá una notificación push en su dispositivo', 'color: #7f8c8d; font-style: italic;');
+        console.log('%c  Tiempo de envío simulado: ' + (delay / 1000).toFixed(2) + 's', 'color: #7f8c8d;');
+        console.log('%c El programador recibirá una notificación push en su dispositivo', 'color: #7f8c8d; font-style: italic;');
         console.log('%c═══════════════════════════════════════════════════════════════\n', 'color: #25D366; font-weight: bold;');
 
         resolve({

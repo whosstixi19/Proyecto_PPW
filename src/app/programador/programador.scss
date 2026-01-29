@@ -1198,6 +1198,15 @@
   background-color: rgba(99, 102, 241, 0.05);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
+.btn-info {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  color: white;
+  border: none;
+}
+.btn-info:hover:not(:disabled) {
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.4);
+  background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+}
 .btn-danger {
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: white;
