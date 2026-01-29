@@ -29,6 +29,9 @@ importers:
       '@angular/router':
         specifier: ^20.3.0
         version: 20.3.15(@angular/common@20.3.15(@angular/core@20.3.15(@angular/compiler@20.3.15)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@20.3.15(@angular/compiler@20.3.15)(rxjs@7.8.2))(@angular/platform-browser@20.3.15(@angular/common@20.3.15(@angular/core@20.3.15(@angular/compiler@20.3.15)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@20.3.15(@angular/compiler@20.3.15)(rxjs@7.8.2)))(rxjs@7.8.2)
+      '@emailjs/browser':
+        specifier: ^4.4.1
+        version: 4.4.1
       chart.js:
         specifier: ^4.5.1
         version: 4.5.1
@@ -388,6 +391,10 @@ packages:
   '@colors/colors@1.5.0':
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
     engines: {node: '>=0.1.90'}
+
+  '@emailjs/browser@4.4.1':
+    resolution: {integrity: sha512-DGSlP9sPvyFba3to2A50kDtZ+pXVp/0rhmqs2LmbMS3I5J8FSOgLwzY2Xb4qfKlOVHh29EAutLYwe5yuEZmEFg==}
+    engines: {node: '>=14.0.0'}
 
   '@esbuild/aix-ppc64@0.25.9':
     resolution: {integrity: sha512-OaGtL73Jck6pBKjNIe24BnFE6agGl+6KxDtTfHhy1HmhthfKouEcOhqpSL64K4/0WCtbKFLOdzD/44cJ4k9opA==}
@@ -3727,6 +3734,8 @@ snapshots:
       '@babel/helper-validator-identifier': 7.28.5
 
   '@colors/colors@1.5.0': {}
+
+  '@emailjs/browser@4.4.1': {}
 
   '@esbuild/aix-ppc64@0.25.9':
     optional: true

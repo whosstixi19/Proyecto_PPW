@@ -10,4 +10,10 @@ export const environment = {
     appId: '1:328388065996:web:6070f419c5f33b6790a069',
     measurementId: 'G-V9NLMLY1EL',
   },
+  emailjs: {
+    serviceId: 'service_wfjyrrs',
+    templateId: 'template_geka91p',
+    templateIdRespuesta: 'template_v5wk3ud',
+    publicKey: 'jvwOoVxtNR7rXH9kB',
+  },
 };

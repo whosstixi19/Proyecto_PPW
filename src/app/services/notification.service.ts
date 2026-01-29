@@ -1,12 +1,17 @@
 import { Injectable } from '@angular/core';
 import { Programador, Asesoria } from '../models/user.model';
+import emailjs from '@emailjs/browser';
+import { environment } from '../../environments/environment';
 
 // Servicio para simular notificaciones por correo electrónico
 @Injectable({
   providedIn: 'root',
 })
 export class NotificationService {
-  constructor() {}
+  constructor() {
+    // Inicializar EmailJS con la public key
+    emailjs.init(environment.emailjs.publicKey);
+  }
 
   // Simular el envío de un correo al programador cuando se solicita una asesoría
   simularEnvioCorreo(
@@ -21,52 +26,71 @@ export class NotificationService {
       comentario?: string;
     }
   ): Promise<{ success: boolean; emailContent: string }> {
-    return new Promise((resolve) => {
-      // Simular delay de red (1-2 segundos)
-      const delay = Math.random() * 1000 + 1000;
-
-      // Mostrar inicio del proceso en consola
-      console.log('\n%c📧 INICIANDO ENVÍO DE CORREO ELECTRÓNICO...', 
+    return new Promise(async (resolve, reject) => {
+      console.log('\n%c📧 ENVIANDO CORREO ELECTRÓNICO REAL...', 
         'background: #667eea; color: white; padding: 10px 20px; font-size: 14px; font-weight: bold; border-radius: 5px;');
-      console.log('%c⏳ Preparando mensaje...', 'color: #f39c12; font-weight: bold;');
+      console.log('%c⏳ Conectando con EmailJS...', 'color: #f39c12; font-weight: bold;');
 
-      setTimeout(() => {
-        // Generar el contenido del correo
+      try {
+        // Preparar los parámetros para EmailJS
+        const templateParams = {
+          to_email: programador.email,
+          programador_nombre: programador.displayName,
+          usuario_nombre: asesoria.usuarioNombre,
+          usuario_email: asesoria.usuarioEmail,
+          tema: asesoria.tema,
+          descripcion: asesoria.descripcion,
+          fecha: new Date(asesoria.fechaSolicitada + 'T00:00:00').toLocaleDateString('es-ES', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          }),
+          hora: asesoria.horaSolicitada,
+          comentario: asesoria.comentario || '',
+        };
+
+        // Enviar email usando EmailJS
+        const response = await emailjs.send(
+          environment.emailjs.serviceId,
+          environment.emailjs.templateId,
+          templateParams
+        );
+
+        // Generar contenido para vista previa
         const emailContent = this.generarContenidoCorreo(programador, asesoria);
 
-        // Mostrar en consola con estilos (simulación)
-        console.log('\n%c╔══════════════════════════════════════════════════════════════╗', 'color: #667eea; font-weight: bold;');
-        console.log('%c║            CORREO ELECTRÓNICO ENVIADO CON ÉXITO           ║', 'color: #667eea; font-weight: bold;');
+        // Mostrar éxito en consola
+        console.log('\n%c╔═══════════════════════════════════════════════════════════════╗', 'color: #667eea; font-weight: bold;');
+        console.log('%c║           📧 CORREO REAL ENVIADO CON ÉXITO ✓               ║', 'color: #667eea; font-weight: bold;');
         console.log('%c╚═══════════════════════════════════════════════════════════════╝', 'color: #667eea; font-weight: bold;');
         
-        console.log('\n%c DATOS DEL ENVÍO:', 'background: #27ae60; color: white; padding: 5px 10px; font-weight: bold;');
+        console.log('\n%c📤 DATOS DEL ENVÍO:', 'background: #27ae60; color: white; padding: 5px 10px; font-weight: bold;');
         console.log('%c┌─────────────────────────────────────────────────────────────┐', 'color: #95a5a6;');
-        console.log(`%c│  Destinatario: ${programador.displayName}`, 'color: #2c3e50; font-weight: bold;');
-        console.log(`%c│  Email:        ${programador.email}`, 'color: #2c3e50;');
-        console.log(`%c│  Asunto:       Nueva solicitud de asesoría - ${asesoria.tema}`, 'color: #2c3e50;');
-        console.log(`%c│  Remitente:    ${asesoria.usuarioNombre}`, 'color: #2c3e50;');
-        console.log(`%c│  Fecha:        ${asesoria.fechaSolicitada}`, 'color: #2c3e50;');
-        console.log(`%c│  Hora:         ${asesoria.horaSolicitada}`, 'color: #2c3e50;');
+        console.log(`%c│ 👤 Destinatario: ${programador.displayName}`, 'color: #2c3e50; font-weight: bold;');
+        console.log(`%c│ 📧 Email:        ${programador.email}`, 'color: #2c3e50;');
+        console.log(`%c│ 📋 Asunto:       Nueva solicitud de asesoría - ${asesoria.tema}`, 'color: #2c3e50;');
+        console.log(`%c│ 👨‍💼 Remitente:    ${asesoria.usuarioNombre}`, 'color: #2c3e50;');
+        console.log(`%c│ 📅 Fecha:        ${asesoria.fechaSolicitada}`, 'color: #2c3e50;');
+        console.log(`%c│ 🕐 Hora:         ${asesoria.horaSolicitada}`, 'color: #2c3e50;');
+        console.log(`%c│ ✅ Estado:       ${response.status} - ${response.text}`, 'color: #27ae60; font-weight: bold;');
         console.log('%c└─────────────────────────────────────────────────────────────┘', 'color: #95a5a6;');
-        
-        console.log('\n%c CONTENIDO DEL CORREO:', 'background: #3498db; color: white; padding: 5px 10px; font-weight: bold;');
-        console.log('%c┌─────────────────────────────────────────────────────────────┐', 'color: #95a5a6;');
-        console.log(`%c│ Tema:        ${asesoria.tema}`, 'color: #34495e;');
-        console.log(`%c│ Descripción: ${asesoria.descripcion}`, 'color: #34495e;');
-        if (asesoria.comentario) {
-          console.log(`%c│ Comentario:  ${asesoria.comentario}`, 'color: #34495e;');
-        }
-        console.log('%c└─────────────────────────────────────────────────────────────┘', 'color: #95a5a6;');
-        
-        console.log('\n%c ESTADO: Correo enviado exitosamente', 'background: #27ae60; color: white; padding: 8px 15px; font-size: 13px; font-weight: bold; border-radius: 3px;');
-        console.log('%c⏱  Tiempo de envío simulado: ' + (delay / 1000).toFixed(2) + 's', 'color: #7f8c8d;');
+        console.log('\n%c✅ El correo fue enviado REALMENTE a través de Gmail', 'background: #27ae60; color: white; padding: 8px 15px; font-size: 13px; font-weight: bold; border-radius: 3px;');
         console.log('%c═══════════════════════════════════════════════════════════════\n', 'color: #667eea; font-weight: bold;');
 
         resolve({
           success: true,
           emailContent: emailContent,
         });
-      }, delay);
+      } catch (error: any) {
+        console.error('\n%c❌ ERROR AL ENVIAR CORREO:', 'background: #e74c3c; color: white; padding: 8px 15px; font-weight: bold;');
+        console.error(error);
+        
+        reject({
+          success: false,
+          error: error.text || error.message || 'Error desconocido',
+        });
+      }
     });
   }
 
@@ -162,6 +186,83 @@ export class NotificationService {
 </body>
 </html>
     `.trim();
+  }
+
+  // Envío REAL de correo al usuario cuando el programador responde (aprueba/rechaza)
+  enviarRespuestaAsesoria(
+    asesoria: {
+      usuarioNombre: string;
+      usuarioEmail: string;
+      tema: string;
+      fechaSolicitada: string;
+      horaSolicitada: string;
+      estado: 'aprobada' | 'rechazada';
+      mensajeRespuesta: string;
+    },
+    programador: {
+      displayName: string;
+      email: string;
+    }
+  ): Promise<{ success: boolean }> {
+    return new Promise(async (resolve, reject) => {
+      console.log('\n%c📧 ENVIANDO RESPUESTA AL USUARIO...', 
+        'background: #667eea; color: white; padding: 10px 20px; font-size: 14px; font-weight: bold; border-radius: 5px;');
+
+      try {
+        const esAprobada = asesoria.estado === 'aprobada';
+        
+        const templateParams = {
+          to_email: asesoria.usuarioEmail,
+          programador_nombre: programador.displayName,
+          programador_email: programador.email,
+          usuario_nombre: asesoria.usuarioNombre,
+          tema: asesoria.tema,
+          fecha: new Date(asesoria.fechaSolicitada + 'T00:00:00').toLocaleDateString('es-ES', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          }),
+          hora: asesoria.horaSolicitada,
+          estado_icono: esAprobada ? '✅' : '❌',
+          estado_texto: esAprobada ? 'ASESORÍA APROBADA' : 'ASESORÍA RECHAZADA',
+          mensaje_respuesta: asesoria.mensajeRespuesta,
+          pie_mensaje: esAprobada 
+            ? 'Por favor, conéctate a la plataforma en la fecha y hora acordadas.'
+            : 'Puedes solicitar otra asesoría cuando lo necesites.',
+        };
+
+        const response = await emailjs.send(
+          environment.emailjs.serviceId,
+          environment.emailjs.templateIdRespuesta,
+          templateParams
+        );
+
+        const estadoColor = esAprobada ? '#27ae60' : '#e74c3c';
+        const estadoTexto = esAprobada ? 'APROBADA ✓' : 'RECHAZADA ✗';
+
+        console.log(`\n%c╔═══════════════════════════════════════════════════════════════╗`, `color: ${estadoColor}; font-weight: bold;`);
+        console.log(`%c║       📧 RESPUESTA ENVIADA AL USUARIO - ${estadoTexto}      ║`, `color: ${estadoColor}; font-weight: bold;`);
+        console.log(`%c╚═══════════════════════════════════════════════════════════════╝`, `color: ${estadoColor}; font-weight: bold;`);
+        
+        console.log('\n%c📤 DATOS DEL ENVÍO:', `background: ${estadoColor}; color: white; padding: 5px 10px; font-weight: bold;`);
+        console.log('%c┌─────────────────────────────────────────────────────────────┐', 'color: #95a5a6;');
+        console.log(`%c│ 👤 Destinatario: ${asesoria.usuarioNombre}`, 'color: #2c3e50; font-weight: bold;');
+        console.log(`%c│ 📧 Email:        ${asesoria.usuarioEmail}`, 'color: #2c3e50;');
+        console.log(`%c│ 👨‍💼 Programador:  ${programador.displayName}`, 'color: #2c3e50;');
+        console.log(`%c│ 📋 Tema:         ${asesoria.tema}`, 'color: #2c3e50;');
+        console.log(`%c│ ✅ Estado:       ${response.status} - ${response.text}`, `color: ${estadoColor}; font-weight: bold;`);
+        console.log('%c└─────────────────────────────────────────────────────────────┘', 'color: #95a5a6;');
+        console.log(`\n%c✅ Notificación de ${asesoria.estado} enviada exitosamente`, `background: ${estadoColor}; color: white; padding: 8px 15px; font-size: 13px; font-weight: bold; border-radius: 3px;`);
+        console.log('%c═══════════════════════════════════════════════════════════════\n', 'color: #667eea; font-weight: bold;');
+
+        resolve({ success: true });
+      } catch (error: any) {
+        console.error('\n%c❌ ERROR AL ENVIAR RESPUESTA:', 'background: #e74c3c; color: white; padding: 8px 15px; font-weight: bold;');
+        console.error(error);
+        reject({ success: false, error: error.text || error.message });
+      }
+    });
   }
 
   // Simular envío de WhatsApp

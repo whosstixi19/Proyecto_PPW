@@ -7,6 +7,7 @@ import { filter, take } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 import { UserService } from '../services/user.service';
 import { AsesoriaService } from '../services/asesoria.service';
+import { NotificationService } from '../services/notification.service';
 import { Programador, Proyecto, Asesoria, Ausencia, HorarioDisponible } from '../models/user.model';
 
 // Componente de perfil del programador - Gestión de proyectos, asesorías, ausencias y horarios
@@ -101,6 +102,7 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private userService: UserService,
     private asesoriaService: AsesoriaService,
+    private notificationService: NotificationService,
     private router: Router,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
@@ -385,18 +387,35 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
 
     this.loading = true;
     try {
+      const mensajeRespuesta = `Asesoría confirmada para el ${asesoria.fechaSolicitada} a las ${asesoria.horaSolicitada}. ¡Nos vemos!`;
+      
       await this.asesoriaService.responderAsesoria(
         asesoria.id!,
         'aprobada',
-        `Asesoría confirmada para el ${asesoria.fechaSolicitada} a las ${asesoria.horaSolicitada}. ¡Nos vemos!`,
+        mensajeRespuesta,
       );
 
-      // Simulación de notificaciones al usuario
-      console.log('📧 ============ SIMULACIÓN DE NOTIFICACIONES ============');
-      console.log('✅ Respuesta de APROBACIÓN enviada al usuario');
-      console.log('📨 Correo electrónico redactado y enviado a:', asesoria.usuarioEmail);
-      console.log('💬 Mensaje de WhatsApp enviado al usuario:', asesoria.usuarioNombre);
-      console.log('========================================================');
+      // Enviar correo REAL al usuario
+      try {
+        await this.notificationService.enviarRespuestaAsesoria(
+          {
+            usuarioNombre: asesoria.usuarioNombre,
+            usuarioEmail: asesoria.usuarioEmail,
+            tema: asesoria.tema,
+            fechaSolicitada: asesoria.fechaSolicitada,
+            horaSolicitada: asesoria.horaSolicitada,
+            estado: 'aprobada',
+            mensajeRespuesta: mensajeRespuesta,
+          },
+          {
+            displayName: this.programador?.displayName || 'Programador',
+            email: this.programador?.email || '',
+          }
+        );
+        console.log('✅ Correo de aprobación enviado exitosamente al usuario');
+      } catch (emailError) {
+        console.error('⚠️ Error al enviar correo, pero asesoría aprobada:', emailError);
+      }
 
       alert('Asesoría aprobada correctamente');
     } catch (error) {
@@ -435,13 +454,27 @@ export class ProgramadorComponent implements OnInit, OnDestroy {
         this.motivoRechazo,
       );
 
-      // Simulación de notificaciones al usuario
-      console.log('📧 ============ SIMULACIÓN DE NOTIFICACIONES ============');
-      console.log('❌ Respuesta de RECHAZO enviada al usuario');
-      console.log('📨 Correo electrónico redactado y enviado a:', this.selectedAsesoria.usuarioEmail);
-      console.log('💬 Mensaje de WhatsApp enviado al usuario:', this.selectedAsesoria.usuarioNombre);
-      console.log('📝 Motivo:', this.motivoRechazo);
-      console.log('========================================================');
+      // Enviar correo REAL al usuario
+      try {
+        await this.notificationService.enviarRespuestaAsesoria(
+          {
+            usuarioNombre: this.selectedAsesoria.usuarioNombre,
+            usuarioEmail: this.selectedAsesoria.usuarioEmail,
+            tema: this.selectedAsesoria.tema,
+            fechaSolicitada: this.selectedAsesoria.fechaSolicitada,
+            horaSolicitada: this.selectedAsesoria.horaSolicitada,
+            estado: 'rechazada',
+            mensajeRespuesta: this.motivoRechazo,
+          },
+          {
+            displayName: this.programador?.displayName || 'Programador',
+            email: this.programador?.email || '',
+          }
+        );
+        console.log('✅ Correo de rechazo enviado exitosamente al usuario');
+      } catch (emailError) {
+        console.error('⚠️ Error al enviar correo, pero asesoría rechazada:', emailError);
+      }
       
       this.closeRechazarModal();
       alert('Asesoría rechazada. Se ha notificado al usuario.');
